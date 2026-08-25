@@ -1,0 +1,33 @@
+<Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/EricksonLopez.Events.Benchmarks/EricksonLopez.Events.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/NativeAotSample/NativeAotSample.csproj" />
+  </Folder>
+  <Folder Name="/samples/ECommerce.Sample/">
+    <Project Path="samples/ECommerce.Sample/ECommerce.App/ECommerce.App.csproj" />
+    <Project Path="samples/ECommerce.Sample/ECommerce.Application/ECommerce.Application.csproj" />
+    <Project Path="samples/ECommerce.Sample/ECommerce.Domain/ECommerce.Domain.csproj" />
+    <Project Path="samples/ECommerce.Sample/ECommerce.Infrastructure/ECommerce.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/EricksonLopez.Events.Contracts/EricksonLopez.Events.Contracts.csproj" />
+    <Project Path="src/EricksonLopez.Events.CloudEvents/EricksonLopez.Events.CloudEvents.csproj" />
+    <Project Path="src/EricksonLopez.Events.Generators/EricksonLopez.Events.Generators.csproj" />
+    <Project Path="src/EricksonLopez.Events.OpenTelemetry/EricksonLopez.Events.OpenTelemetry.csproj" />
+    <Project Path="src/EricksonLopez.Events.Serialization.SystemTextJson/EricksonLopez.Events.Serialization.SystemTextJson.csproj" />
+    <Project Path="src/EricksonLopez.Events.Testing/EricksonLopez.Events.Testing.csproj" />
+    <Project Path="src/EricksonLopez.Events/EricksonLopez.Events.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EricksonLopez.Events.ArchitectureTests/EricksonLopez.Events.ArchitectureTests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.CloudEvents.Tests/EricksonLopez.Events.CloudEvents.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.Generators.Tests/EricksonLopez.Events.Generators.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.OpenTelemetry.Tests/EricksonLopez.Events.OpenTelemetry.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.Serialization.Tests/EricksonLopez.Events.Serialization.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.Testing.Tests/EricksonLopez.Events.Testing.Tests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.UnitTests/EricksonLopez.Events.UnitTests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.NativeAotTests/EricksonLopez.Events.NativeAotTests.csproj" />
+  </Folder>
+</Solution>

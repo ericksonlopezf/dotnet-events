@@ -1,0 +1,25 @@
+{
+  "stryker-config": {
+    "thresholds": {
+      "high": 100,
+      "low": 98,
+      "break": 95
+    },
+    "reporters": [
+      "html",
+      "cleartext",
+      "progress",
+      "json"
+    ],
+    "mutate": [
+      "**/*.cs"
+    ],
+    "ignore-methods": [
+      "ConfigureAwait",
+      "Dispose",
+      "ConfigureGeneratedCodeAnalysis",
+      "EnableConcurrentExecution"
+    ],
+    "ignore-mutations": []
+  }
+}
