@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <AssemblyName>EricksonLopez.Events.Contracts</AssemblyName>
+    <RootNamespace>EricksonLopez.Events</RootNamespace>
+    <Description>Pure domain-level event contracts and identifiers for decoupled, event-driven .NET applications. Zero third-party dependencies.</Description>
+    <PackageTags>$(CommonPackageTags);contracts;domain-events;integration-events;envelope;metadata;guid-v7;correlation-id;ddd;clean-architecture;trimming</PackageTags>
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EricksonLopez.Events" />
+    <InternalsVisibleTo Include="EricksonLopez.Events.UnitTests" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Serialization.SystemTextJson\EricksonLopez.Events.Serialization.SystemTextJson.csproj" />
+  </ItemGroup>
+
+</Project>

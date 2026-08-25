@@ -1,0 +1,53 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);NU1901;NU1902;NU1903;NU1904</NoWarn>
+
+    <!-- Package & Assembly Info -->
+    <Authors>Erickson Lopez</Authors>
+    <Company>ericksonlopez.dev</Company>
+    <Copyright>Copyright © Erickson Lopez. MIT License.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://ericksonlopez.dev/events</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ericksonlopezf/dotnet-events</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <CommonPackageTags>dotnet;csharp;events;event-driven;aot</CommonPackageTags>
+  </PropertyGroup>
+
+  <!-- Rules for Test, Sample and Benchmark Projects -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('Tests')) or $(MSBuildProjectName.EndsWith('Benchmarks')) or $(MSBuildProjectName.EndsWith('Sample')) or $(MSBuildProjectName.Contains('.Sample.'))">
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CA1806;CA1822;CA2012;CA2263;CA1873;CA1510;CA1859;CA1707;IDE1006;CA1305</NoWarn>
+  </PropertyGroup>
+
+  <!-- Rules for Production Libraries -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj' and !$(MSBuildProjectName.EndsWith('Tests')) and !$(MSBuildProjectName.EndsWith('Benchmarks')) and !$(MSBuildProjectName.EndsWith('Sample')) and !$(MSBuildProjectName.Contains('.Sample.')) and !$(MSBuildProjectName.EndsWith('Generators'))">
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Packaging Assets for Packable Projects -->
+  <ItemGroup Condition="'$(IsPackable)' != 'false' and !$(MSBuildProjectName.EndsWith('Tests')) and !$(MSBuildProjectName.EndsWith('Benchmarks')) and !$(MSBuildProjectName.Contains('Sample'))">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>

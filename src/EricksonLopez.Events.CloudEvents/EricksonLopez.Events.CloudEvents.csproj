@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <Description>CloudEvents 1.0 adapter and bidirectional mapping extensions for EricksonLopez.Events, supporting CNCF standard event gateways and Native AOT.</Description>
+    <PackageTags>$(CommonPackageTags);cloudevents;cncf;cloud-native;serverless;eventgrid;eventbridge;knative;interoperability;trimming</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="EricksonLopez.Events.CloudEvents.Tests" />
+  </ItemGroup>
+
+</Project>

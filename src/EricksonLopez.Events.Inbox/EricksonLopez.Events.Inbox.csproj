@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <Description>Idempotent consumer bridge for EricksonLopez.Events backed by EricksonLopez.Outbox.Inbox for guaranteed exactly-once event handler execution.</Description>
+    <PackageTags>$(CommonPackageTags);inbox;inbox-pattern;idempotency;deduplication;exactly-once;reliability;messaging;domain-events;integration-events;trimming</PackageTags>
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Events.Contracts\EricksonLopez.Events.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\dotnet-outbox\src\EricksonLopez.Inbox.Abstractions\EricksonLopez.Inbox.Abstractions.csproj"
+                      Condition="Exists('..\..\..\dotnet-outbox\src\EricksonLopez.Inbox.Abstractions\EricksonLopez.Inbox.Abstractions.csproj')" />
+    <PackageReference Include="EricksonLopez.Inbox.Abstractions"
+                      Condition="!Exists('..\..\..\dotnet-outbox\src\EricksonLopez.Inbox.Abstractions\EricksonLopez.Inbox.Abstractions.csproj')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>

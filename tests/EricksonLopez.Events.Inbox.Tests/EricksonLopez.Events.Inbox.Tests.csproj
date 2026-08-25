@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Contracts\EricksonLopez.Events.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Inbox\EricksonLopez.Events.Inbox.csproj" />
+    <ProjectReference Include="..\..\..\dotnet-outbox\src\EricksonLopez.Outbox.Inbox\EricksonLopez.Outbox.Inbox.csproj" Condition="Exists('..\..\..\dotnet-outbox\src\EricksonLopez.Outbox.Inbox\EricksonLopez.Outbox.Inbox.csproj')" />
+    <PackageReference Include="EricksonLopez.Outbox.Inbox" Condition="!Exists('..\..\..\dotnet-outbox\src\EricksonLopez.Outbox.Inbox\EricksonLopez.Outbox.Inbox.csproj')" />
+  </ItemGroup>
+</Project>

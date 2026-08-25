@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="NetArchTest.eNhancedEdition" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Serialization.SystemTextJson\EricksonLopez.Events.Serialization.SystemTextJson.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.OpenTelemetry\EricksonLopez.Events.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Generators\EricksonLopez.Events.Generators.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Inbox\EricksonLopez.Events.Inbox.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Outbox\EricksonLopez.Events.Outbox.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.CloudEvents\EricksonLopez.Events.CloudEvents.csproj" />
+    <ProjectReference Include="..\..\src\EricksonLopez.Events.Testing\EricksonLopez.Events.Testing.csproj" />
+  </ItemGroup>
+
+</Project>
+
