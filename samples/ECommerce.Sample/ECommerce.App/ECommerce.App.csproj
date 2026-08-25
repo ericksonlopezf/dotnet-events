@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ECommerce.Application\ECommerce.Application.csproj" />
+    <ProjectReference Include="..\ECommerce.Infrastructure\ECommerce.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+    <ProjectReference Include="..\..\..\src\EricksonLopez.Events.Contracts\EricksonLopez.Events.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\src\EricksonLopez.Events.CloudEvents\EricksonLopez.Events.CloudEvents.csproj" />
+    <ProjectReference Include="..\..\..\src\EricksonLopez.Events.Testing\EricksonLopez.Events.Testing.csproj" />
+    <ProjectReference Include="..\..\..\src\EricksonLopez.Events.OpenTelemetry\EricksonLopez.Events.OpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\..\src\EricksonLopez.Events.Serialization.SystemTextJson\EricksonLopez.Events.Serialization.SystemTextJson.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+</Project>

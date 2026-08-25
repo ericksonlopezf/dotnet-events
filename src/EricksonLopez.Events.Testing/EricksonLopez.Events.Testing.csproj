@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <AssemblyName>EricksonLopez.Events.Testing</AssemblyName>
+    <RootNamespace>EricksonLopez.Events.Testing</RootNamespace>
+    <Description>Testing utilities and fake event publishers/handlers for EricksonLopez.Events.</Description>
+    <PackageTags>$(CommonPackageTags);testing;unit-testing;integration-testing;fakes;spies;test-doubles;assertions;domain-events;integration-events;trimming</PackageTags>
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+  </ItemGroup>
+
+</Project>

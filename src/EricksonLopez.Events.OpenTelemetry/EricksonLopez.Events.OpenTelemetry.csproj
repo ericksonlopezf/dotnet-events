@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>OpenTelemetry instrumentation extensions for EricksonLopez.Events. Enables distributed tracing and metrics integration with OpenTelemetry .NET SDK.</Description>
+    <PackageTags>$(CommonPackageTags);opentelemetry;distributed-tracing;tracing;metrics;observability;w3c-tracecontext;telemetry;diagnostics;trimming</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry" />
+  </ItemGroup>
+</Project>

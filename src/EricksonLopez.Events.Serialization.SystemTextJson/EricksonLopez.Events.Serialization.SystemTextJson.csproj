@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>System.Text.Json Native AOT converters and serialization adapters for EricksonLopez.Events.</Description>
+    <PackageTags>$(CommonPackageTags);serialization;system-text-json;json;json-converter;envelope;guid-v7;low-allocation;trimming</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EricksonLopez.Events\EricksonLopez.Events.csproj" />
+  </ItemGroup>
+
+</Project>

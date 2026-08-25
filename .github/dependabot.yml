@@ -1,0 +1,31 @@
+# Dependabot configuration for EricksonLopez.Events
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    groups:
+      microsoft-extensions:
+        patterns:
+          - "Microsoft.Extensions.*"
+      opentelemetry:
+        patterns:
+          - "OpenTelemetry*"
+      test-dependencies:
+        patterns:
+          - "xunit*"
+          - "FluentAssertions*"
+          - "coverlet.*"
+          - "Microsoft.NET.Test.Sdk"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
