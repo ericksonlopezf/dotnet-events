@@ -32,15 +32,14 @@ dotnet-events/
 │   ├── EricksonLopez.Events.Generators/       ──► tests/EricksonLopez.Events.Generators.Tests/
 │   ├── EricksonLopez.Events.Serialization...  ──► tests/EricksonLopez.Events.Serialization.Tests/
 │   ├── EricksonLopez.Events.OpenTelemetry/    ──► tests/EricksonLopez.Events.OpenTelemetry.Tests/
-│   ├── EricksonLopez.Events.Inbox/            ──► tests/EricksonLopez.Events.Inbox.Tests/
-│   ├── EricksonLopez.Events.Outbox/           ──► tests/EricksonLopez.Events.Outbox.Tests/
 │   ├── EricksonLopez.Events.CloudEvents/      ──► tests/EricksonLopez.Events.CloudEvents.Tests/
 │   └── EricksonLopez.Events.Testing/          ──► tests/EricksonLopez.Events.Testing.Tests/
 └── tests/
-    └── EricksonLopez.Events.NativeAotTests/   ──► End-to-end AOT compilation & trimming validation
+    └── EricksonLopez.Events.AotSmokeTest/   ──► End-to-end AOT compilation & trimming validation
 ```
 
 ### Test Categorization & Traits
+Execute the full solution test suite (455+ tests across 8 test projects):
 
 | Test Category | Trait | Purpose | Examples |
 |---|---|---|---|
@@ -119,25 +118,25 @@ Mutation testing validates test assertion quality by introducing syntax mutation
 
 ```powershell
 # Core Contracts (Identifiers, Metadata, Envelopes)
-dotnet stryker -c stryker-config.contracts.json
+dotnet stryker -c stryker-contracts-config.json
 
 # Core Bus & Dispatch
 dotnet stryker -c stryker-config.json
 
 # Roslyn Source Generators & Analyzers
-dotnet stryker -c stryker-config.generators.json
+dotnet stryker -c stryker-generators-config.json
 
 # System.Text.Json Serialization
-dotnet stryker -c stryker-config.serialization.json
+dotnet stryker -c stryker-serialization-config.json
 
 # CloudEvents 1.0 Adapter
-dotnet stryker -c stryker-config.cloudevents.json
+dotnet stryker -c stryker-cloudevents-config.json
 
 # OpenTelemetry Instrumentation
-dotnet stryker -c stryker-config.opentelemetry.json
+dotnet stryker -c stryker-opentelemetry-config.json
 
 # Testing Utilities
-dotnet stryker -c stryker-config.testing.json
+dotnet stryker -c stryker-testing-config.json
 ```
 
 HTML and JSON reports are generated under `StrykerOutput/{timestamp}/reports/mutation-report.html`.

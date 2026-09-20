@@ -1,5 +1,11 @@
 # ADR-025: CloudEvents 1.0 Adapter Strategy and Boundary
 
+## Status
+Accepted
+
+## Date
+2026-08-15
+
 * **Status:** Implemented (v1.0.0)
 * **Date:** 2026-08-15
 * **Deciders:** Architecture Team, Erickson Lopez

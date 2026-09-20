@@ -39,4 +39,10 @@ This directory documents all architectural decision records for `EricksonLopez.E
 | [ADR-029](adr-029-diagnostic-testing-isolation.md) | Diagnostic Testing Isolation | Accepted |
 | [ADR-030](adr-030-public-testing-package.md) | Public Testing Test-Doubles Package | Accepted |
 | [ADR-031](adr-031-stryker-mutation-testing-policy.md) | Stryker Mutation Testing Quality Gate | Accepted |
+| [ADR-032](adr-032-causation-depth-limit-middleware.md) | Built-in Causation Depth Limiting Middleware | Accepted |
+| [ADR-033](adr-033-handler-scope-policy-in-parallel-dispatch.md) | Handler Scope Resolution Policy in Parallel Execution | Accepted |
+| [ADR-034](adr-034-polymorphic-envelope-json-converter.md) | Native AOT Polymorphic EventEnvelope JSON Converter Factory | Accepted |
+| [ADR-035](adr-035-benchmark-regression-gate-and-zero-allocation.md) | Automated CI Benchmark Regression Gate and Zero-Allocation Invariant | Accepted |
+| [ADR-036](adr-036-covariant-event-envelope-and-envelope-handler.md) | Covariant Event Envelope and Envelope Consumer Contracts | Accepted |
+| [ADR-037](adr-037-deprecation-of-in-memory-transactional-publisher.md) | Deprecation of In-Memory Transactional Publisher in Favor of Durable Outbox | Accepted |
 | [REJECT-004](reject-004-global-singleton-event-bus-without-di.md) | Global Singleton EventBus without DI | Rejected |

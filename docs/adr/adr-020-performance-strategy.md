@@ -1,5 +1,11 @@
 # ADR-020: Low Allocation, Zero Boxing and High Throughput Strategy
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

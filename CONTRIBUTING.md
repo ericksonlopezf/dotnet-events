@@ -31,7 +31,7 @@ dotnet build EricksonLopez.Events.slnx -c Release
 ```
 
 ### 3. Run Automated Tests
-Execute the full solution test suite (337+ tests across 10 test projects):
+Execute the full solution test suite (455+ tests across 8 test projects):
 ```bash
 dotnet test EricksonLopez.Events.slnx -c Release --verbosity normal
 ```
@@ -52,42 +52,47 @@ dotnet test --filter "Category=Architecture"
 Verify that smoke test suites and sample applications compile with `PublishAot=true` without trimming warnings:
 ```bash
 # Windows
-dotnet publish tests/EricksonLopez.Events.NativeAotTests/EricksonLopez.Events.NativeAotTests.csproj -c Release -r win-x64 -p:PublishAot=true
-.\tests\EricksonLopez.Events.NativeAotTests\bin\Release\net10.0\win-x64\publish\EricksonLopez.Events.NativeAotTests.exe
+dotnet publish tests/EricksonLopez.Events.AotSmokeTest/EricksonLopez.Events.AotSmokeTest.csproj -c Release -r win-x64 -p:PublishAot=true
+.\tests\EricksonLopez.Events.AotSmokeTest\bin\Release\net10.0\win-x64\publish\EricksonLopez.Events.AotSmokeTest.exe
 
 # Linux
-dotnet publish tests/EricksonLopez.Events.NativeAotTests/EricksonLopez.Events.NativeAotTests.csproj -c Release -r linux-x64 -p:PublishAot=true
-./tests/EricksonLopez.Events.NativeAotTests/bin/Release/net10.0/linux-x64/publish/EricksonLopez.Events.NativeAotTests
+dotnet publish tests/EricksonLopez.Events.AotSmokeTest/EricksonLopez.Events.AotSmokeTest.csproj -c Release -r linux-x64 -p:PublishAot=true
+./tests/EricksonLopez.Events.AotSmokeTest/bin/Release/net10.0/linux-x64/publish/EricksonLopez.Events.AotSmokeTest
 ```
 
 ### 5. Run Mutation Testing (Stryker.NET)
 Per [ADR-031](docs/adr/adr-031-stryker-mutation-testing-policy.md), we enforce a **95% break threshold** across all modules:
 ```bash
 # Core Contracts (Identifiers, Metadata, Envelopes)
-dotnet-stryker -f stryker-config.contracts.json
+dotnet-stryker -f stryker-contracts-config.json
 
 # Core Bus & Dispatch
 dotnet-stryker -f stryker-config.json
 
 # Roslyn Source Generators & Analyzers
-dotnet-stryker -f stryker-config.generators.json
+dotnet-stryker -f stryker-generators-config.json
 
 # System.Text.Json Serialization
-dotnet-stryker -f stryker-config.serialization.json
+dotnet-stryker -f stryker-serialization-config.json
 
 # CloudEvents 1.0 Adapter
-dotnet-stryker -f stryker-config.cloudevents.json
+dotnet-stryker -f stryker-cloudevents-config.json
 
 # OpenTelemetry Instrumentation
-dotnet-stryker -f stryker-config.opentelemetry.json
+dotnet-stryker -f stryker-opentelemetry-config.json
 
 # Testing Utilities
-dotnet-stryker -f stryker-config.testing.json
+dotnet-stryker -f stryker-testing-config.json
 ```
 
-### 6. Run Performance Benchmarks
+### 6. Run Performance Benchmarks & Quality Gate
+Run the BenchmarkDotNet suite and verify that hot paths preserve zero heap allocations (0 B) with no more than 5% latency regression:
 ```bash
-dotnet run -c Release --project benchmarks/EricksonLopez.Events.Benchmarks
+# Run benchmarks and export JSON metrics
+dotnet run -c Release --project benchmarks/EricksonLopez.Events.Benchmarks --framework net10.0 -- --filter "*" --job short --exporters json --memory --artifacts ./benchmarks/pr-results
+
+# Evaluate Benchmark Regression Gate
+pwsh ./scripts/verify-benchmark-gate.ps1 -ReportDir ./benchmarks/pr-results -BaselinePath ./benchmarks/results/baseline.json -MaxLatencyRegressionPercent 5
 ```
 
 ---
@@ -148,6 +153,7 @@ Before submitting a PR, verify:
 - [ ] All automated tests pass locally (`dotnet test -c Release`).
 - [ ] Native AOT smoke tests pass (`PublishAot=true`).
 - [ ] Stryker mutation testing score meets or exceeds the **95% threshold**.
+- [ ] Benchmark regression gate passes with 0 B hot path allocations and $\le 5\%$ latency deviation.
 - [ ] Public types and methods include comprehensive XML documentation comments (`CS1591` is enabled).
 - [ ] New architectural decisions are documented as an ADR under `docs/adr/`.
 

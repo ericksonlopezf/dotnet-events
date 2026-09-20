@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Description>OpenTelemetry instrumentation extensions for EricksonLopez.Events. Enables distributed tracing and metrics integration with OpenTelemetry .NET SDK.</Description>
-    <PackageTags>$(CommonPackageTags);opentelemetry;distributed-tracing;tracing;metrics;observability;w3c-tracecontext;telemetry;diagnostics;trimming</PackageTags>
+    <PackageTags>$(CommonPackageTags);opentelemetry;observability;distributed-tracing;metrics;w3c-tracecontext</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

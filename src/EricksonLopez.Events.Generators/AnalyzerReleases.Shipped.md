@@ -1,10 +1,18 @@
+## Release 2.0.0
+
+### New Rules
+
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+ELE006 | DDD.Design | Warning | Event properties should use immutable collection types
+
 ## Release 1.0.0
 
 ### New Rules
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-ELE001 | DDD.Design | Warning | Event types must be immutable
+ELE001 | DDD.Design | Error | Event types must be immutable
 ELE002 | DDD.Design | Error | Invalid event version in [EventVersion]
 ELE003 | DDD.Design | Warning | Empty event name in [EventName]
 ELE004 | DDD.Design | Warning | Empty event source in [EventSource]

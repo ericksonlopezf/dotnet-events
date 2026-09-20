@@ -22,6 +22,15 @@ public interface IEventTypeRegistry
     bool TryGetDescriptor(EventType eventType, [NotNullWhen(true)] out EventTypeDescriptor? descriptor);
 
     /// <summary>
+    /// Attempts to retrieve the descriptor associated with the specified semantic event type and contract schema version.
+    /// </summary>
+    /// <param name="eventType">The semantic event type identifier.</param>
+    /// <param name="version">The schema contract version.</param>
+    /// <param name="descriptor">When this method returns, contains the descriptor if found; otherwise, <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> if the descriptor was found; otherwise, <see langword="false"/>.</returns>
+    bool TryGetDescriptor(EventType eventType, EventVersion version, [NotNullWhen(true)] out EventTypeDescriptor? descriptor);
+
+    /// <summary>
     /// Attempts to retrieve the descriptor associated with the specified CLR event type.
     /// </summary>
     /// <param name="clrType">The CLR <see cref="Type"/> of the event.</param>

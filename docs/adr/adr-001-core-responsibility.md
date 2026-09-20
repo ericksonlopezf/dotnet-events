@@ -1,5 +1,11 @@
 # ADR-001: Core Responsibility and Ecosystem Boundaries
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

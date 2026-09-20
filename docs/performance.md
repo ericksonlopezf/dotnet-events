@@ -18,5 +18,5 @@ Benchmarks executed on `.NET 10.0.x` and `.NET 8.0.x` under Linux-x64 runner:
 
 ## 2. Key Takeaways
 
-- In-process event dispatching generates **0 bytes of heap allocation** on both .NET 8 and .NET 10.
-- Struct-based `EventEnvelope<T>` packaging executes in single-digit nanoseconds with zero GC overhead.
+- Immutable `EventEnvelope<T>` (`sealed record class`) packaging executes in single-digit nanoseconds with zero GC overhead on cached/in-process paths.
+

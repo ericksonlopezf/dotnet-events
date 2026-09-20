@@ -3,8 +3,8 @@ using System;
 
 namespace EricksonLopez.Events.UnitTests.Identifiers;
 
-using EricksonLopez.Events.Identifiers;
 using AwesomeAssertions;
+using EricksonLopez.Events.Identifiers;
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;

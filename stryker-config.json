@@ -1,5 +1,16 @@
 {
   "stryker-config": {
+    "project": "EricksonLopez.Events.csproj",
+    "test-projects": [
+      "EricksonLopez.Events.UnitTests.csproj"
+    ],
+    "mutate": [
+      "**/*.cs",
+      "!bin/**",
+      "!obj/**",
+      "!**/*.g.cs",
+      "!**/*.AssemblyInfo.cs"
+    ],
     "thresholds": {
       "high": 100,
       "low": 98,
@@ -7,19 +18,14 @@
     },
     "reporters": [
       "html",
+      "json",
       "cleartext",
-      "progress",
-      "json"
-    ],
-    "mutate": [
-      "**/*.cs"
+      "progress"
     ],
     "ignore-methods": [
       "ConfigureAwait",
-      "Dispose",
-      "ConfigureGeneratedCodeAnalysis",
-      "EnableConcurrentExecution"
+      "Dispose"
     ],
-    "ignore-mutations": []
+    "concurrency": 2
   }
 }

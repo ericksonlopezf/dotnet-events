@@ -6,7 +6,7 @@
     <AssemblyName>EricksonLopez.Events.Contracts</AssemblyName>
     <RootNamespace>EricksonLopez.Events</RootNamespace>
     <Description>Pure domain-level event contracts and identifiers for decoupled, event-driven .NET applications. Zero third-party dependencies.</Description>
-    <PackageTags>$(CommonPackageTags);contracts;domain-events;integration-events;envelope;metadata;guid-v7;correlation-id;ddd;clean-architecture;trimming</PackageTags>
+    <PackageTags>$(CommonPackageTags);contracts;domain-events;integration-events;envelope;metadata;guid-v7;correlation-id;ddd;clean-architecture</PackageTags>
     <IsAotCompatible>true</IsAotCompatible>
     <IsTrimmable>true</IsTrimmable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

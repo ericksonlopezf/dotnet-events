@@ -3,11 +3,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AwesomeAssertions;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Generators;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Registry;
-using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
@@ -680,9 +680,22 @@ public static class GeneratedEventServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.Add(new ServiceDescriptor(
-            typeof(IEventHandler<global::HandlerApp.OrderPlaced>),
+            typeof(global::HandlerApp.OrderPlacedHandler),
             typeof(global::HandlerApp.OrderPlacedHandler),
             lifetime));
+
+        services.Add(new ServiceDescriptor(
+            typeof(IEventHandler<global::HandlerApp.OrderPlaced>),
+            static sp => sp.GetRequiredService<global::HandlerApp.OrderPlacedHandler>(),
+            lifetime));
+
+        services.AddSingleton(new EricksonLopez.Events.Bus.Extensions.HandlerRegistrationToken(
+            typeof(global::HandlerApp.OrderPlaced),
+            new EricksonLopez.Events.Bus.Registry.HandlerDescriptor(
+                typeof(global::HandlerApp.OrderPlacedHandler),
+                typeof(IEventHandler<global::HandlerApp.OrderPlaced>),
+                static (inst, evt, ct) => ((IEventHandler<global::HandlerApp.OrderPlaced>)inst).HandleAsync((global::HandlerApp.OrderPlaced)evt, ct),
+                new EricksonLopez.Events.Bus.Registry.HandlerInvoker<global::HandlerApp.OrderPlaced>(static (inst, evt, ct) => ((IEventHandler<global::HandlerApp.OrderPlaced>)inst).HandleAsync(evt, ct)))));
 
         return services;
     }
@@ -702,9 +715,15 @@ public static class GeneratedEventServiceCollectionExtensions
         var ret = addMethod!.Invoke(null, new object[] { services, ServiceLifetime.Transient });
         ret.Should().BeSameAs(services);
         services.Should().ContainSingle(sd =>
-            sd.ServiceType.Name.StartsWith("IEventHandler") &&
+            sd.ServiceType.Name == "OrderPlacedHandler" &&
             sd.ImplementationType!.Name == "OrderPlacedHandler" &&
             sd.Lifetime == ServiceLifetime.Transient);
+        services.Should().ContainSingle(sd =>
+            sd.ServiceType.Name.StartsWith("IEventHandler") &&
+            sd.ImplementationFactory != null &&
+            sd.Lifetime == ServiceLifetime.Transient);
+        services.Should().ContainSingle(sd =>
+            sd.ServiceType == typeof(EricksonLopez.Events.Bus.Extensions.HandlerRegistrationToken));
     }
 
     [Fact]

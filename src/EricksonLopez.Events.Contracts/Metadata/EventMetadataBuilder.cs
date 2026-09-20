@@ -120,6 +120,3 @@ public sealed class EventMetadataBuilder
             headers);
     }
 }
-
-
-

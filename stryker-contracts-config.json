@@ -1,0 +1,28 @@
+{
+  "stryker-config": {
+    "project": "EricksonLopez.Events.Contracts.csproj",
+    "test-projects": [
+      "EricksonLopez.Events.ArchitectureTests.csproj",
+      "EricksonLopez.Events.UnitTests.csproj"
+    ],
+    "mutate": [
+      "**/*.cs",
+      "!bin/**",
+      "!obj/**",
+      "!**/*.g.cs",
+      "!**/*.AssemblyInfo.cs"
+    ],
+    "thresholds": {
+      "high": 100,
+      "low": 98,
+      "break": 95
+    },
+    "reporters": [
+      "html",
+      "json",
+      "cleartext",
+      "progress"
+    ],
+    "concurrency": 2
+  }
+}

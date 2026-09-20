@@ -3,12 +3,12 @@ using System;
 
 namespace EricksonLopez.Events.UnitTests.Envelopes;
 
+using AwesomeAssertions;
 using EricksonLopez.Events.Attributes;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Envelopes;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Metadata;
-using AwesomeAssertions;
 using Xunit;
 
 [Xunit.Trait("Category", "Unit")]
@@ -86,7 +86,7 @@ public sealed class EventEnvelopeTests
         envelope.Type.Should().Be(EventType.From("orders.order-created"));
         envelope.Version.Should().Be(EventVersion.From(2));
         envelope.OccurredAt.Should().Be(ev.OccurredAt);
-        envelope.Metadata.Should().Be(EventMetadata.Empty);
+        envelope.Metadata.Source.Should().Be("orders.service");
     }
 
     [Fact]

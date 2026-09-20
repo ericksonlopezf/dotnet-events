@@ -9,6 +9,7 @@ namespace EricksonLopez.Events.UnitTests.Bus;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using AwesomeAssertions;
 using EricksonLopez.Events.Bus;
 using EricksonLopez.Events.Bus.Configuration;
 using EricksonLopez.Events.Bus.Diagnostics;
@@ -18,7 +19,6 @@ using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Envelopes;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.UnitTests.Common;
-using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
@@ -108,7 +108,7 @@ public sealed class EventBusTests
         Func<Task> act = async () => await bus.PublishAsync(evt);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage($"No handlers registered for event '{typeof(SampleBusEvent).FullName}'.");
+            .WithMessage($"No handlers registered for event type '{typeof(SampleBusEvent).FullName}'*");
     }
 
     [Fact]
@@ -534,7 +534,7 @@ public sealed class EventBusTests
     }
 
     // Integration tests have been moved to EventBusIntegrationTests.cs
-    
+
     private static EventBus CreateDefaultBus(out IHandlerRegistry registry, out IServiceProvider sp, EventExecutionMode mode = EventExecutionMode.Sequential)
     {
         registry = Substitute.For<IHandlerRegistry>();

@@ -16,6 +16,7 @@ using EricksonLopez.Events.Identifiers;
 public sealed class EventTypeRegistry : IEventTypeRegistry
 {
     private readonly FrozenDictionary<EventType, EventTypeDescriptor> _byEventType;
+    private readonly FrozenDictionary<(EventType, EventVersion), EventTypeDescriptor> _byVersionedEventType;
     private readonly FrozenDictionary<Type, EventTypeDescriptor> _byClrType;
     private readonly EventTypeDescriptor[] _allDescriptors;
 
@@ -37,21 +38,31 @@ public sealed class EventTypeRegistry : IEventTypeRegistry
         _allDescriptors = list.ToArray();
 
         var byTypeDict = new Dictionary<EventType, EventTypeDescriptor>();
+        var byVersionedDict = new Dictionary<(EventType, EventVersion), EventTypeDescriptor>();
         var byClrDict = new Dictionary<Type, EventTypeDescriptor>();
 
         foreach (var desc in list)
         {
-            byTypeDict[desc.EventType] = desc;
+            if (!byTypeDict.TryGetValue(desc.EventType, out var existing) || desc.Version > existing.Version)
+            {
+                byTypeDict[desc.EventType] = desc;
+            }
+            byVersionedDict[(desc.EventType, desc.Version)] = desc;
             byClrDict[desc.ClrType] = desc;
         }
 
         _byEventType = byTypeDict.ToFrozenDictionary();
+        _byVersionedEventType = byVersionedDict.ToFrozenDictionary();
         _byClrType = byClrDict.ToFrozenDictionary();
     }
 
     /// <inheritdoc />
     public bool TryGetDescriptor(EventType eventType, [NotNullWhen(true)] out EventTypeDescriptor? descriptor) =>
         _byEventType.TryGetValue(eventType, out descriptor);
+
+    /// <inheritdoc />
+    public bool TryGetDescriptor(EventType eventType, EventVersion version, [NotNullWhen(true)] out EventTypeDescriptor? descriptor) =>
+        _byVersionedEventType.TryGetValue((eventType, version), out descriptor);
 
     /// <inheritdoc />
     public bool TryGetDescriptor(Type clrType, [NotNullWhen(true)] out EventTypeDescriptor? descriptor)

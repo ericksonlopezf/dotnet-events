@@ -3,7 +3,7 @@ name: Feature Request
 about: Suggest an idea or architectural improvement for EricksonLopez.Events
 title: "[FEATURE] "
 labels: ["enhancement"]
-assignees: "ericksonlopez"
+assignees: "ericksonlopezf"
 ---
 
 ## 🎯 Feature Description

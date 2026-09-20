@@ -1,5 +1,11 @@
 # ADR-013: Serialization Decoupling and System.Text.Json Adapter
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

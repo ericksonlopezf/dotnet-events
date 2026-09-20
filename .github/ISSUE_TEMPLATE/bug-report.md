@@ -3,7 +3,7 @@ name: Bug Report
 about: Create a report to help us improve EricksonLopez.Events
 title: "[BUG] "
 labels: ["bug"]
-assignees: "ericksonlopez"
+assignees: "ericksonlopezf"
 ---
 
 ## 🐛 Bug Description
@@ -13,7 +13,7 @@ assignees: "ericksonlopez"
 ## 📦 Package(s) & Version(s) Affected
 
 - Package Name: `EricksonLopez.Events...`
-- Package Version: `1.0.0`
+- Package Version: `2.0.0`
 
 ## ⚙️ Environment Details
 

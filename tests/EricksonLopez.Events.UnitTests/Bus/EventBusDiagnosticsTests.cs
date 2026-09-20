@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using AwesomeAssertions;
 using EricksonLopez.Events.Bus.Diagnostics;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.UnitTests.Common;
-using AwesomeAssertions;
 using Xunit;
 
 [Collection("Diagnostics")]
@@ -24,7 +24,7 @@ public sealed class EventBusDiagnosticsTests
     public void EventBusDiagnostics_Constants_ShouldMatchExpectedValues()
     {
         EventBusDiagnostics.SourceName.Should().Be("EricksonLopez.Events.Bus");
-        EventBusDiagnostics.SourceVersion.Should().Be("1.0.0");
+        EventBusDiagnostics.SourceVersion.Should().Be("2.0.0");
     }
 
     [Fact]
@@ -93,7 +93,7 @@ public sealed class EventBusDiagnosticsTests
         // Assert published
         var published = meterScope.LongMeasurements.Where(m => m.InstrumentName == "eventbus.events.published").ToList();
         published.Should().HaveCount(2);
-        
+
         var publishedPlaced = published.Single(m => (string?)m.Tags["event.type"] == "OrderPlacedEvent");
         publishedPlaced.Value.Should().Be(1);
         publishedPlaced.Tags["status"].Should().Be("success");

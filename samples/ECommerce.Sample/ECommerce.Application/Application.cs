@@ -317,3 +317,67 @@ public sealed class ReentrancyTrackingHandler : IEventHandler<OrderPlacedIntegra
         return ValueTask.CompletedTask;
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Thread-safe handlers for Parallel mode demo (Level 8)
+// These handlers use Interlocked.Increment for lock-free concurrency,
+// making them safe for use with EventExecutionMode.Parallel.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// <summary>
+/// Thread-safe audit handler demonstrating <see cref="EricksonLopez.Events.Bus.Configuration.EventExecutionMode.Parallel"/> safety.
+/// Uses <see cref="System.Threading.Interlocked"/> for lock-free counter updates.
+/// </summary>
+public sealed class ThreadSafeAuditHandler : IEventHandler<OrderPlacedIntegrationEvent>
+{
+    private int _handledCount;
+
+    /// <summary>Gets the number of events handled (thread-safe via Interlocked).</summary>
+    public int HandledCount => Volatile.Read(ref _handledCount);
+
+    public ValueTask HandleAsync(OrderPlacedIntegrationEvent eventInstance, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(eventInstance);
+        Interlocked.Increment(ref _handledCount);
+        Console.WriteLine($"      [ThreadSafeAuditHandler] Auditing order '{eventInstance.OrderId}' (thread-safe Interlocked).");
+        return ValueTask.CompletedTask;
+    }
+}
+
+/// <summary>
+/// Thread-safe notification handler for Parallel mode demo.
+/// </summary>
+public sealed class ThreadSafeNotificationHandler : IEventHandler<OrderPlacedIntegrationEvent>
+{
+    private int _handledCount;
+
+    /// <summary>Gets the number of events handled (thread-safe via Interlocked).</summary>
+    public int HandledCount => Volatile.Read(ref _handledCount);
+
+    public ValueTask HandleAsync(OrderPlacedIntegrationEvent eventInstance, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(eventInstance);
+        Interlocked.Increment(ref _handledCount);
+        Console.WriteLine($"      [ThreadSafeNotificationHandler] Sending notification for order '{eventInstance.OrderId}'.");
+        return ValueTask.CompletedTask;
+    }
+}
+
+/// <summary>
+/// Thread-safe metrics handler for Parallel mode demo.
+/// </summary>
+public sealed class ThreadSafeMetricsHandler : IEventHandler<OrderPlacedIntegrationEvent>
+{
+    private int _handledCount;
+
+    /// <summary>Gets the number of events handled (thread-safe via Interlocked).</summary>
+    public int HandledCount => Volatile.Read(ref _handledCount);
+
+    public ValueTask HandleAsync(OrderPlacedIntegrationEvent eventInstance, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(eventInstance);
+        Interlocked.Increment(ref _handledCount);
+        Console.WriteLine($"      [ThreadSafeMetricsHandler] Recording metrics for order '{eventInstance.OrderId}'.");
+        return ValueTask.CompletedTask;
+    }
+}

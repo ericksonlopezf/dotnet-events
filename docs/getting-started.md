@@ -115,6 +115,6 @@ await bus.PublishAsync(evt);
 ---
 
 ## Next Steps
-- Explore the [Official Cookbook](COOKBOOK.md) for recipes and advanced patterns.
-- Browse the [API Reference](API-REFERENCE.md) for all methods and data structures.
-- Run the [Showcase](SHOWCASE-GUIDE.md) (`samples/ECommerce.Sample`) to see all 10 levels in action.
+- Explore the [Official Cookbook](cookbook.md) for recipes and advanced patterns.
+- Browse the [API Reference](api-reference.md) for all methods and data structures.
+- Run the [Showcase](showcase-guide.md) (`samples/ECommerce.Sample`) to see all 10 levels in action.

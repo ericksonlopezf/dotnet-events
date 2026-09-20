@@ -13,20 +13,29 @@ public class OrderCreated
     public decimal Total { get; set; }
 }
 
-// GOOD: Immutable record struct
-public readonly record struct OrderCreated(Guid Id, decimal Total) : IDomainEvent;
+// GOOD: Immutable record struct or sealed record with required IEvent properties
+public readonly record struct OrderCreated(
+    EventId Id,
+    decimal Total,
+    DateTimeOffset OccurredAt) : IDomainEvent;
 ```
 
 ### ❌ Anti-Pattern 2: Invoking External Brokers Inside Domain Handlers
 ```csharp
-// BAD: Domain event handler directly publishes to Kafka
-public class DomainHandler : IEventHandler<OrderPlacedDomainEvent>
+// BAD: In-process domain event handler directly publishes to Kafka/RabbitMQ
+public sealed class OrderPlacedDomainEventHandler : IEventHandler<OrderPlacedDomainEvent>
 {
-    public async Task HandleAsync(EventEnvelope<OrderPlacedDomainEvent> env, CancellationToken ct)
+    private readonly IKafkaProducer _kafkaProducer;
+
+    public OrderPlacedDomainEventHandler(IKafkaProducer kafkaProducer) => _kafkaProducer = kafkaProducer;
+
+    public async ValueTask HandleAsync(OrderPlacedDomainEvent eventInstance, CancellationToken ct)
     {
-        await _kafkaProducer.SendAsync(env.Payload); // Breaks transactional consistency!
+        await _kafkaProducer.SendAsync(eventInstance); // Breaks transactional consistency! Dual-write hazard!
     }
 }
 
-// GOOD: Save to Transactional Outbox, separate background worker pushes to broker
+// GOOD: Persist events to the Transactional Outbox (e.g., via EricksonLopez.Outbox),
+// and let an asynchronous relay process forward them to the broker with At-Least-Once guarantees.
 ```
+

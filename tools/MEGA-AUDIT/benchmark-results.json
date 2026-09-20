@@ -1,0 +1,64 @@
+﻿{
+  "environment": {
+    "benchmarkDotNet": "0.15.8",
+    "os": "Windows 11 (10.0.26200.9168)",
+    "cpu": "AMD Ryzen 7 9800X3D 4.70GHz, 1 CPU, 8 physical cores, 8 logical cores",
+    "runtime": ".NET 10.0.11 (10.0.1126.37416), X64 RyuJIT x86-64-v4"
+  },
+  "benchmarks": [
+    {
+      "method": "EventId_New",
+      "meanNs": 59.028,
+      "allocatedBytes": 0,
+      "description": "GUID v7 sequential ID generation"
+    },
+    {
+      "method": "EventId_TryFormat_ZeroAlloc",
+      "meanNs": 1.461,
+      "allocatedBytes": 0,
+      "description": "Zero-allocation Span<char> formatting"
+    },
+    {
+      "method": "Envelope_Create",
+      "meanNs": 10.879,
+      "allocatedBytes": 80,
+      "description": "EventEnvelope<T> instance creation"
+    },
+    {
+      "method": "Envelope_Serialize_Json",
+      "meanNs": 465.480,
+      "allocatedBytes": 1360,
+      "description": "System.Text.Json UTF-8 serialization"
+    },
+    {
+      "method": "Envelope_Deserialize_Json",
+      "meanNs": 1073.140,
+      "allocatedBytes": 2088,
+      "description": "System.Text.Json UTF-8 deserialization"
+    },
+    {
+      "method": "Event_Publish_InMemory",
+      "meanNs": 87.931,
+      "allocatedBytes": 312,
+      "description": "In-memory bus single handler dispatch"
+    },
+    {
+      "method": "StaticRegistry_GetDescriptor_Cached",
+      "meanNs": 5.695,
+      "allocatedBytes": 0,
+      "description": "Static CLR generic cache lookup"
+    },
+    {
+      "method": "Registry_TryGetDescriptor_ByType_N100",
+      "meanNs": 1.867,
+      "allocatedBytes": 0,
+      "description": "ConcurrentDictionary type lookup among 100 entries"
+    },
+    {
+      "method": "Registry_TryGetDescriptor_ByEventType_N100",
+      "meanNs": 13.669,
+      "allocatedBytes": 0,
+      "description": "ConcurrentDictionary string EventType lookup among 100 entries"
+    }
+  ]
+}

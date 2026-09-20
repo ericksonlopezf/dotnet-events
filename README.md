@@ -1,6 +1,6 @@
 # EricksonLopez.Events
 
-High-performance, zero-allocation, enterprise-grade Event-Driven Architecture and Distributed Messaging Foundation for modern .NET.
+Ultra-fast, zero-allocation, enterprise-grade Event-Driven Architecture (EDA) ecosystem for modern .NET.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/ericksonlopezf/dotnet-events/ci.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=CI)](https://github.com/ericksonlopezf/dotnet-events/actions)
 [![Coverage](https://img.shields.io/codecov/c/github/ericksonlopezf/dotnet-events?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/ericksonlopezf/dotnet-events)
@@ -14,7 +14,7 @@ High-performance, zero-allocation, enterprise-grade Event-Driven Architecture an
 
 ---
 
-**EricksonLopez.Events** is an ultra-fast, zero-allocation, enterprise-grade **Event-Driven Architecture (EDA)** ecosystem for modern .NET (`.NET 8`, `.NET 9`, `.NET 10`). Engineered for mission-critical microservices and high-throughput modular monoliths, it provides zero-allocation in-process event dispatching, transactional Outbox and Idempotent Inbox abstractions, CNCF CloudEvents v1.0 compliance, monotonic GUID Version 7 event identity, compile-time Roslyn source generation, distributed W3C OpenTelemetry tracing, and 100% NativeAOT trimming safety.
+**EricksonLopez.Events** is an ultra-fast, zero-allocation, enterprise-grade **Event-Driven Architecture (EDA)** ecosystem for modern .NET (`.NET 8`, `.NET 9`, `.NET 10`). Engineered for mission-critical microservices and high-throughput modular monoliths, it provides zero-allocation in-process event dispatching, strongly typed event envelopes with ambient metadata, CNCF CloudEvents v1.0 compliance, monotonic GUID Version 7 event identity, compile-time Roslyn source generation, distributed W3C OpenTelemetry tracing, and 100% NativeAOT trimming safety.
 
 ---
 
@@ -24,9 +24,13 @@ High-performance, zero-allocation, enterprise-grade Event-Driven Architecture an
 - [Key Features](#-key-features)
 - [Ecosystem](#-ecosystem)
 - [Documentation](#-documentation)
-  - [Interactive Showcase (Levels 00 to 08)](#-step-by-step-interactive-showcase-levels-00-to-08)
+  - [Interactive Showcase (Levels 00 to 10)](#-step-by-step-interactive-showcase-levels-00-to-10)
   - [Technical Reference & Architecture Guides](#-technical-reference--architecture-guides)
 - [Installation](#-installation)
+  - [1. Core Package (Required)](#1-core-package-required)
+  - [2. Domain Contracts](#2-domain-contracts)
+  - [3. Optional Framework & Integration Packages](#3-optional-framework--integration-packages)
+  - [4. Testing & Assertion Packages](#4-testing--assertion-packages)
 - [Quick Start](#-quick-start)
   - [1. Defining Domain Events](#1-defining-domain-events)
   - [2. Packaging with EventMetadata & Envelope](#2-packaging-with-eventmetadata--envelope)
@@ -35,8 +39,8 @@ High-performance, zero-allocation, enterprise-grade Event-Driven Architecture an
   - [5. CNCF CloudEvents v1.0 Conversion](#5-cncf-cloudevents-v10-conversion)
 - [Core Use Cases](#-core-use-cases)
   - [Use Case 1: Clean Architecture Domain Event Publishing](#use-case-1-clean-architecture-domain-event-publishing)
-  - [Use Case 2: Transactional Outbox with Atomic Database Persistence](#use-case-2-transactional-outbox-with-atomic-database-persistence)
-  - [Use Case 3: Exactly-Once Idempotent Inbound Processing with Inbox](#use-case-3-exactly-once-idempotent-inbound-processing-with-inbox)
+  - [Use Case 2: Execution Strategies (Sequential & Parallel Dispatching)](#use-case-2-execution-strategies-sequential--parallel-dispatching)
+  - [Use Case 3: Pipeline Middlewares (IEventMiddleware)](#use-case-3-pipeline-middlewares-ieventmiddleware)
   - [Use Case 4: CNCF CloudEvents v1.0 Cross-Service Event Mesh](#use-case-4-cncf-cloudevents-v10-cross-service-event-mesh)
   - [Use Case 5: Compile-Time Zero-Reflection Event Registries with Source Generators](#use-case-5-compile-time-zero-reflection-event-registries-with-source-generators)
   - [Use Case 6: Distributed OpenTelemetry Context Propagation](#use-case-6-distributed-opentelemetry-context-propagation)
@@ -45,24 +49,34 @@ High-performance, zero-allocation, enterprise-grade Event-Driven Architecture an
   - [Pipeline Middlewares (IEventMiddleware)](#pipeline-middlewares-ieventmiddleware)
   - [OpenTelemetry Tracing & Metrics](#opentelemetry-tracing--metrics)
   - [System.Text.Json NativeAOT Serialization](#systemtextjson-nativeaot-serialization)
-  - [Roslyn Compile-Time Diagnostic Analyzers](#roslyn-compile-time-diagnostic-analyzers)
+  - [Roslyn Diagnostic Analyzers](#roslyn-diagnostic-analyzers)
 - [Testing & Quality](#-testing--quality)
   - [Declarative Assertions with FakeEventPublisher](#declarative-assertions-with-fakeeventpublisher)
   - [TestEventHandler and Synthetic Event Builders](#testeventhandler-and-synthetic-event-builders)
-  - [Mutation Testing Verification (Stryker.NET)](#mutation-testing-verification-strykernet)
+  - [ValueTask & Async Invariants](#valuetask--async-invariants)
+  - [Mutation Testing & Quality Gates](#mutation-testing--quality-gates)
 - [Performance Benchmarks](#-performance-benchmarks)
   - [Event Dispatching & Identifier Benchmarks](#event-dispatching--identifier-benchmarks)
+  - [Static Registry Resolution Benchmarks](#static-registry-resolution-benchmarks)
   - [Memory Allocation Profile](#memory-allocation-profile)
 - [Compatibility & Technical Matrix](#-compatibility--technical-matrix)
   - [Target Framework Support & AOT Compliance](#target-framework-support--aot-compliance)
   - [Domain Event to CloudEvents Mapping Matrix](#domain-event-to-cloudevents-mapping-matrix)
 - [Architecture & Design Principles](#-architecture--design-principles)
   - [Functional Dispatch Pipeline](#functional-dispatch-pipeline)
-  - [Event Lifecycle & Transactional Outbox Flow](#event-lifecycle--transactional-outbox-flow)
+  - [Event Lifecycle & Middleware Pipeline Flow](#event-lifecycle--middleware-pipeline-flow)
+  - [Delivery Guarantees & Scoping Policies](#delivery-guarantees--scoping-policies)
 - [Best Practices & Anti-Patterns](#-best-practices--anti-patterns)
+  - [Recommended vs Avoid](#recommended-vs-avoid)
 - [Troubleshooting & Common Pitfalls](#-troubleshooting--common-pitfalls)
+  - [1. Roslyn Analyzer Error ELE001: Event property must be immutable](#1-roslyn-analyzer-error-ele001-event-property-must-be-immutable)
+  - [2. NotSupportedException: Event type ... is not registered in AOT serializer context](#2-notsupportedexception-event-type--is-not-registered-in-aot-serializer-context)
+  - [3. InvalidOperationException: Maximum reentrancy depth exceeded (10)](#3-invalidoperationexception-maximum-reentrancy-depth-exceeded-10)
+  - [4. EventDispatchException: One or more event handlers failed](#4-eventdispatchexception-one-or-more-event-handlers-failed)
+  - [5. Concurrency Invariants in Parallel Dispatch](#5-concurrency-invariants-in-parallel-dispatch)
 - [Part of the EricksonLopez Ecosystem](#-part-of-the-ericksonlopez-ecosystem)
 - [Contributing](#-contributing)
+  - [Development Setup](#development-setup)
 - [License](#-license)
 
 ---
@@ -78,7 +92,7 @@ In modern distributed .NET architectures, microservices, and Domain-Driven Desig
 3. **Loss of Distributed Causality & Context Propagation:**
    Ad-hoc event payloads often discard W3C `traceparent` headers, correlation identifiers, parent causation tokens, and tenant context across domain boundaries, creating untraceable operational blind spots in distributed architectures.
 4. **Dual-Write Inconsistencies & Message Duplication:**
-   Publishing directly to message brokers inside database transactions without formal Transactional Outbox and Idempotent Inbox abstractions leads to lost updates, split-brain data corruption, and duplicate downstream processing during network partitions.
+   Publishing directly to message brokers inside database transactions without structured event envelopes and typed metadata leads to lost updates, split-brain data corruption, and duplicate downstream processing during network partitions.
 
 ### How `EricksonLopez.Events` Solves This
 
@@ -86,39 +100,37 @@ In modern distributed .NET architectures, microservices, and Domain-Driven Desig
 - **100% NativeAOT & Trimming Compliance:** Roslyn incremental source generators inspect code at compile time, eliminating runtime reflection and emitting static handler registries.
 - **Monotonic GUID v7 Event Identity:** Utilizes RFC 9562 GUID Version 7 (`EventId`) for natural time-based sorting and fragmentation-free B-Tree database indexing.
 - **Distributed Ambient Metadata:** Strongly typed `EventMetadata` encapsulates `CorrelationId`, `CausationId`, `TenantId`, and immutable headers on every `EventEnvelope<TEvent>`.
-- **Open Standards & Reliability Patterns:** Built-in bidirectional CNCF CloudEvents v1.0 mapping, pure Transactional Outbox contracts, and consumer deduplication Inbox filters.
+- **Open Standards & Interoperability:** Built-in bidirectional CNCF CloudEvents v1.0 mapping, strongly typed event envelopes, and ambient metadata propagation.
 
 ---
 
 ## ⚡ Key Features
 
 - 🚀 **Zero-Allocation In-Process Dispatching**: Nanosecond-level handler execution using `ValueTask` return types without intermediate heap allocations.
-- 🆔 **Monotonic Guid v7 Identity (`EventId`)**: RFC 9562-compliant time-ordered identifiers supporting zero-allocation formatting via `ISpanFormattable` and `IUtf8SpanFormattable`.
-- 📦 **Strongly Typed `EventEnvelope<TEvent>`**: Clean reference envelope bundling immutable event payloads with contextual ambient metadata.
-- 🌐 **CNCF CloudEvents v1.0 Standard**: Bi-directional transformation between internal envelopes and the CloudEvents JSON schema.
-- 🔒 **Transactional Outbox & Inbox Abstractions**: Pure contracts enabling guaranteed at-least-once publishing and idempotent inbound consumption.
-- ⚡ **Roslyn Incremental Source Generators**: Automatic compile-time event and handler discovery generating reflection-free static registries.
-- 🛡️ **Roslyn Compile-Time Analyzers (`ELE001`–`ELE005`)**: Enforces immutability, valid attribute configurations, and domain-to-integration architectural boundaries.
-- 📊 **First-Class OpenTelemetry Observability**: Native BCL `ActivitySource` distributed tracing context propagation and `System.Diagnostics.Metrics` counters.
-- 🧪 **Enterprise Test Doubles**: In-memory `FakeEventPublisher`, spy `TestEventHandler<T>`, and fluent assertion DSL for test automation.
+- ⏱️ **Monotonic Event Identity (RFC 9562 Guid v7)**: Millisecond-precision time-ordered `EventId` structs with zero-allocation `Span<char>` and `Span<byte>` formatting.
+- 📦 **Structured Event Envelopes**: Type-safe `EventEnvelope<TEvent>` wrapping domain payloads with correlation, causation, tenant identity, and immutable headers.
+- 🌐 **CNCF CloudEvents v1.0 Compliance**: Bidirectional conversion between native envelopes and CloudEvents specification attributes.
+- ⚡ **Execution Strategies**: Pluggable `SequentialExecutionStrategy` and `ParallelExecutionStrategy` with configurable failure policies (`FailFast`, `AggregateAndContinue`).
+- 🧩 **Pipeline Middleware Architecture**: Pre/post execution interception (`IEventMiddleware`) for logging, transaction boundaries, and reentrancy limits.
+- 📊 **First-Class OpenTelemetry Instrumentation**: Native BCL `ActivitySource` tracing and `Meter` metrics counters with W3C `traceparent` context propagation.
+- 🛡️ **NativeAOT & Trimming Safe**: Zero runtime reflection in hot paths with source-generated `JsonSerializerContext` definitions (`IsAotCompatible=true`).
+- 🤖 **Roslyn Incremental Source Generators**: Compile-time handler discovery and static event registries with zero startup scanning overhead.
+- 🛡️ **Compile-Time Diagnostic Analyzers**: Bundled rules (`ELE001`–`ELE006`) enforcing event immutability, version validation, and bounded context segregation.
+- 🧪 **Enterprise Test Doubles & Fluent Assertions**: In-memory `FakeEventPublisher`, spy handlers, synthetic event builders, and declarative assertions.
 
 ---
 
 ## 📦 Ecosystem
-
-The `EricksonLopez.Events` ecosystem is divided into modular, fine-grained, single-responsibility packages:
 
 | Package | Version | Description |
 |---|---|---|
 | [`EricksonLopez.Events`](https://www.nuget.org/packages/EricksonLopez.Events) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events) | Core in-process event bus, dispatching pipeline, execution strategies, and Microsoft DI extensions |
 | [`EricksonLopez.Events.Contracts`](https://www.nuget.org/packages/EricksonLopez.Events.Contracts) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Contracts?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Contracts) | Pure domain contracts (`IEvent`, `IDomainEvent`, `IIntegrationEvent`, `IEventHandler<T>`), and Guid v7 identifiers |
 | [`EricksonLopez.Events.CloudEvents`](https://www.nuget.org/packages/EricksonLopez.Events.CloudEvents) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.CloudEvents?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.CloudEvents) | Bidirectional CNCF CloudEvents v1.0 specification adapter and NativeAOT JSON converters |
-| [`EricksonLopez.Events.Generators`](https://www.nuget.org/packages/EricksonLopez.Events.Generators) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Generators?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Generators) | Roslyn incremental source generator for static event registries and compile-time code analyzers |
-| [`EricksonLopez.Events.Inbox`](https://www.nuget.org/packages/EricksonLopez.Events.Inbox) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Inbox?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Inbox) | Idempotent event consumer decorator and message deduplication abstractions |
+| [`EricksonLopez.Events.Generators`](https://www.nuget.org/packages/EricksonLopez.Events.Generators) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Generators?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Generators) | Roslyn incremental source generator for static event registries and compile-time code analyzers (`ELE001`–`ELE006`) |
 | [`EricksonLopez.Events.OpenTelemetry`](https://www.nuget.org/packages/EricksonLopez.Events.OpenTelemetry) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.OpenTelemetry?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.OpenTelemetry) | W3C distributed tracing Activity propagation and OpenTelemetry metrics meters |
-| [`EricksonLopez.Events.Outbox`](https://www.nuget.org/packages/EricksonLopez.Events.Outbox) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Outbox?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Outbox) | Transactional Outbox persistence contracts and envelope packaging |
 | [`EricksonLopez.Events.Serialization.SystemTextJson`](https://www.nuget.org/packages/EricksonLopez.Events.Serialization.SystemTextJson) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Serialization.SystemTextJson?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Serialization.SystemTextJson) | High-performance NativeAOT System.Text.Json converters for identifiers, metadata, and envelopes |
-| [`EricksonLopez.Events.Testing`](https://www.nuget.org/packages/EricksonLopez.Events.Testing) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Testing?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Testing) | Test doubles (`FakeEventPublisher`), spy handlers, and fluent assertions for unit and integration testing |
+| [`EricksonLopez.Events.Testing`](https://www.nuget.org/packages/EricksonLopez.Events.Testing) | [![NuGet](https://img.shields.io/nuget/v/EricksonLopez.Events.Testing?style=flat-square)](https://www.nuget.org/packages/EricksonLopez.Events.Testing) | Test doubles (`FakeEventPublisher`), spy handlers, synthetic event builders, and fluent assertions |
 
 ---
 
@@ -126,26 +138,28 @@ The `EricksonLopez.Events` ecosystem is divided into modular, fine-grained, sing
 
 > 🌐 **Official Documentation Hub:** [https://github.com/ericksonlopezf/dotnet-events/tree/main/docs](https://github.com/ericksonlopezf/dotnet-events/tree/main/docs)
 
-### 🎓 Step-by-Step Interactive Showcase (Levels 00 to 08)
+### 🎓 Step-by-Step Interactive Showcase (Levels 00 to 10)
 
 | Level | Topic | Description |
 |---|---|---|
-| [**Level 00**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-00-introduction.md) | **Architecture & Philosophy** | Core architectural foundations, domain boundaries, and zero-allocation guarantees |
-| [**Level 01**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-01-getting-started.md) | **Getting Started & Primitives** | Defining immutable domain and integration events with monotonic `EventId` (Guid v7) |
-| [**Level 02**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-02-envelopes-and-metadata.md) | **Envelopes & Metadata** | Composing ambient context with `EventMetadataBuilder` and wrapping events |
-| [**Level 03**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-03-dispatching-and-handlers.md) | **In-Process Dispatching** | Implementing `IEventHandler<T>` and executing sequential or parallel pipelines |
-| [**Level 04**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-04-cloudevents-interop.md) | **CloudEvents Integration** | Bidirectional CNCF CloudEvents v1.0 standard mapping and serialization |
-| [**Level 05**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-05-outbox-and-inbox.md) | **Transactional Outbox & Inbox** | At-least-once persistence guarantees and idempotent consumer deduplication |
-| [**Level 06**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-06-source-generators-and-aot.md) | **Source Generation & NativeAOT** | Compile-time event registry generation and zero-reflection pipelines |
-| [**Level 07**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-07-opentelemetry-tracing.md) | **OpenTelemetry & Tracing** | Distributed W3C Activity context propagation and BCL metrics instrumentation |
-| [**Level 08**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-08-fluent-testing.md) | **Enterprise Testing** | Test doubles (`FakeEventPublisher`), test spies, and fluent assertion DSL |
+| [**Level 00**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-00-conceptual-architecture.md) | **Architecture & Philosophy** | Core architectural foundations, domain boundaries, and zero-allocation guarantees |
+| [**Level 01**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-01-quick-start.md) | **Getting Started & Primitives** | Defining immutable domain and integration events with monotonic `EventId` (Guid v7) |
+| [**Level 02**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-02-full-configuration.md) | **Envelopes & Metadata** | Composing ambient context with `EventMetadataBuilder` and wrapping events |
+| [**Level 03**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-03-real-use-cases.md) | **In-Memory Dispatching** | Dynamic subscription management (`Subscribe`/`Unsubscribe`) with `InMemoryEventPublisher` |
+| [**Level 04**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-04-advanced-integration.md) | **Advanced Integration & DI** | Microsoft DI container wiring (`AddEventBus`, `AddEventHandler`), envelope publishing |
+| [**Level 05**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-05-processing.md) | **Processing & Registries** | Event catalogs (`IEventTypeRegistry`), `StaticEventTypeRegistry`, reentrancy limits |
+| [**Level 06**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-06-error-handling.md) | **Resilience & Error Handling** | Exception aggregation (`AggregateAndContinue`), `EventDispatchException`, failure recovery |
+| [**Level 07**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-07-scalability.md) | **Scalability & Performance** | Zero-allocation `Span<char>` and `Span<byte>` formatting, GUID v7 monotonic indexing |
+| [**Level 08**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-08-customization.md) | **Customization & Middlewares** | Middleware pipeline interceptors (`IEventMiddleware`), custom `IExecutionStrategy` |
+| [**Level 09**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-09-ecosystem-extensions.md) | **Ecosystem Extensions** | CNCF CloudEvents v1.0, Testing DSL (`FakeEventPublisher`), OpenTelemetry instrumentation |
+| [**Level 10**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/showcase/level-10-enterprise-architecture.md) | **Enterprise Architecture & Native AOT** | 100% Native AOT trimming safety, compile-time Roslyn Source Generators, STJ context |
 
 ### 📖 Technical Reference & Architecture Guides
 
 - [**Architecture & Invariants**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/architecture.md) — Complete architectural blueprint, memory layouts, and domain boundaries.
-- [**Architectural Decision Records (ADRs)**](https://github.com/ericksonlopezf/dotnet-events/tree/main/docs/adr) — Comprehensive catalog of 30+ ADRs documenting design rationale and rejected proposals.
+- [**Architectural Decision Records (ADRs)**](https://github.com/ericksonlopezf/dotnet-events/tree/main/docs/adr) — Comprehensive catalog of 37 ADRs documenting design rationale and rejected proposals.
 - [**API Reference Guide**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/api-reference.md) — Microsoft Learn-style exhaustive specification of all public types, methods, and interfaces.
-- [**Cookbook & Enterprise Recipes**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/cookbook.md) — Production-ready recipes for DDD, Outbox, CloudEvents, NativeAOT, and unit testing.
+- [**Cookbook & Enterprise Recipes**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/cookbook.md) — Production-ready recipes for DDD, CloudEvents, Middlewares, NativeAOT, and unit testing.
 - [**Technical Audit & Verification**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/audit.md) — Complete technical audit, security model, and invariant verification.
 - [**Competitive Audit**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/competitive-audit.md) — In-depth architectural comparison vs MediatR, MassTransit, Wolverine, and Brighter.
 - [**Features & Compatibility Matrix**](https://github.com/ericksonlopezf/dotnet-events/blob/main/docs/features-matrix.md) — Target framework matrix, diagnostics rules, and runtime guarantees.
@@ -164,13 +178,13 @@ The `EricksonLopez.Events` ecosystem is divided into modular, fine-grained, sing
 
 Install the required packages using the .NET CLI or NuGet Package Manager:
 
-### 1. Core Package (Required for In-Process Dispatching)
+### 1. Core Package (Required)
 
 ```bash
 dotnet add package EricksonLopez.Events
 ```
 
-### 2. Pure Domain Contracts (For Domain & Application Layers)
+### 2. Domain Contracts
 
 ```bash
 dotnet add package EricksonLopez.Events.Contracts
@@ -185,10 +199,6 @@ dotnet add package EricksonLopez.Events.CloudEvents
 # Roslyn Source Generator for static reflection-free registries & analyzers
 dotnet add package EricksonLopez.Events.Generators
 
-# Transactional Outbox & Idempotent Inbox abstractions
-dotnet add package EricksonLopez.Events.Outbox
-dotnet add package EricksonLopez.Events.Inbox
-
 # Native OpenTelemetry distributed tracing & metrics
 dotnet add package EricksonLopez.Events.OpenTelemetry
 
@@ -196,7 +206,7 @@ dotnet add package EricksonLopez.Events.OpenTelemetry
 dotnet add package EricksonLopez.Events.Serialization.SystemTextJson
 ```
 
-### 4. Testing & Assertion Packages (For Test Projects)
+### 4. Testing & Assertion Packages
 
 ```bash
 dotnet add package EricksonLopez.Events.Testing
@@ -223,7 +233,7 @@ public sealed record OrderPlacedDomainEvent(
     DateTimeOffset OccurredAt) : IDomainEvent;
 ```
 
-### 2. Packaging with `EventMetadata` & Envelope
+### 2. Packaging with EventMetadata & Envelope
 
 Wrap events into an `EventEnvelope<TEvent>` and enrich them with distributed correlation tokens:
 
@@ -266,6 +276,7 @@ var envelope = EventEnvelope.Create(domainEvent, metadata);
 Implement `IEventHandler<TEvent>` returning a lightweight `ValueTask` for zero-allocation asynchronous execution:
 
 ```csharp
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EricksonLopez.Events.Contracts;
@@ -315,7 +326,9 @@ await eventBus.PublishAsync(domainEvent, CancellationToken.None);
 Transform internal envelopes to and from standard CloudEvents v1.0 for cross-boundary messaging:
 
 ```csharp
+using System;
 using EricksonLopez.Events.CloudEvents;
+using EricksonLopez.Events.Envelopes;
 
 // Export internal envelope to CNCF CloudEvent v1.0 specification
 CloudEvent<OrderPlacedIntegrationEvent> cloudEvent = envelope.ToCloudEvent(
@@ -335,6 +348,10 @@ EventEnvelope<OrderPlacedIntegrationEvent> restoredEnvelope = cloudEvent.ToEvent
 In Clean Architecture, domain entities raise domain events internally without dependencies on dispatch infrastructure. Application services harvest and dispatch them through `IEventPublisher`:
 
 ```csharp
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
 
@@ -373,50 +390,55 @@ public sealed class PlaceOrderCommandHandler
 }
 ```
 
-### Use Case 2: Transactional Outbox with Atomic Database Persistence
+### Use Case 2: Execution Strategies (Sequential & Parallel Dispatching)
 
-Prevent dual-write bugs by storing events in the database within the same business transaction using `OutboxEventPublisher`:
+Configure how handlers are invoked when multiple handlers subscribe to the same event:
 
 ```csharp
-using EricksonLopez.Events.Contracts;
-using EricksonLopez.Events.Outbox;
+using EricksonLopez.Events.Bus.Configuration;
+using EricksonLopez.Events.Bus.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
-public static class OutboxSetup
+public static class EventBusSetup
 {
-    public static void ConfigureOutboxServices(IServiceCollection services)
+    public static void ConfigureEventBus(IServiceCollection services)
     {
-        // Registers OutboxEventPublisher which intercepts events and persists them atomically
-        services.AddOutboxEventPublisher();
+        // Parallel dispatching with error aggregation for high throughput
+        services.AddEventBus(options =>
+        {
+            options.ExecutionMode = EventExecutionMode.Parallel;
+            options.ErrorPolicy = ErrorHandlingPolicy.AggregateAndContinue;
+        });
     }
 }
 ```
 
-### Use Case 3: Exactly-Once Idempotent Inbound Processing with Inbox
+### Use Case 3: Pipeline Middlewares (IEventMiddleware)
 
-Prevent duplicate message processing when consuming events from message brokers by wrapping handlers with `AddIdempotentEventHandler`:
+Intercept every event dispatch for cross-cutting validation, audit logging, and security context:
 
 ```csharp
+using System.Threading;
+using System.Threading.Tasks;
+using EricksonLopez.Events.Bus.Middleware;
 using EricksonLopez.Events.Contracts;
-using EricksonLopez.Events.Inbox;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-public sealed class InventoryDeductionHandler : IEventHandler<OrderPlacedIntegrationEvent>
+public sealed class LoggingEventMiddleware : IEventMiddleware
 {
-    public ValueTask HandleAsync(OrderPlacedIntegrationEvent eventInstance, CancellationToken cancellationToken = default)
-    {
-        Console.WriteLine($"Deducting inventory for order: {eventInstance.OrderId}");
-        return ValueTask.CompletedTask;
-    }
-}
+    private readonly ILogger<LoggingEventMiddleware> _logger;
 
-public static class InboxSetup
-{
-    public static void ConfigureInboxServices(IServiceCollection services)
+    public LoggingEventMiddleware(ILogger<LoggingEventMiddleware> logger) => _logger = logger;
+
+    public async ValueTask InvokeAsync<TEvent>(
+        TEvent @event,
+        EventMiddlewareDelegate<TEvent> next,
+        CancellationToken cancellationToken = default)
+        where TEvent : IEvent
     {
-        // Automatically checks IInboxConsumerFilter before invoking handler
-        services.AddIdempotentEventHandler<OrderPlacedIntegrationEvent, InventoryDeductionHandler>(
-            consumerName: "inventory-worker-group");
+        _logger.LogInformation("Dispatching event {EventType}...", typeof(TEvent).Name);
+        await next(@event, cancellationToken);
+        _logger.LogInformation("Event {EventType} successfully handled.", typeof(TEvent).Name);
     }
 }
 ```
@@ -426,6 +448,7 @@ public static class InboxSetup
 Standardize cross-team and multi-cloud event contracts using CloudEvents v1.0 JSON payloads:
 
 ```csharp
+using System;
 using EricksonLopez.Events.CloudEvents;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Envelopes;
@@ -460,6 +483,9 @@ In NativeAOT applications, eliminate dynamic type scanning using the `EricksonLo
 ```csharp
 // Source Generator automatically generates the static registry during compilation:
 // Generated file: GeneratedEventRegistry.g.cs
+using EricksonLopez.Events.Bus.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+
 public static class GeneratedEventRegistrationExtensions
 {
     public static IServiceCollection AddGeneratedEventHandlers(this IServiceCollection services)
@@ -522,12 +548,15 @@ services.AddEventBus(options =>
 });
 ```
 
-### Pipeline Middlewares (`IEventMiddleware`)
+### Pipeline Middlewares (IEventMiddleware)
 
 Implement cross-cutting pipeline behaviors (logging, execution timing, circuit breaking) by implementing `IEventMiddleware`:
 
 ```csharp
+using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using EricksonLopez.Events.Bus.Extensions;
 using EricksonLopez.Events.Bus.Middleware;
 using EricksonLopez.Events.Contracts;
@@ -611,27 +640,29 @@ public sealed partial class OrderingJsonContext : JsonSerializerContext
 }
 ```
 
-### Roslyn Compile-Time Diagnostic Analyzers
+### Roslyn Diagnostic Analyzers
 
 The `EricksonLopez.Events.Generators` package analyzes code during compilation to enforce architectural and immutability invariants:
 
-| Diagnostic ID | Severity | Category | Description | CodeFix Available |
-|---|---|---|---|:---:|
-| `ELE001` | **Error** | Immutability | Event properties must be immutable (`{ get; init; }` or readonly) | ✅ Yes |
-| `ELE002` | **Warning** | Architecture | `[EventName]` attribute argument cannot be null, empty, or whitespace | ✅ Yes |
-| `ELE003` | **Error** | Contract | `[EventVersion]` attribute argument must be a positive integer ($\ge 1$) | ✅ Yes |
-| `ELE004` | **Warning** | Contract | `[EventSource]` attribute argument cannot be null, empty, or whitespace | ✅ Yes |
-| `ELE005` | **Error** | Boundaries | `IIntegrationEvent` cannot leak domain event types (`IDomainEvent`) | ❌ No |
+| Diagnostic ID | Severity | Category | Description | CodeFix |
+|---|:---:|---|---|:---:|
+| `ELE001` | 🛑 **Error** | DDD.Design | Event property must be immutable (`{ get; init; }` or readonly) | ❌ |
+| `ELE002` | 🛑 **Error** | DDD.Design | `[EventVersion]` attribute argument must be a positive integer ($\ge 1$) | ❌ |
+| `ELE003` | ⚠️ Warning | DDD.Design | `[EventName]` attribute argument cannot be null, empty, or whitespace | ❌ |
+| `ELE004` | ⚠️ Warning | DDD.Design | `[EventSource]` attribute argument cannot be null, empty, or whitespace | ❌ |
+| `ELE005` | ⚠️ Warning | DDD.Architecture | `IIntegrationEvent` cannot leak domain event types (`IDomainEvent`) | ❌ |
+| `ELE006` | ⚠️ Warning | DDD.Design | Event property cannot use mutable collection types (e.g., `List<T>`, `Dictionary<K, V>`) | ❌ |
 
 ---
 
 ## 🧪 Testing & Quality
 
-### Declarative Assertions with `FakeEventPublisher`
+### Declarative Assertions with FakeEventPublisher
 
 Verify event publishing in application services without mocking libraries:
 
 ```csharp
+using System;
 using System.Threading.Tasks;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Testing;
@@ -658,13 +689,16 @@ public sealed class OrderServiceTests
 }
 ```
 
-### `TestEventHandler` and Synthetic Event Builders
+### TestEventHandler and Synthetic Event Builders
 
 Inspect handler invocation telemetry or generate synthetic envelopes with `EventTestBuilder`:
 
 ```csharp
+using System;
+using System.Threading;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Testing;
+using Xunit;
 
 // Synthetic Envelope Builder
 var envelope = EventTestBuilder
@@ -682,7 +716,15 @@ Assert.True(spyHandler.WasInvoked);
 Assert.Equal(1, spyHandler.InvocationCount);
 ```
 
-### Mutation Testing Verification (Stryker.NET)
+### ValueTask & Async Invariants
+
+The event bus avoids standard `Task.Result` or `ValueTask.GetAwaiter().GetResult()` anti-patterns that induce deadlocks in synchronization contexts. All handlers and middlewares natively consume and return `ValueTask`:
+
+- **Zero-Allocation Happy Path**: Handlers completing synchronously return `ValueTask.CompletedTask` with **0 bytes of heap allocation**.
+- **Cancellation Propagation**: `CancellationToken` is passed faithfully through all middleware and handler pipelines.
+- **Thread Pool Starvation Prevention**: Handlers running concurrently under `EventExecutionMode.Parallel` avoid thread-blocking calls.
+
+### Mutation Testing & Quality Gates
 
 All business logic, dispatch pipelines, serializers, and identifiers are verified under continuous mutation testing with **Stryker.NET**, maintaining a **100% mutation score**:
 
@@ -691,29 +733,38 @@ All business logic, dispatch pipelines, serializers, and identifiers are verifie
 | `EricksonLopez.Events` | 284 | 284 | **100.0%** | ✅ PASSED (High) |
 | `EricksonLopez.Events.Contracts` | 98 | 98 | **100.0%** | ✅ PASSED (High) |
 | `EricksonLopez.Events.CloudEvents` | 142 | 142 | **100.0%** | ✅ PASSED (High) |
-| `EricksonLopez.Events.Outbox` | 115 | 115 | **100.0%** | ✅ PASSED (High) |
-| `EricksonLopez.Events.Inbox` | 102 | 102 | **100.0%** | ✅ PASSED (High) |
+| `EricksonLopez.Events.Generators` | 74 | 74 | **100.0%** | ✅ PASSED (High) |
 | `EricksonLopez.Events.OpenTelemetry` | 86 | 86 | **100.0%** | ✅ PASSED (High) |
 | `EricksonLopez.Events.Serialization.SystemTextJson` | 94 | 94 | **100.0%** | ✅ PASSED (High) |
-| **Overall Ecosystem Aggregate** | **921** | **921** | **100.0%** | ✅ **VERIFIED HIGH** |
+| `EricksonLopez.Events.Testing` | 52 | 52 | **100.0%** | ✅ PASSED (High) |
+| **Overall Ecosystem Aggregate** | **830** | **830** | **100.0%** | ✅ **VERIFIED HIGH** |
 
 ---
 
 ## ⚡ Performance Benchmarks
 
-> **Environment:** .NET 10.0.10, X64 RyuJIT AVX-512, BenchmarkDotNet v0.14.0
+> **Environment:** BenchmarkDotNet v0.15.8, Windows 11 (10.0.26200), AMD Ryzen 7 9800X3D 4.70GHz, 1 CPU, 8 logical and 8 physical cores, .NET SDK 10.0.400, .NET 10.0.11, X64 RyuJIT x86-64-v4
 
 ### Event Dispatching & Identifier Benchmarks
 
-| Benchmark Method | Target Runtime | Mean Execution | Error | StdDev | Gen0 Allocations | Allocated Heap Memory |
-|---|---|---:|---:|---:|:---:|:---:|
-| `EventId.New()` (Guid v7) | .NET 10.0 | **8.12 ns** | 0.08 ns | 0.07 ns | - | **0 B** |
-| `EventId.TryFormat(Span<char>)` | .NET 10.0 | **5.44 ns** | 0.04 ns | 0.03 ns | - | **0 B** |
-| `Publish_DomainEvent_InProcess` | .NET 10.0 | **12.40 ns** | 0.12 ns | 0.10 ns | - | **0 B** |
-| `Publish_DomainEvent_InProcess` | .NET 8.0 | **14.80 ns** | 0.15 ns | 0.14 ns | - | **0 B** |
-| `Envelope_Packaging_Create` | .NET 10.0 | **4.20 ns** | 0.05 ns | 0.04 ns | - | **0 B** |
-| `Outbox_Envelope_Serialize` | .NET 10.0 | **62.10 ns** | 0.61 ns | 0.58 ns | 0.0029 | 48 B |
-| `CloudEvents_Serialize_AOT` | .NET 10.0 | **84.30 ns** | 0.82 ns | 0.76 ns | 0.0038 | 64 B |
+| Method | Mean | Error | StdDev | Ratio | Gen0 | Allocated |
+|---|---:|---:|---:|---:|:---:|---:|
+| `EventId_TryFormat_ZeroAlloc` | **1.46 ns** | 0.15 ns | 0.01 ns | 0.02 | - | **0 B** |
+| `Envelope_Create` | **10.88 ns** | 1.05 ns | 0.06 ns | 0.18 | 0.0016 | 80 B |
+| `EventId_New` (Guid v7) | **59.03 ns** | 12.39 ns | 0.68 ns | 1.00 | - | **0 B** |
+| `Event_Publish_InMemory` | **87.93 ns** | 4.51 ns | 0.25 ns | 1.49 | 0.0062 | 312 B |
+| `Envelope_Serialize_Json` | **465.48 ns** | 50.20 ns | 2.75 ns | 7.89 | 0.0267 | 1,360 B |
+| `Envelope_Deserialize_Json` | **1,073.14 ns** | 61.90 ns | 3.39 ns | 18.18 | 0.0401 | 2,088 B |
+
+### Static Registry Resolution Benchmarks
+
+| Method | Mean | Error | StdDev | Ratio | Allocated |
+|---|---:|---:|---:|---:|---:|
+| `Registry_TryGetDescriptor_ByType_N1` | **1.82 ns** | 0.24 ns | 0.01 ns | 0.32 | **0 B** |
+| `Registry_TryGetDescriptor_ByType_N10` | **1.86 ns** | 0.33 ns | 0.02 ns | 0.33 | **0 B** |
+| `Registry_TryGetDescriptor_ByType_N100` | **1.87 ns** | 0.26 ns | 0.01 ns | 0.33 | **0 B** |
+| `StaticRegistry_GetDescriptor_Cached` | **5.70 ns** | 0.73 ns | 0.04 ns | 1.00 | **0 B** |
+| `Registry_TryGetDescriptor_ByEventType_N100` | **13.67 ns** | 0.57 ns | 0.03 ns | 2.40 | **0 B** |
 
 ### Memory Allocation Profile
 
@@ -730,31 +781,36 @@ All business logic, dispatch pipelines, serializers, and identifiers are verifie
 
 ### Target Framework Support & AOT Compliance
 
-| Package | .NET 8.0 (LTS) | .NET 9.0 (STS) | .NET 10.0 | NativeAOT Ready | Trimming Safe | Dependencies |
+| Package | .NET 8.0 LTS | .NET 9.0 STS | .NET 10.0 | NativeAOT | Trimmable | Notes |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| `EricksonLopez.Events` | ✅ | ✅ | ✅ | ✅ | ✅ | Microsoft.Extensions.DI |
-| `EricksonLopez.Events.Contracts` | ✅ | ✅ | ✅ | ✅ | ✅ | Pure BCL (0 Dependencies) |
-| `EricksonLopez.Events.CloudEvents` | ✅ | ✅ | ✅ | ✅ | ✅ | Contracts, System.Text.Json |
-| `EricksonLopez.Events.Generators` | ✅ (.NET Standard 2.0) | ✅ | ✅ | ✅ | ✅ | Microsoft.CodeAnalysis |
-| `EricksonLopez.Events.Inbox` | ✅ | ✅ | ✅ | ✅ | ✅ | Contracts |
-| `EricksonLopez.Events.OpenTelemetry` | ✅ | ✅ | ✅ | ✅ | ✅ | OpenTelemetry.Api |
-| `EricksonLopez.Events.Outbox` | ✅ | ✅ | ✅ | ✅ | ✅ | Contracts |
-| `EricksonLopez.Events.Serialization.SystemTextJson` | ✅ | ✅ | ✅ | ✅ | ✅ | System.Text.Json |
-| `EricksonLopez.Events.Testing` | ✅ | ✅ | ✅ | ✅ | ✅ | Events |
+| `EricksonLopez.Events` | ✅ Full | ✅ Full | ✅ Full | ✅ 100% | ✅ Safe | Zero reflection in hot path |
+| `EricksonLopez.Events.Contracts` | ✅ Full | ✅ Full | ✅ Full | ✅ 100% | ✅ Safe | Pure domain abstractions |
+| `EricksonLopez.Events.CloudEvents` | ✅ Full | ✅ Full | ✅ Full | ✅ 100% | ✅ Safe | CNCF v1.0 standard mapping |
+| `EricksonLopez.Events.Generators` | ➖ Standard 2.0 | ➖ Standard 2.0 | ➖ Standard 2.0 | ✅ Safe | ✅ Safe | Roslyn Incremental Generator |
+| `EricksonLopez.Events.OpenTelemetry` | ✅ Full | ✅ Full | ✅ Full | ✅ 100% | ✅ Safe | BCL `ActivitySource` & `Meter` |
+| `EricksonLopez.Events.Serialization.SystemTextJson` | ✅ Full | ✅ Full | ✅ Full | ✅ 100% | ✅ Safe | Source generation contexts |
+| `EricksonLopez.Events.Testing` | ✅ Full | ✅ Full | ✅ Full | ✅ 100% | ✅ Safe | In-memory test doubles & spies |
 
 ### Domain Event to CloudEvents Mapping Matrix
 
-| Domain / Envelope Field | CloudEvents v1.0 Field | Schema Type | Description |
-|---|---|---|---|
-| `EventEnvelope.Id` | `id` | String (`UUIDv7`) | Unique event occurrence identifier |
-| `EventEnvelope.Metadata.Source` | `source` | URI | Canonical URI producer identifier |
-| `EventEnvelope.Type` | `type` | String | Semantic event name (`[EventName]`) |
-| `EventEnvelope.OccurredAt` | `time` | RFC 3339 Timestamp | UTC timestamp of event generation |
-| `EventEnvelope.Metadata.ContentType`| `datacontenttype` | String (`application/json`) | Payload MIME serialization format |
-| `EventEnvelope.Metadata.CorrelationId`| `correlationid` | Extension String | W3C distributed trace correlation token |
-| `EventEnvelope.Metadata.CausationId`| `causationid` | Extension String | Causative command or event token |
-| `EventEnvelope.Metadata.TenantId` | `tenantid` | Extension String | Multi-tenant tenant identifier |
-| `EventEnvelope.Payload` | `data` | Object / JSON | Strongly typed domain event payload |
+| `EventEnvelope<T>` Field | CNCF CloudEvents v1.0 Attribute | Requirement Level | Format / Specification |
+|---|---|:---:|---|
+| `Metadata.Id` (`EventId`) | `id` | **Mandatory** | String representation of RFC 9562 UUIDv7 |
+| `Metadata.EventType` | `type` | **Mandatory** | Reverse-DNS or dot-separated string (e.g. `orders.order-placed`) |
+| `Metadata.Source` | `source` | **Mandatory** | Absolute URI reference identifying the producer |
+| `"1.0"` | `specversion` | **Mandatory** | Fixed `"1.0"` literal string |
+| `Metadata.Timestamp` | `time` | Optional | RFC 3339 formatted UTC timestamp string |
+| `"application/json"` | `datacontenttype` | Optional | MIME media type specification |
+| `Metadata.SchemaUri` | `dataschema` | Optional | Absolute URI referencing the JSON schema definition |
+| `Metadata.CorrelationId` | `correlationid` | Extension | Distributed correlation trace identifier |
+| `Metadata.CausationId` | `causationid` | Extension | Causation event identifier or parent command ID |
+| `Metadata.TenantId` | `tenantid` | Extension | Multi-tenant partition key string |
+| `Metadata.Headers[k]` | Extension Attributes | Extension | Custom header strings mapped to lowercase CloudEvents extensions |
+| `Payload` | `data` | Optional | Serialized JSON payload object |
+
+---
+
+> 🛡️ **Target Framework & Lifecycle Policy**: First-class multi-targeting across `.NET 10` (Modern LTS), `.NET 9` (STS), and `.NET 8` (Enterprise LTS) — along with `.NET Standard 2.0` for Roslyn analyzers and source generators — is actively maintained. Full backward compatibility is guaranteed until Microsoft officially reaches End-of-Life (EOL) for .NET 8 and .NET 9 in November 2026, at which milestone the ecosystem will transition to .NET 10 and .NET 11.
 
 ---
 
@@ -764,73 +820,97 @@ All business logic, dispatch pipelines, serializers, and identifiers are verifie
 
 ```mermaid
 flowchart TD
-    subgraph Client["Application / Domain Layer"]
-        Agg["Aggregate Root"] -->|1. Emits| DE["IDomainEvent"]
-        AppSvc["Application Service"] -->|2. Maps to| IE["IIntegrationEvent"]
-        AppSvc -->|3. Packages via| Builder["EventMetadataBuilder"]
-        Builder -->|4. Wraps in| Env["EventEnvelope&lt;TEvent&gt;"]
-    end
-
-    subgraph Pipeline["EricksonLopez.Events Dispatch Engine"]
-        Env -->|5. Publishes to| Bus["IEventBus / IEventPublisher"]
-        Bus --> MW["Middleware Pipeline (IEventMiddleware)"]
-        MW --> Strat{"Execution Strategy"}
-        Strat -->|Sequential| Seq["SequentialExecutionStrategy"]
-        Strat -->|Parallel| Par["ParallelExecutionStrategy"]
-        Seq --> Reg["Static Event Registry (No Reflection)"]
-        Par --> Reg
-        Reg --> H1["IEventHandler&lt;T&gt; (Email)"]
-        Reg --> H2["IEventHandler&lt;T&gt; (Audit)"]
-    end
-
-    subgraph Bridges["Ecosystem Infrastructure Bridges"]
-        Env -.->|Serialize AOT| STJ["SystemTextJson Converters"]
-        Env -.->|CNCF Export| CE["CloudEvents v1.0 Adapter"]
-        Bus -.->|Persist DB Tx| Outbox["Transactional Outbox"]
-        H2 -.->|Idempotent Guard| Inbox["Idempotent Inbox"]
-        MW -.->|Trace Propagation| OTEL["OpenTelemetry Tracer"]
-    end
+    App[Application / Command Handler] --> Pub[IEventPublisher.PublishAsync]
+    Pub --> Env[Wrap into EventEnvelope]
+    Env --> MW1[IEventMiddleware 1: Diagnostics / OpenTelemetry]
+    MW1 --> MW2[IEventMiddleware 2: Reentrancy Limit Guard]
+    MW2 --> MW3[IEventMiddleware 3: Logging & Audit]
+    MW3 --> Strat{IExecutionStrategy}
+    
+    Strat -- Sequential --> Seq[SequentialExecutionStrategy: Handlers in strict order]
+    Strat -- Parallel --> Par[ParallelExecutionStrategy: Task.WhenAll with Scope Isolation]
+    
+    Seq --> H1[IEventHandler 1]
+    Seq --> H2[IEventHandler 2]
+    
+    Par --> H1
+    Par --> H2
+    
+    H1 --> Done[ValueTask.CompletedTask]
+    H2 --> Done
+    
+    style App fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Strat fill:#d4edda,stroke:#28a745,stroke-width:2px
+    style Done fill:#cce5ff,stroke:#004085,stroke-width:2px
 ```
 
-### Event Lifecycle & Transactional Outbox Flow
+### Event Lifecycle & Middleware Pipeline Flow
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor App as Application Service
+    participant App as Application Layer
     participant Bus as EventBus (IEventBus)
-    participant MW as Logging/Telemetry Middleware
-    participant Outbox as OutboxEventPublisher
-    participant DB as Relational Database
-    participant Worker as Outbox Background Processor
-    participant Handler as IEventHandler<T>
+    participant MW as Middleware Pipeline
+    participant Strat as Execution Strategy
+    participant H1 as Handler 1
+    participant H2 as Handler 2
 
-    App->>Bus: PublishAsync(EventEnvelope)
-    Bus->>MW: InvokeAsync(EventEnvelope, Delegate)
-    MW->>Outbox: PublishAsync(EventEnvelope)
-    Outbox->>DB: INSERT INTO OutboxMessages (Id, Payload, Headers) [Within DB Transaction]
-    DB-->>Outbox: Transaction Committed
-    Outbox-->>MW: Complete
-    MW-->>Bus: Complete
+    App->>Bus: PublishAsync(event, ct)
+    Bus->>MW: InvokeAsync(envelope, next, ct)
+    Note over MW: Start Activity & TraceContext
+    MW->>Strat: ExecuteAsync(handlers, event, ct)
+    
+    alt Sequential Mode
+        Strat->>H1: HandleAsync(event, ct)
+        H1-->>Strat: ValueTask Completed
+        Strat->>H2: HandleAsync(event, ct)
+        H2-->>Strat: ValueTask Completed
+    else Parallel Mode
+        par Concurrent Handler 1 (Scoped)
+            Strat->>H1: HandleAsync(event, ct)
+            H1-->>Strat: ValueTask Completed
+        and Concurrent Handler 2 (Scoped)
+            Strat->>H2: HandleAsync(event, ct)
+            H2-->>Strat: ValueTask Completed
+        end
+    end
+
+    Strat-->>MW: Handlers Completed
+    Note over MW: Record Duration Metric & Enrich Tags
+    MW-->>Bus: Pipeline Completed
     Bus-->>App: ValueTask Completed
-
-    Note over Worker,DB: Asynchronous Outbox Polling / CDC
-    Worker->>DB: SELECT * FROM OutboxMessages WHERE ProcessedAt IS NULL
-    Worker->>Handler: HandleAsync(DeserializedEvent)
-    Handler-->>Worker: Success
-    Worker->>DB: UPDATE OutboxMessages SET ProcessedAt = UtcNow WHERE Id = @Id
 ```
+
+### Delivery Guarantees & Scoping Policies
+
+1. **Delivery Semantics: At-Most-Once (In-Process) vs. At-Least-Once (Outbox)**
+   - **In-Process Scope**: `EricksonLopez.Events` provides high-throughput, zero-allocation **At-Most-Once** in-memory delivery. Events dispatched in memory do not survive ungraceful process crashes (`SIGKILL`, container restarts, power outages).
+   - **Durable Consistency**: If your events represent critical business or financial state changes that must not be lost if the server dies between the database commit and the event dispatch, you **must** integrate with an Outbox pattern (e.g. `EricksonLopez.Outbox`). In-memory dispatch does not survive process termination.
+
+2. **Dependency Scoping in Parallel Dispatch (`HandlerScopePolicy`)**
+   - When executing multiple handlers concurrently (`EventExecutionMode.Parallel`), never share a single scoped service provider across concurrent threads if any handler consumes non-thread-safe dependencies (such as Entity Framework Core `DbContext`).
+   - Always retain the default `HandlerScopePolicy.Auto`, which automatically instantiates an isolated `IServiceScope` for each concurrent handler task.
+
+3. **Ahead-Of-Time Compilation (NativeAOT) & Trimming Invariants**
+   - In NativeAOT-published applications, reference the `EricksonLopez.Events.Generators` Roslyn package so that event registries and handler invokers are generated at compile time.
+   - Avoid runtime reflection scanning (`Assembly.GetTypes()`), which triggers trimming warnings (`IL2026`) and breaks NativeAOT binaries.
 
 ---
 
 ## 🛡️ Best Practices & Anti-Patterns
 
-| Scenario | ❌ Avoid (Anti-Pattern) | ✅ Recommended (Best Practice) |
+### Recommended vs Avoid
+
+| Scenario | ❌ Avoid | ✅ Recommended |
 |---|---|---|
-| **Event Immutability** | Defining mutable properties (`public Guid Id { get; set; }`) | Use `sealed record` with `{ get; init; }` properties. Enforced by analyzer `ELE001`. |
+| **Event Immutability** | Defining mutable properties (`public Guid Id { get; set; }`) | Use `sealed record` with `{ get; init; }` properties (Enforced by `ELE001`). |
 | **Identifier Generation** | Using non-sortable `Guid.NewGuid()` (GUID v4) | Use `EventId.New()` (monotonic GUID Version 7 RFC 9562) for optimal DB index performance. |
-| **Layer Boundaries** | Nesting `IDomainEvent` types inside `IIntegrationEvent` contracts | Map domain events to flat integration DTOs. Enforced by analyzer `ELE005`. |
-| **Broker Publishing** | Publishing directly to Kafka/RabbitMQ inside domain handlers | Use `EricksonLopez.Events.Outbox` to persist events atomically in the business transaction. |
+| **Layer Boundaries** | Nesting `IDomainEvent` types inside `IIntegrationEvent` contracts | Map domain events to flat integration DTOs (Enforced by `ELE005`). |
+| **Collection Properties** | Using mutable collection types (`List<T>`, `Dictionary<K, V>`) | Use immutable collection types (`ImmutableArray<T>`, `IReadOnlyList<T>`) (Enforced by `ELE006`). |
+| **Broker Publishing** | Publishing directly to Kafka/RabbitMQ inside domain handlers | Publish domain events in-process or package into `EventEnvelope<T>` for transactional outbox persistence. |
+| **Transactional Durability** | Assuming in-memory dispatch guarantees delivery across process crashes | Integrate with an Outbox pattern for durable, atomic At-Least-Once database-backed delivery. |
+| **Parallel Scopes** | Using `HandlerScopePolicy.ReuseAmbientScope` with scoped dependencies (`DbContext`) | Keep default `HandlerScopePolicy.Auto` to create an isolated `IServiceScope` per parallel task. |
 | **Reflection Scanning** | Scanning assemblies at startup with `Assembly.GetTypes()` | Use Roslyn incremental generators or explicit `AddEventHandler<T, H>()` for NativeAOT safety. |
 | **Header Boxing** | Using `Dictionary<string, object>` for ambient metadata | Use strongly typed `EventMetadataBuilder` backed by `FrozenDictionary<string, string>`. |
 | **Async Execution** | Returning `Task` on synchronous or fast-completing paths | Implement `IEventHandler<T>` returning `ValueTask` for zero-allocation synchronous completion. |
@@ -843,25 +923,30 @@ sequenceDiagram
 > [!CAUTION]
 > In NativeAOT compiled applications, any event type or envelope passed to serialization must be explicitly registered in a `JsonSerializerContext`. Failure to register will result in runtime `NotSupportedException`.
 
-### 1. Roslyn Analyzer Error `ELE001: Event property must be immutable`
+### 1. Roslyn Analyzer Error ELE001: Event property must be immutable
 - **Symptom**: Compilation fails with error `ELE001: Property 'Total' on event 'OrderCreated' must be init-only or get-only`.
 - **Cause**: An `IEvent` type was declared with mutable properties containing public `set;` accessors.
 - **Solution**: Convert mutable properties to `{ get; init; }` or redefine the contract as `public sealed record OrderCreated(...) : IEvent;`.
 
-### 2. `NotSupportedException: Event type ... is not registered in AOT serializer context`
+### 2. NotSupportedException: Event type ... is not registered in AOT serializer context
 - **Symptom**: Runtime serialization crashes in NativeAOT mode with missing metadata exceptions.
 - **Cause**: The generic `EventEnvelope<TEvent>` was omitted from the `[JsonSerializable]` attributes on `JsonSerializerContext`.
 - **Solution**: Add `[JsonSerializable(typeof(EventEnvelope<YourEvent>))]` to your application's `JsonSerializerContext` partial class.
 
-### 3. `InvalidOperationException: Maximum reentrancy depth exceeded (10)`
+### 3. InvalidOperationException: Maximum reentrancy depth exceeded (10)
 - **Symptom**: Event publishing throws `InvalidOperationException` reporting maximum reentrancy depth violation.
 - **Cause**: An event handler published an event that directly or indirectly triggered the original handler in an infinite recursive cycle.
 - **Solution**: Break circular publication chains in application handlers, or adjust `options.MaxReentrancyDepth` in `AddEventBus(...)` if deep reentrancy is intentionally required.
 
-### 4. `EventDispatchException: One or more event handlers failed`
+### 4. EventDispatchException: One or more event handlers failed
 - **Symptom**: Publishing throws `EventDispatchException` containing multiple inner exceptions.
 - **Cause**: One or more registered subscribers failed while executing under `ErrorHandlingPolicy.AggregateAndContinue`.
 - **Solution**: Inspect `ex.InnerExceptions` collection to diagnose individual handler failures and apply compensation or retry logic.
+
+### 5. Concurrency Invariants in Parallel Dispatch
+- **Symptom**: `InvalidOperationException: A second operation was started on this context instance before a previous operation completed` when using Entity Framework Core.
+- **Cause**: Using `HandlerScopePolicy.ReuseAmbientScope` across concurrent handlers sharing the same scoped `DbContext`.
+- **Solution**: Keep `HandlerScopePolicy.Auto` (the default) so that each concurrent handler task receives an isolated `IServiceScope`.
 
 ---
 
@@ -871,6 +956,7 @@ sequenceDiagram
 
 - 🧱 [**EricksonLopez.SharedKernel**](https://github.com/ericksonlopezf/dotnet-shared-kernel) — Foundational Domain-Driven Design building blocks, Entity bases, and specifications.
 - ⚡ [**EricksonLopez.Result**](https://github.com/ericksonlopezf/dotnet-result) — Zero-allocation, struct-based Result Pattern and Railway-Oriented Programming ecosystem.
+- 🔍 [**EricksonLopez.Specification**](https://github.com/ericksonlopezf/dotnet-specification) — Composable AOT-first Specification Pattern.
 - 💎 [**EricksonLopez.DomainPrimitives**](https://github.com/ericksonlopezf/dotnet-domain-primitives) — Zero-allocation Domain Primitives, SmartEnums, and strongly typed identifiers.
 - 🌍 [**EricksonLopez.ValueObjects**](https://github.com/ericksonlopezf/dotnet-value-objects) — Enterprise Value Objects, Currencies, and Multi-Country Fiscal Satellites.
 
@@ -878,49 +964,39 @@ sequenceDiagram
 
 ## 🤝 Contributing
 
-Contributions are welcome! Follow these steps to build, test, and verify the repository locally:
+We welcome contributions, bug reports, documentation improvements, and feature suggestions!
 
-### Prerequisites
+### Development Setup
 
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- Git & PowerShell 7+
-
-### Local Build & Test Workflow
-
-1. **Clone the Repository:**
+1. **Prerequisites:** [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0), Git, and an IDE (Rider, Visual Studio 2022+, or VS Code).
+2. **Clone & Restore:**
    ```bash
    git clone https://github.com/ericksonlopezf/dotnet-events.git
    cd dotnet-events
-   ```
-
-2. **Restore Dependencies & Build Solution:**
-   ```bash
    dotnet restore
-   dotnet build --configuration Release
    ```
-
-3. **Execute Test Suite & Code Coverage:**
+3. **Build Solution:**
    ```bash
-   dotnet test --configuration Release --collect:"XPlat Code Coverage"
+   dotnet build EricksonLopez.Events.slnx --configuration Release
    ```
-
-4. **Execute Mutation Testing (Stryker.NET):**
+4. **Run All Tests:**
+   ```bash
+   dotnet test EricksonLopez.Events.slnx --configuration Release --collect:"XPlat Code Coverage"
+   ```
+5. **Run Mutation Tests:**
    ```bash
    dotnet tool restore
    dotnet stryker --config-file stryker-config.json
    ```
-
-5. **Run Performance Benchmarks:**
+6. **Run Performance Benchmarks:**
    ```bash
    dotnet run -c Release --project benchmarks/EricksonLopez.Events.Benchmarks
    ```
 
-Please review [**CONTRIBUTING.md**](https://github.com/ericksonlopezf/dotnet-events/blob/main/CONTRIBUTING.md), [**CODE_OF_CONDUCT.md**](https://github.com/ericksonlopezf/dotnet-events/blob/main/CODE_OF_CONDUCT.md), and [**SECURITY.md**](https://github.com/ericksonlopezf/dotnet-events/blob/main/SECURITY.md) before submitting Pull Requests.
+Please read our [**Contributing Guide**](https://github.com/ericksonlopezf/dotnet-events/blob/main/CONTRIBUTING.md), [**Code of Conduct**](https://github.com/ericksonlopezf/dotnet-events/blob/main/CODE_OF_CONDUCT.md), and [**Security Policy**](https://github.com/ericksonlopezf/dotnet-events/blob/main/SECURITY.md) before submitting pull requests.
 
 ---
 
 ## 📄 License
 
-Distributed under the [MIT License](https://github.com/ericksonlopezf/dotnet-events/blob/main/LICENSE).
-
-Copyright © 2026 [Erickson Lopez](https://github.com/ericksonlopezf). All rights reserved.
+Distributed under the [MIT License](https://github.com/ericksonlopezf/dotnet-events/blob/main/LICENSE). Copyright © 2026 Erickson Lopez.

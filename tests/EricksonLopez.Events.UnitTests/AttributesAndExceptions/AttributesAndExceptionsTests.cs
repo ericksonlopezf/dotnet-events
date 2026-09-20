@@ -3,10 +3,10 @@ using System;
 
 namespace EricksonLopez.Events.UnitTests.AttributesAndExceptions;
 
+using AwesomeAssertions;
 using EricksonLopez.Events.Attributes;
 using EricksonLopez.Events.Exceptions;
 using EricksonLopez.Events.Identifiers;
-using AwesomeAssertions;
 using Xunit;
 
 [Xunit.Trait("Category", "Unit")]

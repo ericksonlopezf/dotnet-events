@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace EricksonLopez.Events.UnitTests.Bus;
 
+using AwesomeAssertions;
 using EricksonLopez.Events.Bus.Configuration;
 using EricksonLopez.Events.Bus.Exceptions;
 using EricksonLopez.Events.Bus.Execution;
@@ -13,11 +14,9 @@ using EricksonLopez.Events.Bus.Registry;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.UnitTests.Common;
-using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
-
 using EventId = EricksonLopez.Events.Identifiers.EventId;
 
 [Xunit.Trait("Category", "Unit")]
@@ -38,7 +37,7 @@ public sealed class ExecutionStrategiesTests
         public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
         public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (logLevel == Microsoft.Extensions.Logging.LogLevel.Warning) 
+            if (logLevel == Microsoft.Extensions.Logging.LogLevel.Warning)
             {
                 WarningLogCount++;
                 WarningMessages.Add(state?.ToString() ?? "");
@@ -398,7 +397,7 @@ public sealed class ExecutionStrategiesTests
         executed.Should().Contain("h1");
         executed.Should().NotContain("h2");
         executed.Should().NotContain("h3");
-        
+
         logger.WarningLogCount.Should().Be(2);
         logger.WarningMessages[0].Should().Contain("Skipping handler.");
         logger.WarningMessages[1].Should().Contain("Skipping handler.");
@@ -424,7 +423,7 @@ public sealed class ExecutionStrategiesTests
             throw new ArgumentException("Parallel error 2");
         });
 
-        var options = new EventBusOptions();
+        var options = new EventBusOptions { ErrorPolicy = ErrorHandlingPolicy.AggregateAndContinue };
         var evt = new TestStrategyEvent(EventId.New(), DateTimeOffset.UtcNow);
 
         var act = () => strategy.ExecuteAsync(new[] { desc1, desc2 }, evt, sp, options, CancellationToken.None).AsTask();
@@ -562,7 +561,7 @@ public sealed class ExecutionStrategiesTests
     }
 
     [Fact]
-    public async Task SequentialStrategy_WhenHandlerThrowsOperationCanceledException_ShouldPropagateDirectlyEvenUnderContinueOnError()
+    public async Task SequentialStrategy_WhenHandlerThrowsOperationCanceledExceptionWithoutCallerCancellation_ShouldAggregateUnderContinueOnError()
     {
         var strategy = new SequentialExecutionStrategy();
         var sp = Substitute.For<IServiceProvider>();
@@ -579,8 +578,32 @@ public sealed class ExecutionStrategiesTests
 
         Func<Task> act = async () => await strategy.ExecuteAsync(new[] { desc }, evt, sp, options, CancellationToken.None);
 
-        await act.Should().ThrowExactlyAsync<OperationCanceledException>()
-            .WithMessage("Handler cancelled directly");
+        var ex = await act.Should().ThrowAsync<EventDispatchException>();
+        ex.Which.InnerExceptions.Should().ContainSingle(e => e is OperationCanceledException && e.Message == "Handler cancelled directly");
+    }
+
+    [Fact]
+    public async Task SequentialStrategy_WhenCallerTokenIsCanceled_ShouldPropagateOperationCanceledExceptionDirectly()
+    {
+        var strategy = new SequentialExecutionStrategy();
+        var sp = Substitute.For<IServiceProvider>();
+        var h1 = new DummyHandler1();
+        sp.GetService(typeof(DummyHandler1)).Returns(h1);
+
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        var desc = new HandlerDescriptor(
+            typeof(DummyHandler1),
+            typeof(object),
+            (_, _, ct) => { ct.ThrowIfCancellationRequested(); return ValueTask.CompletedTask; });
+
+        var options = new EventBusOptions { ErrorPolicy = ErrorHandlingPolicy.AggregateAndContinue };
+        var evt = new TestStrategyEvent(EventId.New(), DateTimeOffset.UtcNow);
+
+        Func<Task> act = async () => await strategy.ExecuteAsync(new[] { desc }, evt, sp, options, cts.Token);
+
+        await act.Should().ThrowExactlyAsync<OperationCanceledException>();
     }
 
     [Fact]

@@ -43,6 +43,14 @@ public readonly record struct EventType :
     public bool IsEmpty => string.IsNullOrWhiteSpace(Value);
 
     /// <inheritdoc />
+    public bool Equals(EventType other) =>
+        string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public override int GetHashCode() =>
+        string.GetHashCode(Value ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
     public int CompareTo(EventType other) =>
         string.Compare(Value, other.Value, StringComparison.OrdinalIgnoreCase);
 

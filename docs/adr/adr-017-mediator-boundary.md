@@ -1,5 +1,11 @@
 # ADR-017: Mediator Boundary and Responsibility Matrix
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

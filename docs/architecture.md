@@ -43,8 +43,6 @@ graph TD
     subgraph "Ecosystem Bridges & Infrastructure"
         Env -->|Serialize AOT| STJ["EricksonLopez.Events.Serialization.SystemTextJson"]
         Env -->|ToCloudEvent| CE["EricksonLopez.Events.CloudEvents"]
-        Bus -->|Persist Transaction| Outbox["EricksonLopez.Events.Outbox"]
-        Handlers -->|Idempotent Guard| Inbox["EricksonLopez.Events.Inbox"]
         MW -->|Telemetry Spans| OTEL["EricksonLopez.Events.OpenTelemetry"]
         Bus -..->|Testing Spy/Stub| Test["EricksonLopez.Events.Testing"]
     end
@@ -125,6 +123,4 @@ sequenceDiagram
 | `EricksonLopez.Events.Generators` | Roslyn Generator for event discovery and ELE001–ELE005 analyzers. | Microsoft.CodeAnalysis | ✅ 100% |
 | `EricksonLopez.Events.CloudEvents` | Bidirectional mapping to CNCF CloudEvents v1.0 specification. | Contracts, System.Text.Json | ✅ 100% |
 | `EricksonLopez.Events.OpenTelemetry` | Traces and Metrics OTel instrumentation for the EventBus. | OpenTelemetry.Api | ✅ 100% |
-| `EricksonLopez.Events.Inbox` | Idempotent consumer decorator and deduplication. | Contracts, EricksonLopez.Inbox | ✅ 100% |
-| `EricksonLopez.Events.Outbox` | Transactional publisher persisted in Outbox. | Contracts, EricksonLopez.Outbox | ✅ 100% |
 | `EricksonLopez.Events.Testing` | Test spies, builders, and fluent assertion DSL. | Events | ✅ 100% |

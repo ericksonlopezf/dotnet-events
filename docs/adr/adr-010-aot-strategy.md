@@ -1,5 +1,11 @@
 # ADR-010: Native AOT and Trimming Zero-Reflection Guarantee
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez
@@ -32,5 +38,5 @@ For rapid prototyping where the Source Generator is not referenced, the static d
 - Using runtime reflection scanning (`Assembly.GetTypes()`) without compiler safety attributes was rejected.
 
 ## Related ADRs
-- [ADR-012: Roslyn Incremental Source Generator for Static Descriptors](ADR-012-source-generation.md)
-- [ADR-021: StaticEventTypeRegistry — Reflection Fallback and AOT Honesty](ADR-021-static-registry-aot-fallback.md)
+- [ADR-012: Roslyn Incremental Source Generator for Static Descriptors](adr-012-source-generation.md)
+- [ADR-021: StaticEventTypeRegistry — Reflection Fallback and AOT Honesty](adr-021-static-registry-aot-fallback.md)

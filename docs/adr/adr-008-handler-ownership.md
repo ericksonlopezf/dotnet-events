@@ -1,5 +1,11 @@
 # ADR-008: Event Handler Abstraction and Mediator Boundary
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

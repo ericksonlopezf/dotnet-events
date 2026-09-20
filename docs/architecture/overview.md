@@ -25,8 +25,6 @@ graph TD
         STJ["EricksonLopez.Events.Serialization.SystemTextJson<br/><i>Native AOT STJ Converters</i>"]
         CloudEvents["EricksonLopez.Events.CloudEvents<br/><i>CNCF CloudEvents v1.0 Mappings</i>"]
         OTel["EricksonLopez.Events.OpenTelemetry<br/><i>ActivitySource & Meter Instrumentation</i>"]
-        Inbox["EricksonLopez.Events.Inbox<br/><i>Idempotent Consumer Bridge</i>"]
-        Outbox["EricksonLopez.Events.Outbox<br/><i>Transactional Outbox Publisher</i>"]
     end
 
     subgraph TestLayer["Test Infrastructure"]
@@ -34,8 +32,6 @@ graph TD
     end
 
     Contracts --> Core
-    Contracts --> Inbox
-    Contracts --> Outbox
     Core --> STJ
     Core --> CloudEvents
     Core --> OTel
@@ -76,8 +72,6 @@ graph TD
 | **`EricksonLopez.Events.Serialization.SystemTextJson`** | L2 | Native AOT JSON converters for identifiers, metadata, and polymorphic envelopes. | `Events` |
 | **`EricksonLopez.Events.CloudEvents`** | L2 | Bidirectional mapping between `EventEnvelope<T>` and CNCF `CloudEvent` v1.0. | `Events` |
 | **`EricksonLopez.Events.OpenTelemetry`** | L2 | Distributed tracing and metrics instrumentation via `ActivitySource` and `Meter`. | `Events`, `OpenTelemetry` |
-| **`EricksonLopez.Events.Inbox`** | L2 | Idempotent consumer decorator guaranteeing exactly-once handler execution. | `Contracts`, `EricksonLopez.Inbox.Abstractions` |
-| **`EricksonLopez.Events.Outbox`** | L2 | Transactional outbox publisher bridging `IEventPublisher` to `EricksonLopez.Outbox.Abstractions`. | `Contracts`, `EricksonLopez.Outbox.Abstractions` |
 | **`EricksonLopez.Events.Testing`** | Test | Public testing utilities, `FakeEventPublisher`, `TestEventHandler<T>`, `EventTestBuilder`. | `Events` |
 
 ---
@@ -147,13 +141,13 @@ graph TD
     end
 
     subgraph Infrastructure["Infrastructure Layer (L2)"]
-        Outbox["OutboxEventPublisher (EricksonLopez.Events.Outbox)"]
-        OutboxStore["Transactional Outbox Table"]
-        CloudEvents["CloudEvents Adapter"]
+        CloudEvents["CloudEvents Adapter (EricksonLopez.Events.CloudEvents)"]
+        STJConv["Native AOT Serialization (EricksonLopez.Events.Serialization.SystemTextJson)"]
+        OTel["Distributed Tracing (EricksonLopez.Events.OpenTelemetry)"]
 
-        Bus -->|"Routed to"| Outbox
-        Outbox -->|"Persists"| OutboxStore
-        OutboxStore -.->|"Serialized via"| CloudEvents
+        Bus -->|"Transforms via"| CloudEvents
+        Bus -->|"Serializes via"| STJConv
+        Bus -->|"Instruments via"| OTel
     end
 ```
 

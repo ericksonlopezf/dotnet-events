@@ -1,5 +1,11 @@
 # ADR-009: Event Publication and Dispatching Contracts
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

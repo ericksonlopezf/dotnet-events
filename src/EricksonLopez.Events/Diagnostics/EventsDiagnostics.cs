@@ -22,7 +22,7 @@ public static class EventsDiagnostics
     /// <summary>
     /// Gets the version of the instrumentation source.
     /// </summary>
-    public const string Version = "1.0.0";
+    public const string Version = "2.0.0";
 
     /// <summary>Gets the <see cref="System.Diagnostics.ActivitySource"/> used for distributed tracing of event operations.</summary>
     public static readonly ActivitySource ActivitySource = new(SourceName, Version);
@@ -82,8 +82,13 @@ public static class EventsDiagnostics
     /// Records a published event metric.
     /// </summary>
     /// <param name="eventType">The type name of the event.</param>
-    public static void RecordEventPublished(string eventType) =>
-        s_eventsPublished.Add(1, new KeyValuePair<string, object?>("event.type", eventType));
+    public static void RecordEventPublished(string eventType)
+    {
+        if (s_eventsPublished.Enabled)
+        {
+            s_eventsPublished.Add(1, new KeyValuePair<string, object?>("event.type", eventType));
+        }
+    }
 
     /// <summary>
     /// Records a handled event metric with its duration and outcome.
@@ -93,11 +98,24 @@ public static class EventsDiagnostics
     /// <param name="success"><see langword="true"/> if handling succeeded; otherwise, <see langword="false"/>.</param>
     public static void RecordEventHandled(string eventType, double durationMs, bool success)
     {
-        s_eventsHandled.Add(1,
-            new KeyValuePair<string, object?>("event.type", eventType),
-            new KeyValuePair<string, object?>("event.success", success));
+        if (!s_eventsHandled.Enabled && !s_handlingDuration.Enabled)
+        {
+            return;
+        }
 
-        s_handlingDuration.Record(durationMs, new KeyValuePair<string, object?>("event.type", eventType));
+        var tagType = new KeyValuePair<string, object?>("event.type", eventType);
+
+        if (s_eventsHandled.Enabled)
+        {
+            s_eventsHandled.Add(1,
+                tagType,
+                new KeyValuePair<string, object?>("event.success", success));
+        }
+
+        if (s_handlingDuration.Enabled)
+        {
+            s_handlingDuration.Record(durationMs, tagType);
+        }
     }
 }
 

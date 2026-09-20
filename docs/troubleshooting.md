@@ -8,11 +8,12 @@ Guide to identify and resolve common errors when working with **EricksonLopez.Ev
 
 | Code | Error Message | Cause | Resolution |
 |---|---|---|---|
-| **ELE001** | `Event property must be immutable.` | A property of an `IEvent` type has a mutable public setter (`set;`). | Change the property to `{ get; init; }` or convert the class to a `sealed record`. |
-| **ELE002** | `[EventName] attribute argument cannot be null or whitespace.` | An empty or null string was passed to `[EventName("")]`. | Specify a valid semantic name (e.g. `"orders.order-placed"`). |
-| **ELE003** | `[EventVersion] must be greater than or equal to 1.` | A version of `0` was specified. | Event versions must be integers greater than or equal to 1. |
+| **ELE001** | `Event types must be immutable.` | A property of an `IEvent` type has a mutable public setter (`set;`) or the type is not a `readonly record struct` or `sealed record`. | Change the property to `{ get; init; }` or convert the type to a `readonly record struct` or `sealed record`. |
+| **ELE002** | `[EventVersion] must be greater than or equal to 1.` | A non-positive version ($< 1$) was specified in `[EventVersion]`. | Event versions must be positive integers greater than or equal to 1. |
+| **ELE003** | `[EventName] attribute argument cannot be null or whitespace.` | An empty, null, or whitespace-only string was passed to `[EventName("")]`. | Specify a valid semantic name (e.g. `"orders.order-placed"`). |
 | **ELE004** | `[EventSource] attribute argument cannot be null or whitespace.` | An empty or null string was passed to `[EventSource("")]`. | Specify a valid source identifier or URI. |
 | **ELE005** | `Integration event cannot leak domain event.` | An `IIntegrationEvent` has a property of type `IDomainEvent`. | Map the data to primitive types or DTOs instead of nesting domain events. |
+
 
 ---
 

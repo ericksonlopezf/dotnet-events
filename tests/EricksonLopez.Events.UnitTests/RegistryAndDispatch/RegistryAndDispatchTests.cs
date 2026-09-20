@@ -8,6 +8,7 @@ namespace EricksonLopez.Events.UnitTests.RegistryAndDispatch;
 
 using System.Diagnostics;
 using System.Linq;
+using AwesomeAssertions;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Diagnostics;
 using EricksonLopez.Events.Dispatch;
@@ -15,10 +16,9 @@ using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Metadata;
 using EricksonLopez.Events.Registry;
 using EricksonLopez.Events.UnitTests.Common;
-using AwesomeAssertions;
 using Xunit;
 
-[Collection("Diagnostics")]
+[Collection("DiagnosticsAndStaticRegistry")]
 [Xunit.Trait("Category", "Unit")]
 public sealed class RegistryAndDispatchTests
 {
@@ -106,19 +106,20 @@ public sealed class RegistryAndDispatchTests
     [Fact]
     public void StaticEventTypeRegistry_CurrentAndCaching_ShouldWork()
     {
+        StaticEventTypeRegistry.Reset();
         var original = StaticEventTypeRegistry.Current;
 
         var customRegistry = EventTypeRegistry.CreateBuilder()
             .Register<UserRegistered>("users.custom", 3, "custom.src")
             .Build();
 
-        StaticEventTypeRegistry.Current = customRegistry;
+        StaticEventTypeRegistry.SetCurrent(customRegistry, allowOverride: true);
         StaticEventTypeRegistry.Current.Should().BeSameAs(customRegistry);
 
-        StaticEventTypeRegistry.Current = null!;
+        StaticEventTypeRegistry.Reset();
         StaticEventTypeRegistry.Current.Should().BeSameAs(EventTypeRegistry.Empty);
 
-        StaticEventTypeRegistry.Current = original;
+        StaticEventTypeRegistry.SetCurrent(original, allowOverride: true);
 
         var descriptor = StaticEventTypeRegistry.GetDescriptor<UserRegistered>();
         descriptor.ClrType.Should().Be(typeof(UserRegistered));
@@ -207,15 +208,23 @@ public sealed class RegistryAndDispatchTests
     [Theory]
     [InlineData(0, "handler")]
     [InlineData(1, "handler")]
-    [InlineData(2, "eventInstance")]
+    [InlineData(2, "handler")]
+    [InlineData(3, "handler")]
+    [InlineData(4, "eventInstance")]
     public async Task InMemoryEventPublisher_NullValidations_ShouldThrow(int nullArgIndex, string expectedParamName)
     {
         var publisher = new InMemoryEventPublisher();
 
         Func<Task> act = nullArgIndex switch
         {
-            0 => () => { publisher.Subscribe<UserRegistered>(null!); return Task.CompletedTask; },
-            1 => () => { publisher.Unsubscribe<UserRegistered>(null!); return Task.CompletedTask; },
+            0 => () => { publisher.Subscribe<UserRegistered>((IEventHandler<UserRegistered>)null!); return Task.CompletedTask; }
+            ,
+            1 => () => { publisher.Unsubscribe<UserRegistered>((IEventHandler<UserRegistered>)null!); return Task.CompletedTask; }
+            ,
+            2 => () => { publisher.Subscribe<UserRegistered>((IEnvelopeEventHandler<UserRegistered>)null!); return Task.CompletedTask; }
+            ,
+            3 => () => { publisher.Unsubscribe<UserRegistered>((IEnvelopeEventHandler<UserRegistered>)null!); return Task.CompletedTask; }
+            ,
             _ => async () => await publisher.PublishAsync<UserRegistered>(null!)
         };
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EricksonLopez.Events.Bus.Execution;
 
-using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Bus.Configuration;
 using EricksonLopez.Events.Bus.Registry;
+using EricksonLopez.Events.Contracts;
 
 /// <summary>
 /// Defines a strategy for executing event handlers during dispatch.

@@ -1,0 +1,38 @@
+﻿[
+  {
+    "attackName": "Mutable Event Payload Tampering",
+    "vector": "Handler modifying inner reference object (List<T>) in-memory",
+    "outcome": "Observed in memory pipeline; mitigated via Roslyn immutability analyzer and IReadOnlyList guidelines",
+    "vulnerabilityStatus": "MITIGATED"
+  },
+  {
+    "attackName": "Tenant Context Bypass via Whitespace",
+    "vector": "TenantId.From(\"   \") vs TenantId.Empty",
+    "outcome": "Resolved: Normalized symmetrically across Equals, GetHashCode, and CompareTo",
+    "vulnerabilityStatus": "REMEDIATED"
+  },
+  {
+    "attackName": "Metadata Case-Sensitivity Collision",
+    "vector": "Case difference in header keys (\"trace\" vs \"TRACE\")",
+    "outcome": "Resolved: Hash code now uses OrdinalIgnoreCase consistently with Equals",
+    "vulnerabilityStatus": "REMEDIATED"
+  },
+  {
+    "attackName": "JSON Bomb Recursion Exhaustion",
+    "vector": "Deeply nested JSON payload exceeding 64 levels",
+    "outcome": "Safely rejected with JsonException; stack preserved",
+    "vulnerabilityStatus": "PROTECTED"
+  },
+  {
+    "attackName": "Polymorphic RCE / Arbitrary Type Activation",
+    "vector": "Injection of unexpected type metadata into JSON stream",
+    "outcome": "System.Text.Json strictly deserializes only registered contracts; RCE impossible",
+    "vulnerabilityStatus": "PROTECTED"
+  },
+  {
+    "attackName": "Concurrent Event Flood (10,000 events)",
+    "vector": "100 parallel worker tasks flooding bus concurrently",
+    "outcome": "Zero lost events, zero deadlocks, zero collection corruption",
+    "vulnerabilityStatus": "RESILIENT"
+  }
+]

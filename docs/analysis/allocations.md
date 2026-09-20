@@ -11,28 +11,29 @@ In high-throughput microservices, event publishing must not generate GC pressure
 | Operation | Standard MediatR / EventBus | `EricksonLopez.Events` | Improvement |
 |---|---|---|---|
 | Domain Event Instantiation | 24–32 B (`class`) | **0 B** (`readonly record struct`) | **100% Zero Heap Allocation** |
-| Envelope Packaging | 64–96 B | **0 B** (Stack value type envelope) | **100% Zero Heap Allocation** |
-| In-Process Dispatch Pipeline | 128+ B (LINQ / Closures) | **0 B** (`TState` combinators) | **100% Zero Allocation** |
+| Envelope Packaging | 64–96 B (`Dictionary`) | Single object allocation (`EventMetadata` Frozen Headers) | Minimal allocation, 0 B on cached paths |
+| In-Process Dispatch Pipeline | 128+ B (LINQ / Closures) | **0 B** (Devirtualized `ValueTask` invocation delegates) | **100% Zero Allocation** |
 | OpenTelemetry Tag Enrichment | 48 B (`Dictionary`) | **0 B** (BCL `Activity` native tags) | **100% Zero Allocation** |
 
 ---
 
-## 2. Struct Memory Layout
+## 2. Event Envelope Reference Type Model (ADR-023)
+
+Per [ADR-023](../adr/adr-023-envelope-record-vs-struct.md), `EventEnvelope<T>` is intentionally designed as an immutable reference type (`sealed record class`) to avoid massive struct copy overhead across asynchronous await boundaries and middleware pipelines:
 
 ```csharp
-// EventEnvelope<T> memory layout
-[StructLayout(LayoutKind.Auto)]
-public readonly struct EventEnvelope<T>
+// EventEnvelope<T> reference layout
+public sealed record EventEnvelope<T> : IEventEnvelope<T> where T : IEvent
 {
-    public readonly Guid Id;                     // 16 bytes
-    public readonly DateTimeOffset OccurredOn;   // 16 bytes
-    public readonly string EventType;            // 8 bytes (pointer)
-    public readonly string? CorrelationId;       // 8 bytes (pointer)
-    public readonly string? CausationId;         // 8 bytes (pointer)
-    public readonly string? TenantId;            // 8 bytes (pointer)
-    public readonly T Payload;                   // Variable (value type or ref)
+    public EventId Id { get; init; }                     // 16 bytes (UUIDv7 struct)
+    public string EventType { get; init; }               // 8 bytes (reference)
+    public string? EventSource { get; init; }            // 8 bytes (reference)
+    public DateTimeOffset OccurredAt { get; init; }      // 16 bytes (struct)
+    public T Payload { get; init; }                      // Variable (struct or ref)
+    public EventMetadata Metadata { get; init; }         // 8 bytes (reference to frozen headers)
 }
 ```
+
 
 ---
 

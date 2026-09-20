@@ -20,19 +20,20 @@ samples/
 
 ## Progressive Levels Matrix
 
-| Level | Name | Key Concepts | API Involved | Project |
-|---|---|---|---|---|
-| **0** | **Conceptual Architecture** | DDD, capability boundaries, zero mediator | `IEvent`, `IDomainEvent`, `IIntegrationEvent` | Architecture |
-| **1** | **Quick Start** | Event emission in Aggregate, temporal ordering | `EventId.New()`, `Guid.CreateVersion7()` | `ECommerce.Domain` |
-| **2** | **Full Configuration** | Contextual metadata, Frozen headers | `EventMetadataBuilder`, `EventEnvelope.Create` | `ECommerce.Application` |
-| **3** | **Real Use Cases** | Application flow, domain → integration mapping | `OrderApplicationService`, `IOutboxService` | `ECommerce.Application` |
-| **4** | **Advanced Integration** | Dependency injection, async dispatch | `AddEventBus`, `AddEventHandler`, `IEventBus` | `ECommerce.App` |
-| **5** | **Processing** | Concurrency strategies | `EventExecutionMode.Sequential / Parallel` | `ECommerce.App` |
-| **6** | **Error Handling** | Resilience and exception aggregation | `ErrorHandlingPolicy.AggregateAndContinue`, `EventDispatchException` | `ECommerce.App` |
-| **7** | **Scalability & Performance** | Zero-allocation Spans, monotonic ordering | `TryFormat(Span<char>)`, `TryFormat(Span<byte>)` | `ECommerce.App` |
-| **8** | **Customization** | Interceptor pipelines and middlewares | `IEventMiddleware`, `AddEventMiddleware` | `ECommerce.Infrastructure` |
-| **9** | **Ecosystem Extensions** | CloudEvents v1.0, Testing DSL, OpenTelemetry | `ToCloudEvent()`, `FakeEventPublisher`, `TestEventHandler` | `ECommerce.App` |
-| **10** | **Enterprise Architecture** | 100% Native AOT, reflection-free serialization | `JsonSerializerContext`, `ECommerceJsonSerializer` | `ECommerce.Infrastructure` |
+| Level | Name | Key Concepts | API Involved | Document | Project |
+|---|---|---|---|---|---|
+| **0** | **Conceptual Architecture** | DDD, capability boundaries, zero mediator | `IEvent`, `IDomainEvent`, `IIntegrationEvent` | [Level 00](showcase/level-00-conceptual-architecture.md) | Architecture |
+| **1** | **Quick Start** | Event emission in Aggregate, temporal ordering | `EventId.New()`, `Guid.CreateVersion7()` | [Level 01](showcase/level-01-quick-start.md) | `ECommerce.Domain` |
+| **2** | **Full Configuration** | Contextual metadata, Frozen headers | `EventMetadataBuilder`, `EventEnvelope.Create` | [Level 02](showcase/level-02-full-configuration.md) | `ECommerce.Application` |
+| **3** | **Real Use Cases** | Application flow, in-memory publisher/subscriber | `InMemoryEventPublisher`, `IEventSubscriber` | [Level 03](showcase/level-03-real-use-cases.md) | `ECommerce.App` |
+| **4** | **Advanced Integration** | Dependency injection, async dispatch | `AddEventBus`, `AddEventHandler`, `IEventBus` | [Level 04](showcase/level-04-advanced-integration.md) | `ECommerce.App` |
+| **5** | **Processing** | Concurrency strategies, all registry overloads, cancellation, Reset | `EventExecutionMode`, `StaticEventTypeRegistry`, `TryGetDescriptor` (all overloads) | [Level 05](showcase/level-05-processing.md) | `ECommerce.App` |
+| **6** | **Error Handling** | Resilience and exception aggregation | `ErrorHandlingPolicy`, `EventDispatchException` | [Level 06](showcase/level-06-error-handling.md) | `ECommerce.App` |
+| **7** | **Scalability & Performance** | Zero-allocation Spans, monotonic ordering | `TryFormat(Span<char>)`, `TryFormat(Span<byte>)` | [Level 07](showcase/level-07-scalability.md) | `ECommerce.App` |
+| **8** | **Customization** | Middleware pipeline, Parallel mode, ScopePolicy, custom strategies | `IEventMiddleware`, `EventExecutionMode.Parallel`, `MaxDegreeOfParallelism`, `HandlerScopePolicy.ReuseAmbientScope`, `ParallelExecutionStrategy` | [Level 08](showcase/level-08-customization.md) | `ECommerce.Infrastructure` |
+| **9** | **Ecosystem Extensions** | CloudEvents v1.0, Testing DSL, OpenTelemetry | `ToCloudEvent()`, `FakeEventPublisher`, `TestEventHandler` | [Level 09](showcase/level-09-ecosystem-extensions.md) | `ECommerce.App` |
+| **10** | **Enterprise Architecture** | 100% Native AOT, reflection-free serialization | `JsonSerializerContext`, `EventsJsonSerializerOptionsExtensions` | [Level 10](showcase/level-10-enterprise-architecture.md) | `ECommerce.Infrastructure` |
+| **11** | **Comprehensive Coverage** | All remaining API surface: attributes, diagnostics, transactional, context | `EventSourceAttribute`, `EventBusDiagnostics`, `TransactionalEventPublisher`, `EventContext`, `SequentialExecutionStrategy` | — | `ECommerce.App` |
 
 ---
 
@@ -83,8 +84,13 @@ services.AddEventHandler<OrderPlacedIntegrationEvent, SendOrderConfirmationEmail
 services.AddEventHandler<OrderPlacedIntegrationEvent, UpdateInventoryOnOrderPlacedHandler>();
 ```
 
-### Level 5: Processing Strategies (Sequential vs Parallel)
-Enables switching between deterministic sequential or concurrent dispatch via `Task.WhenAll`.
+### Level 5: Processing Strategies, Registries & Cancellation
+Covers all registry overloads:
+- `TryGetDescriptor(EventType, out)` — by semantic name
+- `TryGetDescriptor<TEvent>(out)` — generic, AOT-preferred
+- `TryGetDescriptor(Type, out)` — non-generic CLR type overload
+- `TryGetDescriptor(EventType, EventVersion, out)` — versioned lookup
+- `StaticEventTypeRegistry.Reset()` — test-isolation API
 
 ### Level 6: Resilience and Error Handling
 Demonstrates how `ErrorHandlingPolicy.AggregateAndContinue` ensures that if one handler fails, the other subscribers continue executing, grouping the errors in `EventDispatchException`.
@@ -92,8 +98,13 @@ Demonstrates how `ErrorHandlingPolicy.AggregateAndContinue` ensures that if one 
 ### Level 7: Zero-Allocation Performance
 Demonstrates direct formatting of `EventId` over `Span<char>` and `Span<byte>` buffers allocated on the stack (`stackalloc`) without generating Garbage Collector pressure.
 
-### Level 8: Pipeline Middlewares
-Demonstrates event interception before and after delivery via `LoggingEventMiddleware` and `PerformanceMetricsMiddleware`.
+### Level 8: Customization — Middleware, Parallel Mode & ScopePolicy
+Demonstrates:
+- `IEventMiddleware` pipeline (Logging → Performance → Handler)
+- `MiddlewarePipeline.Build<T>()` explicit construction
+- `EventExecutionMode.Parallel` + `MaxDegreeOfParallelism` with thread-safe handlers
+- `HandlerScopePolicy.ReuseAmbientScope` with Sequential mode (+ thread-safety warning)
+- `ParallelExecutionStrategy` instantiated directly
 
 ### Level 9: Ecosystem Extensions
 - **CloudEvents v1.0**: Converts `EventEnvelope<T>` to the CNCF standard specification via `.ToCloudEvent()` and its inverse `.ToEventEnvelope()`.
@@ -101,6 +112,19 @@ Demonstrates event interception before and after delivery via `LoggingEventMiddl
 
 ### Level 10: Native AOT & Trimming
 Serializes and deserializes event envelopes using `System.Text.Json.JsonSerializerContext` with zero runtime reflection.
+
+### Level 11: Comprehensive API Coverage
+Executable coverage of every remaining public API surface member:
+- `EventSourceAttribute` — construction and reflection-based introspection
+- `EventBusDiagnostics.RecordPublish`
+- `TransactionalEventPublisher` (full lifecycle: Publish, CommitAndPublishAsync, Rollback)
+- `EventContext.SetExecutionTracker`, `MarkHandlerCompleted`, `IsHandlerCompleted`
+- `SequentialExecutionStrategy` / `HandlerRegistry` / `HandlerDescriptor`
+- All JSON converters: `EventEnvelopeJsonConverterFactory`, `EventEnvelopeJsonConverter<T>`
+
+> **External integrations** (out of scope — separate packages):
+> - `EricksonLopez.Outbox` → `OutboxEventPublisher`, transactional relay
+> - `EricksonLopez.Inbox` → idempotency / inbox processor
 
 ---
 

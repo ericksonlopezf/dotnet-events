@@ -7,7 +7,7 @@ Answers to common questions about the architecture, scope, capabilities, and dif
 ### How does EricksonLopez.Events differ from MediatR?
 
 - **MediatR** combines commands (1-to-1), queries (1-to-1), and notifications (1-to-N), historically relying on runtime reflection.
-- **EricksonLopez.Events** is a library specialized exclusively in **Events** (Domain Events and Integration Events). It offers zero runtime reflection, strict Native AOT and Trimming compatibility, native Guid v7 support, and bridges for CloudEvents v1.0, Inbox, and Outbox.
+- **EricksonLopez.Events** is a library specialized exclusively in **Events** (Domain Events and Integration Events). It offers zero runtime reflection, strict Native AOT and Trimming compatibility, native Guid v7 support, CNCF CloudEvents v1.0 schema conversion, and pure contracts ready for integration with Transactional Outbox and Idempotent Inbox patterns (via `EricksonLopez.Outbox`).
 
 ### How does it differ from MassTransit or Wolverine?
 

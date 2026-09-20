@@ -1,5 +1,11 @@
 # ADR-029: Isolated Serial Execution for OpenTelemetry Diagnostic Tests via Collection Fixture
 
+## Status
+Accepted
+
+## Date
+2026-08-20
+
 * **Status:** Accepted
 * **Date:** 2026-08-20
 * **Deciders:** Architecture Team, Erickson Lopez

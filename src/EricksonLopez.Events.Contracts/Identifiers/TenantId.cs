@@ -30,10 +30,12 @@ public readonly record struct TenantId :
     /// </summary>
     public static readonly TenantId Empty = new(string.Empty);
 
+    private readonly string? _value;
+
     /// <summary>
     /// Gets the string representation of the tenant id.
     /// </summary>
-    public string Value { get; }
+    public string Value => _value ?? string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TenantId"/> struct.
@@ -41,7 +43,7 @@ public readonly record struct TenantId :
     /// <param name="value">The tenant identifier string.</param>
     public TenantId(string value)
     {
-        Value = value ?? string.Empty;
+        _value = value ?? string.Empty;
     }
 
     /// <summary>
@@ -52,13 +54,50 @@ public readonly record struct TenantId :
     public static TenantId From(string value) => new(value);
 
     /// <summary>
+    /// Creates a <see cref="TenantId"/> from a <see cref="Guid"/>, interoperable with EricksonLopez.MultiTenancy.
+    /// </summary>
+    /// <param name="value">The tenant GUID.</param>
+    /// <returns>A new <see cref="TenantId"/> formatted as a standard 36-character hyphenated UUID.</returns>
+    public static TenantId From(Guid value) => new(value.ToString("D"));
+
+    /// <summary>
+    /// Converts a <see cref="Guid"/> to a <see cref="TenantId"/> instance.
+    /// </summary>
+    /// <param name="value">The GUID value to convert.</param>
+    /// <returns>A new <see cref="TenantId"/> initialized with the GUID string.</returns>
+    public static explicit operator TenantId(Guid value) => From(value);
+
+    /// <summary>
+    /// Attempts to parse the underlying value as a <see cref="Guid"/> for interoperability with EricksonLopez.MultiTenancy.
+    /// </summary>
+    /// <param name="tenantGuid">When this method returns, contains the parsed GUID value if successful; otherwise, <see cref="Guid.Empty"/>.</param>
+    /// <returns><see langword="true"/> if the value is a valid GUID; otherwise, <see langword="false"/>.</returns>
+    public bool TryToGuid(out Guid tenantGuid) => Guid.TryParse(Value, out tenantGuid);
+
+    /// <summary>
     /// Gets a value indicating whether the tenant id is empty.
     /// </summary>
-    public bool IsEmpty => string.IsNullOrEmpty(Value);
+    public bool IsEmpty => string.IsNullOrWhiteSpace(Value);
 
     /// <inheritdoc />
-    public int CompareTo(TenantId other) =>
-        string.Compare(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+    public bool Equals(TenantId other)
+    {
+        if (IsEmpty && other.IsEmpty) return true;
+        return string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode() =>
+        IsEmpty ? 0 : string.GetHashCode(Value, StringComparison.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public int CompareTo(TenantId other)
+    {
+        if (IsEmpty && other.IsEmpty) return 0;
+        if (IsEmpty) return -1;
+        if (other.IsEmpty) return 1;
+        return string.Compare(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <inheritdoc />
     public int CompareTo(object? obj)
@@ -115,7 +154,7 @@ public readonly record struct TenantId :
     public static explicit operator TenantId(string value) => new(value);
 
     /// <inheritdoc />
-    public override string ToString() => Value;
+    public override string ToString() => Value ?? string.Empty;
 
     /// <inheritdoc />
     public static TenantId Parse(string s, IFormatProvider? provider = null) =>

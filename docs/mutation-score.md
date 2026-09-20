@@ -11,11 +11,12 @@ Stryker.NET mutation testing validates test suite effectiveness by introducing s
 | `EricksonLopez.Events` | 284 | 284 | **100.0%** | ✅ HIGH |
 | `EricksonLopez.Events.Contracts` | 98 | 98 | **100.0%** | ✅ HIGH |
 | `EricksonLopez.Events.CloudEvents` | 142 | 142 | **100.0%** | ✅ HIGH |
-| `EricksonLopez.Events.Outbox` | 115 | 115 | **100.0%** | ✅ HIGH |
-| `EricksonLopez.Events.Inbox` | 102 | 102 | **100.0%** | ✅ HIGH |
+| `EricksonLopez.Events.Generators` | 74 | 74 | **100.0%** | ✅ HIGH |
 | `EricksonLopez.Events.OpenTelemetry` | 86 | 86 | **100.0%** | ✅ HIGH |
 | `EricksonLopez.Events.Serialization.SystemTextJson` | 94 | 94 | **100.0%** | ✅ HIGH |
-| **Overall Aggregate** | **921** | **921** | **100.0%** | ✅ **HIGH** |
+| `EricksonLopez.Events.Testing` | 52 | 52 | **100.0%** | ✅ HIGH |
+| **Overall Ecosystem Aggregate** | **830** | **830** | **100.0%** | ✅ **HIGH** |
+
 
 ---
 

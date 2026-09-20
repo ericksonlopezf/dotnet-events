@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Description>System.Text.Json Native AOT converters and serialization adapters for EricksonLopez.Events.</Description>
-    <PackageTags>$(CommonPackageTags);serialization;system-text-json;json;json-converter;envelope;guid-v7;low-allocation;trimming</PackageTags>
+    <PackageTags>$(CommonPackageTags);serialization;system-text-json;json;json-converter;envelope;guid-v7</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

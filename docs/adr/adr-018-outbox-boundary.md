@@ -1,5 +1,11 @@
 # ADR-018: Outbox Integration Contract and Separation of Persistence
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

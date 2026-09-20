@@ -14,6 +14,7 @@ namespace EricksonLopez.Events.Testing;
 public sealed class FakeEventPublisher : IEventPublisher
 {
     private readonly List<IEvent> _publishedEvents = new();
+    private readonly List<EricksonLopez.Events.Envelopes.IEventEnvelope> _publishedEnvelopes = new();
     private readonly object _lock = new();
     private Exception? _simulatedException;
     private int _simulatedFailureCount;
@@ -28,6 +29,20 @@ public sealed class FakeEventPublisher : IEventPublisher
             lock (_lock)
             {
                 return _publishedEvents.ToArray();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets a read-only list of all published event envelopes in chronological order.
+    /// </summary>
+    public IReadOnlyList<EricksonLopez.Events.Envelopes.IEventEnvelope> PublishedEnvelopes
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _publishedEnvelopes.ToArray();
             }
         }
     }
@@ -63,6 +78,28 @@ public sealed class FakeEventPublisher : IEventPublisher
             }
 
             _publishedEvents.Add(eventInstance);
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask PublishEnvelopeAsync<TEvent>(EricksonLopez.Events.Envelopes.IEventEnvelope<TEvent> envelope, CancellationToken cancellationToken = default)
+        where TEvent : IEvent
+    {
+        ArgumentNullException.ThrowIfNull(envelope);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        lock (_lock)
+        {
+            if (_simulatedFailureCount > 0)
+            {
+                _simulatedFailureCount--;
+                throw _simulatedException!;
+            }
+
+            _publishedEnvelopes.Add(envelope);
+            _publishedEvents.Add(envelope.Payload);
         }
 
         return ValueTask.CompletedTask;
@@ -291,6 +328,7 @@ public sealed class FakeEventPublisher : IEventPublisher
         lock (_lock)
         {
             _publishedEvents.Clear();
+            _publishedEnvelopes.Clear();
             _simulatedException = null;
             _simulatedFailureCount = 0;
         }

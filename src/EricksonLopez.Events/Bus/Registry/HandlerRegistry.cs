@@ -31,6 +31,16 @@ public sealed class HandlerRegistry : IHandlerRegistry
             _ => new[] { descriptor },
             (_, existing) =>
             {
+                for (int i = 0; i < existing.Length; i++)
+                {
+                    if (existing[i].HandlerType == descriptor.HandlerType &&
+                        existing[i].ServiceType == descriptor.ServiceType &&
+                        existing[i].Invoker == descriptor.Invoker)
+                    {
+                        return existing;
+                    }
+                }
+
                 var updated = new HandlerDescriptor[existing.Length + 1];
                 Array.Copy(existing, updated, existing.Length);
                 updated[^1] = descriptor;

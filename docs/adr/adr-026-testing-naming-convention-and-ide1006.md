@@ -1,5 +1,11 @@
 # ADR-026: Testing Naming Convention (Osherove Pattern) and Local IDE1006 Suppression
 
+## Status
+Accepted
+
+## Date
+2026-08-18
+
 * **Status:** Accepted
 * **Date:** 2026-08-18
 * **Deciders:** Architecture Team, Erickson Lopez

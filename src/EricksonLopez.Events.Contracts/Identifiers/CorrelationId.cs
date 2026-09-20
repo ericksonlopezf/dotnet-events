@@ -132,7 +132,7 @@ public readonly record struct CorrelationId :
     public static explicit operator CorrelationId(string value) => new(value);
 
     /// <inheritdoc />
-    public override string ToString() => Value;
+    public override string ToString() => Value ?? string.Empty;
 
     /// <inheritdoc />
     public static CorrelationId Parse(string s, IFormatProvider? provider = null) =>

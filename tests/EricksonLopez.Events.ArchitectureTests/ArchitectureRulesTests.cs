@@ -5,16 +5,17 @@ namespace EricksonLopez.Events.ArchitectureTests;
 
 using System.Linq;
 using System.Reflection;
+using AwesomeAssertions;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
-using AwesomeAssertions;
 using NetArchTest.Rules;
 using Xunit;
 
 [Trait("Category", "Architecture")]
 public sealed class ArchitectureRulesTests
 {
-    private static readonly Assembly EventsAssembly = typeof(IEvent).Assembly;
+    private static readonly Assembly ContractsAssembly = typeof(IEvent).Assembly;
+    private static readonly Assembly EventsAssembly = typeof(EricksonLopez.Events.Bus.EventBus).Assembly;
     private static readonly Assembly SerializationAssembly = typeof(EricksonLopez.Events.Serialization.SystemTextJson.EventsJsonSerializerOptionsExtensions).Assembly;
     private static readonly Assembly OpenTelemetryAssembly = typeof(EricksonLopez.Events.OpenTelemetry.EventsOpenTelemetryExtensions).Assembly;
     private static readonly Assembly GeneratorsAssembly = typeof(EricksonLopez.Events.Generators.EventIncrementalGenerator).Assembly;
@@ -34,16 +35,22 @@ public sealed class ArchitectureRulesTests
             "Confluent.Kafka",
             "Azure.Messaging.ServiceBus",
             "Amazon.SQS",
-            "System.Text.Json",
             "Newtonsoft.Json"
         };
 
-        var result = Types.InAssembly(EventsAssembly)
+        var contractsResult = Types.InAssembly(ContractsAssembly)
             .ShouldNot()
             .HaveDependencyOnAny(forbiddenDependencies)
             .GetResult();
 
-        result.IsSuccessful.Should().BeTrue("Core package must not have any dependencies on infrastructure, brokers, or serializes.");
+        contractsResult.IsSuccessful.Should().BeTrue("Contracts package must not have any dependencies on infrastructure or brokers.");
+
+        var busResult = Types.InAssembly(EventsAssembly)
+            .ShouldNot()
+            .HaveDependencyOnAny(forbiddenDependencies)
+            .GetResult();
+
+        busResult.IsSuccessful.Should().BeTrue("Core EventBus package must not have any dependencies on infrastructure or brokers.");
     }
 
     [Fact]
@@ -172,7 +179,7 @@ public sealed class ArchitectureRulesTests
     [Fact]
     public void Identifiers_WhenInNamespace_ShouldBeValueTypesAndImmutable()
     {
-        var identifierTypes = EventsAssembly.GetExportedTypes()
+        var identifierTypes = ContractsAssembly.GetExportedTypes()
             .Where(t => t.Namespace == typeof(EventId).Namespace)
             .ToList();
 

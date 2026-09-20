@@ -1,5 +1,11 @@
 # ADR-027: Canonical Event Contracts Ownership (IDomainEvent & IIntegrationEvent)
 
+## Status
+Accepted
+
+## Date
+2026-08-19
+
 * **Status:** Accepted
 * **Date:** 2026-08-19
 * **Deciders:** Architecture Team, Erickson Lopez

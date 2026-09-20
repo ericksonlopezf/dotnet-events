@@ -1,5 +1,11 @@
 # ADR-021: StaticEventTypeRegistry — Reflection Fallback and AOT Honesty
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

@@ -1,5 +1,11 @@
 # ADR-007: Strongly-Typed Immutable Metadata Model
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

@@ -8,13 +8,13 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AwesomeAssertions;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Envelopes;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Metadata;
 using EricksonLopez.Events.Serialization.SystemTextJson;
 using EricksonLopez.Events.Serialization.SystemTextJson.Converters;
-using AwesomeAssertions;
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
@@ -24,6 +24,11 @@ public sealed record CustomerRegisteredEvent(
     string CustomerName,
     string Email,
     DateTimeOffset OccurredAt) : IIntegrationEvent;
+
+public readonly record struct StructTestEvent(
+    EventId Id,
+    DateTimeOffset OccurredAt,
+    int Value) : IEvent;
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, PropertyNameCaseInsensitive = true)]
 [JsonSerializable(typeof(EventId))]
@@ -35,6 +40,8 @@ public sealed record CustomerRegisteredEvent(
 [JsonSerializable(typeof(EventMetadata))]
 [JsonSerializable(typeof(CustomerRegisteredEvent))]
 [JsonSerializable(typeof(EventEnvelope<CustomerRegisteredEvent>))]
+[JsonSerializable(typeof(StructTestEvent))]
+[JsonSerializable(typeof(EventEnvelope<StructTestEvent>))]
 internal sealed partial class TestJsonContext : JsonSerializerContext
 {
 }
@@ -874,6 +881,60 @@ public sealed class EventsJsonSerializationTests
         evt!.Id.Should().Be(eventId);
         evt.CustomerName.Should().Be("Jane Doe");
         evt.Email.Should().Be("jane@example.com");
+    }
+
+    [Fact]
+    public void EVT_SER_002_StructEvent_MissingPayload_ThrowsJsonException()
+    {
+        var converter = new EventEnvelopeJsonConverter<StructTestEvent>();
+        var jsonWithoutPayload = """
+        {
+            "id": "11111111-1111-1111-1111-111111111111",
+            "type": "StructTestEvent",
+            "version": 1,
+            "occurredAt": "2026-09-05T12:00:00+00:00"
+        }
+        """;
+
+        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(jsonWithoutPayload));
+        reader.Read();
+
+        try
+        {
+            converter.Read(ref reader, typeof(EventEnvelope<StructTestEvent>), _options);
+            Assert.Fail("Expected JsonException was not thrown.");
+        }
+        catch (JsonException ex)
+        {
+            ex.Message.Should().Contain("Missing payload property");
+        }
+    }
+
+    [Fact]
+    public void EVT_SER_002_ReferenceEvent_MissingPayload_ThrowsJsonException()
+    {
+        var converter = new EventEnvelopeJsonConverter<CustomerRegisteredEvent>();
+        var jsonWithoutPayload = """
+        {
+            "id": "22222222-2222-2222-2222-222222222222",
+            "type": "CustomerRegisteredEvent",
+            "version": 1,
+            "occurredAt": "2026-09-05T12:00:00+00:00"
+        }
+        """;
+
+        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(jsonWithoutPayload));
+        reader.Read();
+
+        try
+        {
+            converter.Read(ref reader, typeof(EventEnvelope<CustomerRegisteredEvent>), _options);
+            Assert.Fail("Expected JsonException was not thrown.");
+        }
+        catch (JsonException ex)
+        {
+            ex.Message.Should().Contain("Missing payload property");
+        }
     }
 
     #endregion

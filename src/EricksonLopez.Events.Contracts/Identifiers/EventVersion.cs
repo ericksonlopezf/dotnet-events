@@ -20,10 +20,17 @@ public readonly record struct EventVersion :
     /// </summary>
     public static readonly EventVersion V1 = new(1);
 
+    private readonly uint _value;
+
     /// <summary>
     /// Gets the unsigned integer value of the version.
     /// </summary>
-    public uint Value { get; }
+    public uint Value => _value == 0 ? 1 : _value;
+
+    /// <summary>
+    /// Gets a value indicating whether this version instance is uninitialized (default struct state).
+    /// </summary>
+    public bool IsUninitialized => _value == 0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EventVersion"/> struct.
@@ -37,8 +44,14 @@ public readonly record struct EventVersion :
             throw new ArgumentOutOfRangeException(nameof(value), "Event version must be greater than or equal to 1.");
         }
 
-        Value = value;
+        _value = value;
     }
+
+    /// <inheritdoc />
+    public bool Equals(EventVersion other) => Value == other.Value;
+
+    /// <inheritdoc />
+    public override int GetHashCode() => Value.GetHashCode();
 
     /// <summary>
     /// Creates an <see cref="EventVersion"/> from an unsigned integer.
@@ -117,7 +130,7 @@ public readonly record struct EventVersion :
     public static explicit operator EventVersion(uint value) => new(value);
 
     /// <inheritdoc />
-    public override string ToString() => Value == 0 ? "1" : Value.ToString(CultureInfo.InvariantCulture);
+    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 
     /// <inheritdoc />
     public static EventVersion Parse(string s, IFormatProvider? provider = null)

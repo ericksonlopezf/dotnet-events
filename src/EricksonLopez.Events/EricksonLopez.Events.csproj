@@ -4,7 +4,7 @@
     <TargetFramework></TargetFramework>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Description>Event dispatching, bus orchestration and ambient pipeline primitives for decoupled, event-driven .NET applications, designed for trimming and Native AOT.</Description>
-    <PackageTags>$(CommonPackageTags);eventbus;dispatcher;domain-events;integration-events;ddd;clean-architecture;middleware;dependency-injection;low-allocation;trimming</PackageTags>
+    <PackageTags>$(CommonPackageTags);event-bus;in-memory;dispatcher;pubsub;middleware;dependency-injection;domain-events;integration-events;ddd;clean-architecture</PackageTags>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <IsAotCompatible>true</IsAotCompatible>

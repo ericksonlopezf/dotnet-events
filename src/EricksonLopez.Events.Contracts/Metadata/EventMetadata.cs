@@ -85,8 +85,14 @@ public sealed record EventMetadata
         TenantId = tenantId;
         Source = source;
         ContentType = contentType;
-        CustomHeaders = customHeaders is not null
-            ? (customHeaders as FrozenDictionary<string, string> ?? customHeaders.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase))
+        // EVT-DAT-003 FIX: Always normalize CustomHeaders to a FrozenDictionary with OrdinalIgnoreCase.
+        // The previous shortcut `customHeaders as FrozenDictionary<string, string>` was unsound:
+        // if the caller passed a FrozenDictionary built with the default Ordinal comparer, it would
+        // be cast directly, and TryGetHeader("x-custom-header") for a key stored as "X-Custom-Header"
+        // would silently return false — a case-sensitivity violation.
+        // The fix: always rebuild with OrdinalIgnoreCase to guarantee the invariant stated in the XML doc.
+        CustomHeaders = customHeaders is not null && customHeaders.Count > 0
+            ? customHeaders.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase)
             : EmptyHeaders;
     }
 
@@ -130,7 +136,7 @@ public sealed record EventMetadata
             [key] = value ?? string.Empty
         };
 
-        return this with { CustomHeaders = dict.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase) };
+        return this with { CustomHeaders = dict };
     }
 
     /// <summary>
@@ -139,8 +145,16 @@ public sealed record EventMetadata
     /// <param name="key">The header key.</param>
     /// <param name="value">When this method returns, contains the retrieved header value if found; otherwise, <see langword="null"/>.</param>
     /// <returns><see langword="true"/> if the header was found; otherwise, <see langword="false"/>.</returns>
+    /// <remarks>
+    /// The lookup is case-insensitive because <see cref="CustomHeaders"/> is always constructed with
+    /// <see cref="StringComparer.OrdinalIgnoreCase"/>. A single <c>TryGetValue</c> call is sufficient —
+    /// no secondary linear scan is needed (EVT-MED-META-001 fix).
+    /// </remarks>
     public bool TryGetHeader(string key, out string? value)
     {
+        // EVT-MED-META-001 FIX: Removed redundant O(n) foreach fallback.
+        // CustomHeaders is always constructed with OrdinalIgnoreCase comparer, so TryGetValue
+        // handles case-insensitive lookup in O(1). The previous foreach was unreachable dead code.
         if (CustomHeaders.TryGetValue(key, out var val))
         {
             value = val;
@@ -150,7 +164,57 @@ public sealed record EventMetadata
         value = null;
         return false;
     }
+
+    /// <inheritdoc />
+    public bool Equals(EventMetadata? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        if (CorrelationId != other.CorrelationId ||
+            CausationId != other.CausationId ||
+            TenantId != other.TenantId ||
+            !string.Equals(Source, other.Source, StringComparison.Ordinal) ||
+            !string.Equals(ContentType, other.ContentType, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (CustomHeaders.Count != other.CustomHeaders.Count)
+        {
+            return false;
+        }
+
+        foreach (var pair in CustomHeaders)
+        {
+            if (!other.CustomHeaders.TryGetValue(pair.Key, out var otherVal) ||
+                !string.Equals(pair.Value, otherVal, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(CorrelationId);
+        hash.Add(CausationId);
+        hash.Add(TenantId);
+        hash.Add(Source, StringComparer.Ordinal);
+        hash.Add(ContentType, StringComparer.Ordinal);
+        hash.Add(CustomHeaders.Count);
+        int headersHash = 0;
+        foreach (var pair in CustomHeaders)
+        {
+            headersHash = unchecked(headersHash + HashCode.Combine(
+                StringComparer.OrdinalIgnoreCase.GetHashCode(pair.Key),
+                pair.Value != null ? StringComparer.Ordinal.GetHashCode(pair.Value) : 0));
+        }
+        hash.Add(headersHash);
+        return hash.ToHashCode();
+    }
 }
-
-
-

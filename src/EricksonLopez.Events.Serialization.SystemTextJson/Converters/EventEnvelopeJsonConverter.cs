@@ -34,6 +34,7 @@ public sealed class EventEnvelopeJsonConverter<TEvent> : JsonConverter<EventEnve
         var version = EventVersion.V1;
         var occurredAt = default(DateTimeOffset);
         TEvent? payload = default;
+        bool hasPayload = false;
         EventMetadata? metadata = null;
 
         var payloadTypeInfo = (JsonTypeInfo<TEvent>)options.GetTypeInfo(typeof(TEvent));
@@ -88,6 +89,7 @@ public sealed class EventEnvelopeJsonConverter<TEvent> : JsonConverter<EventEnve
             else if (string.Equals(propName, "payload", StringComparison.OrdinalIgnoreCase))
             {
                 payload = JsonSerializer.Deserialize(ref reader, payloadTypeInfo);
+                hasPayload = true;
             }
             else if (string.Equals(propName, "metadata", StringComparison.OrdinalIgnoreCase))
             {
@@ -99,7 +101,7 @@ public sealed class EventEnvelopeJsonConverter<TEvent> : JsonConverter<EventEnve
             }
         }
 
-        if (payload is null)
+        if (!hasPayload || payload is null)
         {
             throw new JsonException($"Missing payload property when deserializing {nameof(EventEnvelope<TEvent>)}.");
         }

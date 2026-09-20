@@ -4,8 +4,8 @@ using System;
 namespace EricksonLopez.Events.UnitTests.Identifiers;
 
 using System.Globalization;
-using EricksonLopez.Events.Identifiers;
 using AwesomeAssertions;
+using EricksonLopez.Events.Identifiers;
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
@@ -57,7 +57,8 @@ public sealed class EventTypeAndVersionTests
         var type2 = EventType.From("ORDERS.CREATED");
         var type3 = EventType.From("orders.updated");
 
-        type1.Equals(type2).Should().BeFalse(); // record equality checks string exact, but CompareTo is case-insensitive
+        type1.Equals(type2).Should().BeTrue(); // Invariant: CompareTo == 0 must imply Equals == true
+        type1.GetHashCode().Should().Be(type2.GetHashCode());
         type1.CompareTo(type2).Should().Be(0);
         type1.CompareTo((object)type2).Should().Be(0);
         (type1 <= type2).Should().BeTrue();

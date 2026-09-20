@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace EricksonLopez.Events.UnitTests.Bus;
 
+using AwesomeAssertions;
 using EricksonLopez.Events.Bus.Configuration;
 using EricksonLopez.Events.Bus.Extensions;
 using EricksonLopez.Events.Bus.Middleware;
 using EricksonLopez.Events.Bus.Registry;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
-using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -33,12 +33,15 @@ public sealed class EventBusServiceCollectionExtensionsTests
 
     public sealed class TestSpyMiddleware : IEventMiddleware
     {
-        public bool Executed { get; private set; }
+        // Use a static counter — instances are Transient, so we need shared state to verify execution.
+        // This is safe in a unit test environment (no parallelism within this test class).
+        public static int InvocationCount { get; private set; }
+        public static void Reset() => InvocationCount = 0;
 
         public async ValueTask InvokeAsync<TEvent>(TEvent eventInstance, EventMiddlewareDelegate<TEvent> nextHandler, CancellationToken cancellationToken)
             where TEvent : IEvent
         {
-            Executed = true;
+            InvocationCount++;
             await nextHandler(eventInstance, cancellationToken);
         }
     }
@@ -62,8 +65,34 @@ public sealed class EventBusServiceCollectionExtensionsTests
     }
 
     [Fact]
+    public void AddEventMiddleware_WithSingletonAndMutableState_ThrowsInvalidOperationException()
+    {
+        // EVT-HIGH-004 Remediation: Verified that Singleton middleware with mutable fields is rejected.
+        // TestSpyMiddleware has a static counter, so it has no mutable INSTANCE fields.
+        // StatefulSingletonMiddleware has a mutable instance field — must throw.
+        var services = new ServiceCollection();
+        var act = () => services.AddEventMiddleware<StatefulSingletonMiddleware>(ServiceLifetime.Singleton);
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*cannot be registered as Singleton*mutable instance field*");
+    }
+
+    private sealed class StatefulSingletonMiddleware : IEventMiddleware
+    {
+        private int _counter; // mutable instance field — Singleton not allowed
+
+        public async ValueTask InvokeAsync<TEvent>(TEvent eventInstance, EventMiddlewareDelegate<TEvent> nextHandler, CancellationToken cancellationToken)
+            where TEvent : IEvent
+        {
+            _counter++;
+            await nextHandler(eventInstance, cancellationToken);
+        }
+    }
+
+    [Fact]
     public async Task AddEventBus_WithCustomOptionsAndHandlers_ShouldResolveAndDispatchCorrectly()
     {
+        TestSpyMiddleware.Reset();
+
         var services = new ServiceCollection();
 
         services.AddEventBus(options =>
@@ -73,7 +102,7 @@ public sealed class EventBusServiceCollectionExtensionsTests
         });
 
         services.AddEventHandler<SampleDiEvent, SampleDiHandler>(ServiceLifetime.Singleton);
-        services.AddEventMiddleware<TestSpyMiddleware>(ServiceLifetime.Singleton);
+        services.AddEventMiddleware<TestSpyMiddleware>(ServiceLifetime.Transient);
 
         using var sp = services.BuildServiceProvider();
 
@@ -96,14 +125,11 @@ public sealed class EventBusServiceCollectionExtensionsTests
         var interfaceHandler = sp.GetRequiredService<IEventHandler<SampleDiEvent>>();
         interfaceHandler.Should().BeSameAs(handler);
 
-        var middleware = sp.GetRequiredService<IEventMiddleware>() as TestSpyMiddleware;
-
         var evt = new SampleDiEvent(EventId.New(), DateTimeOffset.UtcNow);
         await bus.PublishAsync(evt);
 
         handler.Invocations.Should().Be(1);
-        middleware.Should().NotBeNull();
-        middleware!.Executed.Should().BeTrue();
+        TestSpyMiddleware.InvocationCount.Should().BeGreaterThan(0, "Middleware must have been invoked.");
 
         // Verify invocation via the generated Invoker delegate in HandlerDescriptor
         await handlers[0].Invoker(handler, evt, CancellationToken.None);
@@ -113,6 +139,7 @@ public sealed class EventBusServiceCollectionExtensionsTests
     [Fact]
     public void HandlerRegistrationToken_Constructor_ShouldSetProperties()
     {
+
         var desc = new HandlerDescriptor(typeof(SampleDiHandler), typeof(object), (_, _, _) => ValueTask.CompletedTask);
         var token = new HandlerRegistrationToken(typeof(SampleDiEvent), desc);
 

@@ -1,0 +1,79 @@
+﻿[
+  {
+    "id": "EVT-SEC-001",
+    "severity": "HIGH",
+    "category": "Security",
+    "title": "Mutable Event Payload Tampering in Shared Memory Pipeline",
+    "file": "src/EricksonLopez.Events/Bus/InMemoryEventPublisher.cs",
+    "line": 45,
+    "status": "MITIGATED_BY_GUIDANCE",
+    "rootCause": "In-memory event instances are passed by reference. Compilers enforce shallow immutability, but mutable collections (e.g. List<T>) can be modified by downstream handlers.",
+    "recommendation": "Enforce IReadOnlyList<T> or ImmutableArray<T> in event contracts and enhance Roslyn analyzer ELE001."
+  },
+  {
+    "id": "EVT-LFC-001",
+    "severity": "HIGH",
+    "category": "Lifecycle",
+    "title": "O(N^2) Zombie Handler Instantiation Storm for Transient Generic Handlers",
+    "file": "src/EricksonLopez.Events/Bus/Registry/HandlerResolutionHelper.cs",
+    "line": 42,
+    "status": "DOCUMENTED",
+    "rootCause": "Resolving IEnumerable<IEventHandler<T>> repeatedly for each descriptor without concrete implementation registration leads to N^2 instantiations.",
+    "recommendation": "Mandate AddHandler<THandler>() fluent registration to register concrete implementation descriptors."
+  },
+  {
+    "id": "EVT-REL-002",
+    "severity": "MEDIUM",
+    "category": "Reliability",
+    "title": "Volatile Memory Loss in TransactionalEventPublisher on Process Crash",
+    "file": "src/EricksonLopez.Events/Bus/Transactional/TransactionalEventPublisher.cs",
+    "line": 15,
+    "status": "OBSOLETE",
+    "rootCause": "Buffering events in an in-memory List<IEvent> does not survive process crashes or OOM events between database commit and event dispatch.",
+    "recommendation": "Deprecate in-memory transactional publisher; require consumers to use durable transactional outbox via EricksonLopez.Outbox."
+  },
+  {
+    "id": "EVT-CNC-001",
+    "severity": "MEDIUM",
+    "category": "Concurrency",
+    "title": "ParallelExecutionStrategy Shares Scoped DbContext Under ReuseAmbientScope",
+    "file": "src/EricksonLopez.Events/Bus/Execution/ParallelExecutionStrategy.cs",
+    "line": 28,
+    "status": "RECOMMENDED_FIX",
+    "rootCause": "Concurrent tasks sharing the ambient service provider invoke methods concurrently on non-thread-safe scoped dependencies.",
+    "recommendation": "Validate options at startup and reject Parallel execution combined with ReuseAmbientScope."
+  },
+  {
+    "id": "EVT-DAT-002",
+    "severity": "HIGH",
+    "category": "Correctness",
+    "title": "EventMetadata Case-Insensitive HashCode Mismatch with Equals",
+    "file": "src/EricksonLopez.Events.Contracts/Metadata/EventMetadata.cs",
+    "line": 176,
+    "status": "REMEDIATED",
+    "rootCause": "GetHashCode used StringComparer.Ordinal while Equals used StringComparer.OrdinalIgnoreCase, breaking hash table lookups for differing header casings.",
+    "recommendation": "Use StringComparer.OrdinalIgnoreCase across both Equals and GetHashCode."
+  },
+  {
+    "id": "EVT-SEC-004",
+    "severity": "HIGH",
+    "category": "Security",
+    "title": "TenantId Whitespace-Only Inequality Discrepancy",
+    "file": "src/EricksonLopez.Events.Contracts/Identifiers/TenantId.cs",
+    "line": 38,
+    "status": "REMEDIATED",
+    "rootCause": "Whitespace-only TenantId instances did not equate symmetrically to TenantId.Empty in GetHashCode and CompareTo.",
+    "recommendation": "Normalize whitespace strings to TenantId.Empty across all comparison, equality, and hashing branches."
+  },
+  {
+    "id": "EVT-GOV-001",
+    "severity": "LOW",
+    "category": "Governance",
+    "title": "Missing MIT License Header and Multiple Top-Level Types Per File",
+    "file": "src/EricksonLopez.Events/Registry/StaticEventTypeRegistry.cs",
+    "line": 1,
+    "status": "DOCUMENTED",
+    "rootCause": "Historical files defined helper enums or multiple interfaces within a single .cs file and omitted first-line license text.",
+    "recommendation": "Split secondary types into dedicated files and prepend canonical MIT license comment."
+  }
+]

@@ -1,3 +1,4 @@
+# Copyright © Erickson Lopez. MIT License.
 name: Nightly Deep Quality & Ecosystem Validation
 
 on:
@@ -16,10 +17,10 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
       with:
         dotnet-version: '10.0.x'
 
@@ -38,12 +39,12 @@ jobs:
     - name: Run Native AOT Tests (Windows)
       if: runner.os == 'Windows'
       run: |
-        dotnet publish tests/EricksonLopez.Events.NativeAotTests/EricksonLopez.Events.NativeAotTests.csproj -c Release -r win-x64 -p:PublishAot=true
-        .\tests\EricksonLopez.Events.NativeAotTests\bin\Release\net10.0\win-x64\publish\EricksonLopez.Events.NativeAotTests.exe
+        dotnet publish tests/EricksonLopez.Events.AotSmokeTest/EricksonLopez.Events.AotSmokeTest.csproj -c Release -r win-x64 -p:PublishAot=true
+        .\tests\EricksonLopez.Events.AotSmokeTest\bin\Release\net10.0\win-x64\publish\EricksonLopez.Events.AotSmokeTest.exe
 
     - name: Run Native AOT Tests (Linux)
       if: runner.os == 'Linux'
       run: |
-        dotnet publish tests/EricksonLopez.Events.NativeAotTests/EricksonLopez.Events.NativeAotTests.csproj -c Release -r linux-x64 -p:PublishAot=true
-        chmod +x ./tests/EricksonLopez.Events.NativeAotTests/bin/Release/net10.0/linux-x64/publish/EricksonLopez.Events.NativeAotTests
-        ./tests/EricksonLopez.Events.NativeAotTests/bin/Release/net10.0/linux-x64/publish/EricksonLopez.Events.NativeAotTests
+        dotnet publish tests/EricksonLopez.Events.AotSmokeTest/EricksonLopez.Events.AotSmokeTest.csproj -c Release -r linux-x64 -p:PublishAot=true
+        chmod +x ./tests/EricksonLopez.Events.AotSmokeTest/bin/Release/net10.0/linux-x64/publish/EricksonLopez.Events.AotSmokeTest
+        ./tests/EricksonLopez.Events.AotSmokeTest/bin/Release/net10.0/linux-x64/publish/EricksonLopez.Events.AotSmokeTest

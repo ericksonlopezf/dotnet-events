@@ -37,8 +37,16 @@ public sealed class EventMetadataJsonConverter : JsonConverter<EventMetadata>
                 break;
             }
 
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                throw new JsonException($"Expected PropertyName token when deserializing {nameof(EventMetadata)}, but encountered '{reader.TokenType}'.");
+            }
+
             var propName = reader.GetString();
-            reader.Read();
+            if (!reader.Read())
+            {
+                throw new JsonException($"Unexpected end of JSON data reading value for property '{propName}'.");
+            }
 
             if (string.Equals(propName, "correlationId", StringComparison.OrdinalIgnoreCase))
             {
@@ -76,8 +84,19 @@ public sealed class EventMetadataJsonConverter : JsonConverter<EventMetadata>
                             break;
                         }
 
+                        if (reader.TokenType != JsonTokenType.PropertyName)
+                        {
+                            throw new JsonException($"Expected PropertyName token in customHeaders, but encountered '{reader.TokenType}'.");
+                        }
+
                         var headerKey = reader.GetString()!;
                         reader.Read();
+
+                        if (reader.TokenType != JsonTokenType.String && reader.TokenType != JsonTokenType.Null)
+                        {
+                            throw new JsonException($"CustomHeader value for key '{headerKey}' must be a string, but encountered '{reader.TokenType}'.");
+                        }
+
                         var headerVal = reader.GetString();
                         customHeaders[headerKey] = headerVal ?? string.Empty;
                     }

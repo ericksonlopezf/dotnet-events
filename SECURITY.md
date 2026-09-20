@@ -6,7 +6,8 @@ Security fixes and patches are released for the following versions of `EricksonL
 
 | Version | Supported | .NET Target | Status |
 | :--- | :---: | :---: | :--- |
-| **1.0.x** | ✅ Yes | .NET 8.0, 9.0, 10.0 | **Active Support (Current)** |
+| **2.0.x** | ✅ Yes | .NET 8.0, 9.0, 10.0 | **Active Support (Current)** |
+| **1.0.x** | ⚠️ Maintenance | .NET 8.0, 9.0, 10.0 | Maintenance (Critical Security Only) |
 | < 1.0.0 | ❌ No | — | Unsupported |
 
 ---
@@ -33,10 +34,13 @@ We take the security of `EricksonLopez.Events` seriously. If you believe you hav
 
 To protect consumers against supply chain tampering and unauthorized package injection, `EricksonLopez.Events` implements the following safeguards:
 
-1. **Central Package Management (CPM)**: All external and transitively referenced package versions are pinned in [`Directory.Packages.props`](Directory.Packages.props) to prevent dependency confusion attacks and untrusted package floating.
-2. **Deterministic & Reproducible Builds**: All builds configure `EmbedUntrackedSources=true`, `PublishRepositoryUrl=true`, and produce deterministic symbol packages (`.snupkg`).
-3. **Strict Warning & Analyzer Policies**: The entire solution enforces `TreatWarningsAsErrors=true` and `AnalysisLevel=latest-recommended`.
-4. **Roslyn Security Analyzers**: Built-in analyzers (`ELE001`–`ELE005`) prevent domain event leaks and ensure event immutability at compile time.
+1. **Strong Name Cryptographic Signing**: All production assemblies are signed with a strong name key (`EricksonLopez.snk`), ensuring assembly binary identity and preventing assembly spoofing.
+2. **Sigstore Keyless Provenance Attestation**: Release artifacts generate verifiable cryptographic build provenance attestations using Sigstore via GitHub Actions (`actions/attest-build-provenance@v2`), achieving SLSA Build Level 2/3 supply chain integrity.
+3. **NuGet Trusted Publishing (OIDC)**: Packages are published to NuGet.org using passwordless OpenID Connect (OIDC) through GitHub Actions (`NuGet/login@v1`), eliminating long-lived API tokens and credential theft risks.
+4. **Central Package Management (CPM)**: All external and transitively referenced package versions are pinned in [`Directory.Packages.props`](Directory.Packages.props) to prevent dependency confusion attacks and untrusted package floating.
+5. **Deterministic & Reproducible Builds**: All builds configure `EmbedUntrackedSources=true`, `PublishRepositoryUrl=true`, and produce deterministic symbol packages (`.snupkg`).
+6. **Strict Warning & Analyzer Policies**: The entire solution enforces `TreatWarningsAsErrors=true` and `AnalysisLevel=latest-recommended`.
+7. **Roslyn Security Analyzers**: Built-in analyzers (`ELE001`–`ELE006`) prevent domain event leaks and ensure event immutability at compile time.
 
 ---
 

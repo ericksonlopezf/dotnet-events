@@ -6,7 +6,7 @@
     <AssemblyName>EricksonLopez.Events.Testing</AssemblyName>
     <RootNamespace>EricksonLopez.Events.Testing</RootNamespace>
     <Description>Testing utilities and fake event publishers/handlers for EricksonLopez.Events.</Description>
-    <PackageTags>$(CommonPackageTags);testing;unit-testing;integration-testing;fakes;spies;test-doubles;assertions;domain-events;integration-events;trimming</PackageTags>
+    <PackageTags>$(CommonPackageTags);testing;unit-testing;integration-testing;test-doubles;fakes;spies;assertions</PackageTags>
     <IsAotCompatible>true</IsAotCompatible>
     <IsTrimmable>true</IsTrimmable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

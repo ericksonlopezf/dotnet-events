@@ -2,16 +2,16 @@
 const fs = require('fs');
 const path = require('path');
 
-function loadThresholds() {
+function loadThresholds(configPath = 'stryker-config.json') {
   let thresholds = { high: 100, low: 98, break: 95 };
   try {
-    if (fs.existsSync('stryker-config.json')) {
-      const config = JSON.parse(fs.readFileSync('stryker-config.json', 'utf8'));
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       const t = config['stryker-config']?.thresholds || config.thresholds || {};
       thresholds = { high: t.high ?? 100, low: t.low ?? 98, break: t.break ?? 95 };
     }
   } catch (err) {
-    console.warn(`Could not parse stryker-config.json: ${err.message}`);
+    console.warn(`Could not parse ${configPath}: ${err.message}`);
   }
   return thresholds;
 }
@@ -24,7 +24,7 @@ function findJsonReports(dir) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       results = results.concat(findJsonReports(full));
-    } else if (entry.name.endsWith('.json') && !entry.name.endsWith('.html.json') && !entry.name.endsWith('metadata.json')) {
+    } else if (entry.name.endsWith('.json') && !entry.name.endsWith('.html.json') && !entry.name.endsWith('metadata.json') && !entry.name.startsWith('summary-')) {
       results.push(full);
     }
   }
@@ -32,13 +32,17 @@ function findJsonReports(dir) {
 }
 
 function main() {
-  const thresholds = loadThresholds();
+  const targetDir = process.argv[2] || 'StrykerOutput/ci';
+  const pkgName = process.argv[3] || 'Events';
+  const configFile = process.argv[4] || 'stryker-config.json';
+
+  const thresholds = loadThresholds(configFile);
   let score = 0;
   let killed = 0;
   let total = 0;
   let foundReport = false;
 
-  const jsonFiles = findJsonReports('StrykerOutput/ci');
+  const jsonFiles = findJsonReports(targetDir);
   if (jsonFiles.length > 0) {
     try {
       const data = JSON.parse(fs.readFileSync(jsonFiles[0], 'utf8'));
@@ -80,6 +84,7 @@ function main() {
 
   // Save metadata artifact
   const metadata = {
+    package: pkgName,
     commit_sha: sha,
     execution_date: new Date().toISOString(),
     mutation_score: score,
@@ -89,16 +94,18 @@ function main() {
     threshold_low: thresholds.low,
     threshold_break: thresholds.break,
     status: statusLabel,
-    passed: passedGate,
+    passed_break: passedGate,
     run_url: runUrl
   };
-  fs.writeFileSync('stryker-metadata.json', JSON.stringify(metadata, null, 2));
+
+  fs.mkdirSync('StrykerOutput', { recursive: true });
+  fs.writeFileSync(path.join('StrykerOutput', `summary-${pkgName}.json`), JSON.stringify(metadata, null, 2));
 
   // Write Step Summary
   const stepSummaryPath = process.env.GITHUB_STEP_SUMMARY;
   if (stepSummaryPath) {
     const summary = `
-## 🛡️ Stryker Mutation Testing Results
+## 🛡️ Stryker Mutation Testing Results — ${pkgName}
 
 | Metric | Value |
 |--------|-------|
@@ -121,7 +128,7 @@ function main() {
     fs.appendFileSync(outputPath, `total=${total}\n`);
   }
 
-  console.log(`Stryker Score: ${score}% (${killed}/${total}) - ${statusLabel}`);
+  console.log(`[${pkgName}] Stryker Score: ${score}% (${killed}/${total}) - ${statusLabel}`);
 }
 
 main();

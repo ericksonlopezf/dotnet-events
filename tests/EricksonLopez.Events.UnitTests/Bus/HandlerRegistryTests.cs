@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace EricksonLopez.Events.UnitTests.Bus;
 
-using EricksonLopez.Events.Bus.Registry;
 using AwesomeAssertions;
+using EricksonLopez.Events.Bus.Registry;
 using Xunit;
 
 [Xunit.Trait("Category", "Unit")]
@@ -27,8 +27,10 @@ public sealed class HandlerRegistryTests
 
         Action act = nullArgIndex switch
         {
-            0 => () => { _ = new HandlerDescriptor(null!, typeof(object), invoker); },
-            1 => () => { _ = new HandlerDescriptor(typeof(HandlerA), null!, invoker); },
+            0 => () => { _ = new HandlerDescriptor(null!, typeof(object), invoker); }
+            ,
+            1 => () => { _ = new HandlerDescriptor(typeof(HandlerA), null!, invoker); }
+            ,
             _ => () => { _ = new HandlerDescriptor(typeof(HandlerA), typeof(object), null!); }
         };
 

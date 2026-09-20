@@ -12,7 +12,7 @@ This document benchmarks `EricksonLopez.Events` against mainstream .NET event an
 | **NativeAOT & Trimming Compliant** | ✅ **100% NativeAOT** | ❌ Reflection-heavy | ⚠️ Partial | ⚠️ Partial | ❌ No |
 | **Compile-Time Source Generators** | ✅ **Roslyn Incremental** | ❌ No | ❌ No | ✅ Yes | ❌ No |
 | **CNCF CloudEvents v1.0 Adapter** | ✅ **Built-in Package** | ❌ No | ⚠️ Plugin | ❌ No | ❌ No |
-| **Transactional Outbox & Inbox** | ✅ **Pure Contracts + Storage**| ❌ No | ✅ Full Broker Engine | ✅ Full Broker Engine | ✅ Yes |
+| **Transactional Outbox & Inbox** | ✅ **Pure Contracts (Persistence via `EricksonLopez.Outbox`)** | ❌ No | ✅ Full Broker Engine | ✅ Full Broker Engine | ✅ Yes |
 | **Zero Functional Dependencies** | ✅ **BCL Only** | ❌ MediatR.Contracts | ❌ Heavy Third-party | ❌ Heavy | ❌ Heavy |
 | **Distributed W3C Tracing** | ✅ **Native BCL Activity** | ⚠️ DiagnosticSource | ✅ OpenTelemetry | ✅ OpenTelemetry | ⚠️ Custom |
 | **Stryker Mutation Tested ($\ge 95\%$)** | ✅ **100% Verified** | ❌ Untested | ❌ Untested | ❌ Untested | ❌ Untested |

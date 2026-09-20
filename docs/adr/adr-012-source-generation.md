@@ -1,5 +1,11 @@
 # ADR-012: Roslyn Incremental Source Generator for Static Descriptors
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

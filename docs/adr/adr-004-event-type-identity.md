@@ -1,5 +1,11 @@
 # ADR-004: Explicit Event Type Identity vs. CLR Type Name
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

@@ -74,6 +74,7 @@ public static class Program
             await RunLevel8CustomizationAndMiddlewaresAsync();
             await RunLevel9EcosystemExtensionsAsync();
             await RunLevel10EnterpriseAotAsync();
+            await Level11_ComprehensiveCoverage.RunAsync();
 
             PrintCompletionSummary();
             return 0;
@@ -126,8 +127,6 @@ public static class Program
         Console.WriteLine("   .Events.CloudEvents         → CloudEvents v1.0 bridge");
         Console.WriteLine("   .Events.Serialization.STJ   → System.Text.Json converters");
         Console.WriteLine("   .Events.OpenTelemetry       → TracerProviderBuilder/MeterProviderBuilder");
-        Console.WriteLine("   .Events.Inbox               → Idempotent handler decorator");
-        Console.WriteLine("   .Events.Outbox              → Transactional outbox IEventPublisher");
         Console.WriteLine("   .Events.Generators          → Roslyn Source Generator (AOT registry)");
         Console.WriteLine("   .Events.Testing             → FakeEventPublisher, TestEventHandler, builders");
         Console.WriteLine();
@@ -466,6 +465,12 @@ public static class Program
         var fulfillmentHandler = scope.ServiceProvider.GetRequiredService<UpdateFulfillmentStatusHandler>();
         Console.WriteLine($"     Shipment Handled={shipmentHandler.Handled}, Fulfillment Handled={fulfillmentHandler.Handled}");
 
+        // ── EventPublisherExtensions.PublishAsync — IEventEnvelope<TEvent> overload (GAP-009) ──
+        Console.WriteLine(" [2b] EventPublisherExtensions.PublishAsync<T>(IEventPublisher, IEventEnvelope<TEvent>, ct) — interface overload:");
+        IEventEnvelope<OrderShippedIntegrationEvent> envelopeAsInterface = shippedEnvelope;
+        await (eventBus as IEventPublisher)!.PublishAsync(envelopeAsInterface);
+        Console.WriteLine("     IEventEnvelope<T> overload dispatched correctly ✓");
+
         // ── ThrowOnUnregisteredEvent = false demo ────────────────────────────
         Console.WriteLine(" [3] EventBusOptions.ThrowOnUnregisteredEvent=false: dispatching event with no handlers:");
         var auditEvt = new UnhandledAuditEvent(EventId.New(), "UserLogin", DateTimeOffset.UtcNow);
@@ -527,11 +532,11 @@ public static class Program
 
         // ── StaticEventTypeRegistry ─────────────────────────────────────────
         Console.WriteLine(" [3] StaticEventTypeRegistry — zero-overhead compile-time lookup:");
-        StaticEventTypeRegistry.Current = registry;
+        StaticEventTypeRegistry.SetCurrent(registry, allowOverride: true);
 
         var staticDesc = StaticEventTypeRegistry.GetDescriptor<OrderPlacedIntegrationEvent>();
         var staticType = StaticEventTypeRegistry.GetEventType<OrderPlacedIntegrationEvent>();
-        var staticVer  = StaticEventTypeRegistry.GetVersion<OrderPlacedIntegrationEvent>();
+        var staticVer = StaticEventTypeRegistry.GetVersion<OrderPlacedIntegrationEvent>();
 
         Console.WriteLine($"     GetDescriptor<T>():  {staticDesc.EventType} (Source: {staticDesc.Source})");
         Console.WriteLine($"     GetEventType<T>():   {staticType}");
@@ -549,6 +554,35 @@ public static class Program
         Console.WriteLine($"     CancellationToken.CanBeCanceled: {cts.Token.CanBeCanceled}");
         Console.WriteLine("     All ValueTask HandleAsync/PublishAsync accept CancellationToken.");
         Console.WriteLine("     Handlers must call cancellationToken.ThrowIfCancellationRequested().");
+
+        // ── IEventTypeRegistry.TryGetDescriptor(Type, out) — non-generic CLR overload (GAP-006) ─
+        Console.WriteLine(" [6] IEventTypeRegistry.TryGetDescriptor(Type clrType, out descriptor) — non-generic overload:");
+        if (registry.TryGetDescriptor(typeof(OrderPlacedIntegrationEvent), out var descByClrType))
+        {
+            Console.WriteLine($"     TryGetDescriptor(typeof(T)):   Found → {descByClrType.EventType} v{descByClrType.Version}");
+        }
+
+        // ── IEventTypeRegistry.TryGetDescriptor(EventType, EventVersion, out) — versioned overload (GAP-007) ─
+        Console.WriteLine(" [7] IEventTypeRegistry.TryGetDescriptor(EventType, EventVersion, out) — versioned overload:");
+        var lookupType = EricksonLopez.Events.Identifiers.EventType.From("ecommerce.orders.order-placed");
+        if (registry.TryGetDescriptor(lookupType, EventVersion.V1, out var descVersioned))
+        {
+            Console.WriteLine($"     TryGetDescriptor(type, v1):    Found → CLR={descVersioned.ClrType.Name}");
+        }
+        if (!registry.TryGetDescriptor(lookupType, EventVersion.From(99), out _))
+        {
+            Console.WriteLine("     TryGetDescriptor(type, v99):   Not found (expected) ✓");
+        }
+
+        // ── StaticEventTypeRegistry.Reset() — test-isolation API (GAP-008) ─────
+        Console.WriteLine(" [8] StaticEventTypeRegistry.Reset() — resets to empty for test isolation:");
+        StaticEventTypeRegistry.SetCurrent(registry, allowOverride: true);
+        Console.WriteLine($"     Before Reset — GetDescriptor<T>: {StaticEventTypeRegistry.GetDescriptor<OrderPlacedIntegrationEvent>().EventType}");
+        StaticEventTypeRegistry.Reset();
+        Console.WriteLine($"     After Reset — Current is Empty: {ReferenceEquals(StaticEventTypeRegistry.Current, EricksonLopez.Events.Registry.EventTypeRegistry.Empty)}");
+        // Re-initialize for subsequent levels that depend on the registry
+        StaticEventTypeRegistry.SetCurrent(registry, allowOverride: true);
+        Console.WriteLine($"     Re-initialized registry: {StaticEventTypeRegistry.Current.GetAllDescriptors().Count} descriptors");
         Console.WriteLine();
 
         return Task.CompletedTask;
@@ -600,7 +634,7 @@ public static class Program
             }
 
             var emailH = scope.ServiceProvider.GetRequiredService<SendOrderConfirmationEmailHandler>();
-            var invH   = scope.ServiceProvider.GetRequiredService<UpdateInventoryOnOrderPlacedHandler>();
+            var invH = scope.ServiceProvider.GetRequiredService<UpdateInventoryOnOrderPlacedHandler>();
             Console.WriteLine($"     Remaining handlers ran despite failure: Email={emailH.Handled}, Inventory={invH.Handled}");
         }
 
@@ -656,13 +690,10 @@ public static class Program
         Console.WriteLine($"     Constructor 1: {validationEx1.Message}");
         Console.WriteLine($"     Constructor 2: {validationEx2.Message} (InnerException: {validationEx2.InnerException?.GetType().Name})");
 
-        // ── Inbox decorator note ──────────────────────────────────────────────
-        Console.WriteLine(" [6] IdempotentEventHandler<TEvent> (EricksonLopez.Events.Inbox):");
-        Console.WriteLine("     Wraps an IEventHandler<TEvent> with idempotent execution using IInboxConsumerFilter.");
-        Console.WriteLine("     API: AddIdempotentEventHandler<TEvent, THandler>(services, consumerName?)");
-        Console.WriteLine("     Requires: EricksonLopez.Events.Inbox + EricksonLopez.Outbox.Inbox packages.");
-        Console.WriteLine("     Constructor: IdempotentEventHandler(innerHandler, inboxFilter, consumerName?, logger?)");
-        Console.WriteLine("     Deduplication: derives messageId from IEventEnvelope.Id or fallback hash.");
+        // ── Deduplication / Reliability Note ───────────────────────────────────
+        Console.WriteLine(" [6] Reliable Inbound & Outbound Ecosystem Integration:");
+        Console.WriteLine("     EventEnvelope<TEvent> + EventMetadata provide typed identity (EventId, CorrelationId, TenantId)");
+        Console.WriteLine("     for seamless integration with dedicated persistence libraries (EricksonLopez.Outbox / EricksonLopez.Inbox).");
         Console.WriteLine();
     }
 
@@ -792,8 +823,74 @@ public static class Program
         Console.WriteLine("     Scanning criteria: Types implementing IEvent (with [EventName]/[EventVersion])");
         Console.WriteLine("                        + Types implementing IEventHandler<TEvent>.");
         Console.WriteLine("     NativeAOT: eliminates all runtime reflection for type discovery.");
+
+        // ── EventExecutionMode.Parallel + MaxDegreeOfParallelism (GAP-002 / GAP-003) ─────────
+        Console.WriteLine(" [6] EventExecutionMode.Parallel + MaxDegreeOfParallelism — concurrent handler dispatch:");
+        {
+            var services = new ServiceCollection();
+            services.AddEventBus(opts =>
+            {
+                opts.ExecutionMode = EventExecutionMode.Parallel;
+                opts.MaxDegreeOfParallelism = 4;               // GAP-003 — explicit concurrency limit
+                opts.ErrorPolicy = ErrorHandlingPolicy.AggregateAndContinue;
+            });
+            // Thread-safe handlers: use Interlocked so parallel handlers don't race
+            services.AddEventHandler<OrderPlacedIntegrationEvent, ThreadSafeAuditHandler>();
+            services.AddEventHandler<OrderPlacedIntegrationEvent, ThreadSafeNotificationHandler>();
+            services.AddEventHandler<OrderPlacedIntegrationEvent, ThreadSafeMetricsHandler>();
+
+            using var sp = services.BuildServiceProvider();
+            using var scope = sp.CreateScope();
+            var bus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+
+            var evt = new OrderPlacedIntegrationEvent(EventId.New(), Guid.NewGuid(), Guid.NewGuid(), 450.00m, "USD", DateTimeOffset.UtcNow);
+            Console.WriteLine($"     Dispatching to 3 handlers concurrently (MaxDegreeOfParallelism=4)...");
+            await bus.PublishAsync(evt);
+
+            var audit = scope.ServiceProvider.GetRequiredService<ThreadSafeAuditHandler>();
+            var notif = scope.ServiceProvider.GetRequiredService<ThreadSafeNotificationHandler>();
+            var metr = scope.ServiceProvider.GetRequiredService<ThreadSafeMetricsHandler>();
+
+            Console.WriteLine($"     AuditHandler.HandledCount:        {audit.HandledCount}");
+            Console.WriteLine($"     NotificationHandler.HandledCount: {notif.HandledCount}");
+            Console.WriteLine($"     MetricsHandler.HandledCount:      {metr.HandledCount}");
+            Console.WriteLine($"     All 3 ran concurrently ✓ (EventExecutionMode.Parallel, MaxDegreeOfParallelism={4})");
+        }
+
+        // ── HandlerScopePolicy.ReuseAmbientScope (GAP-004) ──────────────────
+        Console.WriteLine(" [7] HandlerScopePolicy.ReuseAmbientScope — handlers share caller's IServiceProvider:");
+        Console.WriteLine("     ⚠  WARNING: Only safe with EventExecutionMode.Sequential.");
+        Console.WriteLine("     ⚠  With Parallel mode, all handlers share the scope concurrently — requires thread-safe dependencies.");
+        {
+            var services = new ServiceCollection();
+            services.AddEventBus(opts =>
+            {
+                opts.ExecutionMode = EventExecutionMode.Sequential;
+                opts.ScopePolicy = HandlerScopePolicy.ReuseAmbientScope; // GAP-004
+            });
+            services.AddEventHandler<OrderPlacedIntegrationEvent, ThreadSafeAuditHandler>();
+
+            using var sp = services.BuildServiceProvider();
+            using var scope = sp.CreateScope();
+            var bus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+            var evt = new OrderPlacedIntegrationEvent(EventId.New(), Guid.NewGuid(), Guid.NewGuid(), 100.00m, "USD", DateTimeOffset.UtcNow);
+            await bus.PublishAsync(evt);
+
+            var audit = scope.ServiceProvider.GetRequiredService<ThreadSafeAuditHandler>();
+            Console.WriteLine($"     ReuseAmbientScope — handler ran with ambient scope, HandledCount={audit.HandledCount}");
+        }
+
+        // ── ParallelExecutionStrategy directly instantiated (GAP-005) ─────────
+        Console.WriteLine(" [8] ParallelExecutionStrategy — instantiated directly (bypassing DI):");
+        {
+            var strategy = new EricksonLopez.Events.Bus.Execution.ParallelExecutionStrategy();
+            Console.WriteLine($"     ParallelExecutionStrategy type: {strategy.GetType().Name}");
+            Console.WriteLine("     (Used internally by EventBus when ExecutionMode=Parallel)");
+            Console.WriteLine("     Interface: IExecutionStrategy.ExecuteAsync<TEvent>(handlers, event, sp, options, ct)");
+        }
         Console.WriteLine();
     }
+
 
     // ─────────────────────────────────────────────────────────────────────────
     // LEVEL 9: Ecosystem — CloudEvents, Full Testing DSL, Diagnostics
@@ -1147,13 +1244,10 @@ public static class Program
             Console.WriteLine($"     EventMetadata serialized:    {metaJson[..Math.Min(120, metaJson.Length)]}...");
         }
 
-        // ── Outbox bridge note ───────────────────────────────────────────────
-        Console.WriteLine(" [6] EricksonLopez.Events.Outbox — Transactional Outbox IEventPublisher:");
-        Console.WriteLine("     AddOutboxEventPublisher()                → registers OutboxEventPublisher (NullTransactionProvider)");
-        Console.WriteLine("     AddOutboxEventPublisher<TProvider>()     → registers custom IOutboxTransactionProvider");
-        Console.WriteLine("     NullOutboxTransactionProvider.Instance   → CurrentTransaction = null (safe no-op)");
-        Console.WriteLine("     OutboxEventPublisher.PublishAsync<T>()   → stores event in outbox via IOutbox.StoreAsync()");
-        Console.WriteLine("     Requires: IOutboxTransactionProvider with active IOutboxTransactionContext.");
+        // ── Envelope Packaging Note ──────────────────────────────────────────
+        Console.WriteLine(" [6] EventEnvelope & Metadata Packaging for Transactional Relays:");
+        Console.WriteLine("     EventEnvelope<T>.Create(domainEvent, metadata) encapsulates domain state and context.");
+        Console.WriteLine("     Ready for atomic database persistence via Transactional Outbox (EricksonLopez.Outbox).");
         Console.WriteLine();
 
         return Task.CompletedTask;
@@ -1210,10 +1304,12 @@ public static class Program
         Console.WriteLine("  ✓ TestEventHandler<T> (all 10+ public members)");
         Console.WriteLine("  ✓ EventTestBuilder.For<T>(), EventEnvelopeTestBuilder<T> (all 10 fluent methods)");
         Console.WriteLine("  ✓ EventsDiagnostics (SourceName, Version, ActivitySource, Meter, all methods)");
-        Console.WriteLine("  ✓ EventsOpenTelemetryExtensions (both overloads — documented)");
-        Console.WriteLine("  ✓ IdempotentEventHandler<T>, AddIdempotentEventHandler (documented)");
-        Console.WriteLine("  ✓ OutboxEventPublisher, NullOutboxTransactionProvider, AddOutboxEventPublisher (documented)");
+        Console.WriteLine("  ✓ EventsOpenTelemetryExtensions (both overloads)");
         Console.WriteLine("  ✓ EventIncrementalGenerator / GeneratedEventRegistry (documented)");
+        Console.WriteLine();
+        Console.WriteLine(" EXTERNAL INTEGRATIONS (out-of-scope — separate packages):");
+        Console.WriteLine("  → EricksonLopez.Outbox  : OutboxEventPublisher, transactional relay");
+        Console.WriteLine("  → EricksonLopez.Inbox   : idempotency / InboxEventProcessor");
         Console.ResetColor();
     }
 }

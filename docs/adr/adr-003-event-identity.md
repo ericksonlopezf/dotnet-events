@@ -1,5 +1,11 @@
 # ADR-003: Event Identity with Native Guid Version 7
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

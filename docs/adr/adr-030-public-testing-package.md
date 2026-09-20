@@ -1,5 +1,11 @@
 # ADR-030: Distribution of Test Doubles and Testing Utilities as a First-Class Public Package
 
+## Status
+Accepted
+
+## Date
+2026-08-20
+
 * **Status:** Accepted
 * **Date:** 2026-08-20
 * **Deciders:** Architecture Team, Erickson Lopez

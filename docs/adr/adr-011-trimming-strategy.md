@@ -1,5 +1,11 @@
 # ADR-011: Trimming Annotations and Analyzer Warnings Policy
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

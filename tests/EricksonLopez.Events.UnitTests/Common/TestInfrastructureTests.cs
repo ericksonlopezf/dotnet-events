@@ -8,9 +8,9 @@ namespace EricksonLopez.Events.UnitTests.Common;
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using AwesomeAssertions;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
-using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

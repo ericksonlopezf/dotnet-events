@@ -567,13 +567,13 @@ public static class TestingRecipe
 
 ---
 
-## Recipe 10: Transactional Integration with Outbox and Idempotent Inbox
+## Recipe 10: Packaging Event Envelopes for Transactional Outbox Persistence
 
 ### Problem
-Atomically guarantee event publishing when saving changes to the database (Transactional Outbox) and ensure the receiver processes each event exactly once (Idempotent Inbox).
+Atomically encapsulate domain events with distributed context (`CorrelationId`, `CausationId`, `TenantId`) into an immutable `EventEnvelope<T>` ready for transactional database persistence.
 
 ### Solution
-Use `OutboxEventPublisher` from `EricksonLopez.Events.Outbox` and `IdempotentEventHandler<T>` from `EricksonLopez.Events.Inbox`.
+Use `EventMetadataBuilder` and `EventEnvelope<T>` from `EricksonLopez.Events.Contracts` and `EricksonLopez.Events.Envelopes` to create standardized persistence DTOs.
 
 ### Complete Code
 ```csharp
@@ -581,32 +581,35 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EricksonLopez.Events.Contracts;
-using EricksonLopez.Events.Inbox;
-using EricksonLopez.Events.Outbox;
-using Microsoft.Extensions.DependencyInjection;
+using EricksonLopez.Events.Envelopes;
+using EricksonLopez.Events.Identifiers;
+using EricksonLopez.Events.Metadata;
 
 namespace MyProject.Reliability;
 
-public sealed record OrderCompletedEvent(EventId Id, Guid OrderId, DateTimeOffset OccurredAt) : IEvent;
+public sealed record OrderCompletedEvent(EventId Id, Guid OrderId, decimal Total) : IDomainEvent;
 
-public sealed class OrderCompletedHandler : IEventHandler<OrderCompletedEvent>
+public sealed class OrderService
 {
-    public ValueTask HandleAsync(OrderCompletedEvent eventInstance, CancellationToken cancellationToken = default)
-    {
-        Console.WriteLine($"Processing order idempotently: {eventInstance.OrderId}");
-        return ValueTask.CompletedTask;
-    }
-}
+    private readonly IEventPublisher _publisher;
 
-public static class OutboxInboxConfiguration
-{
-    public static void ConfigureReliableMessaging(IServiceCollection services)
-    {
-        // Outbox Publisher
-        services.AddOutboxEventPublisher();
+    public OrderService(IEventPublisher publisher) => _publisher = publisher;
 
-        // Idempotent Inbox Handler
-        services.AddIdempotentEventHandler<OrderCompletedEvent, OrderCompletedHandler>();
+    public async Task CompleteOrderAsync(Guid orderId, decimal total, string tenantId, CancellationToken ct)
+    {
+        var domainEvent = new OrderCompletedEvent(EventId.New(), orderId, total);
+
+        var metadata = new EventMetadataBuilder()
+            .WithCorrelationId(CorrelationId.New())
+            .WithTenantId(TenantId.From(tenantId))
+            .WithSource("https://api.orders.company.internal")
+            .WithHeader("X-Schema-Version", "1.0")
+            .Build();
+
+        var envelope = EventEnvelope.Create(domainEvent, metadata);
+
+        // Publish in-process or store envelope in transactional outbox table
+        await _publisher.PublishAsync(envelope.Payload, ct);
     }
 }
 ```

@@ -6,8 +6,8 @@ namespace EricksonLopez.Events.UnitTests.Identifiers;
 
 using System.Globalization;
 using System.Text;
-using EricksonLopez.Events.Identifiers;
 using AwesomeAssertions;
+using EricksonLopez.Events.Identifiers;
 using FsCheck;
 using FsCheck.Xunit;
 using Xunit;

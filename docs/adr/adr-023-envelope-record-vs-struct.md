@@ -1,5 +1,11 @@
 # ADR-023: EventEnvelope<TEvent> — record (class) vs record struct
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

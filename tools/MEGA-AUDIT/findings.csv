@@ -1,0 +1,8 @@
+﻿ID,Severity,Category,Title,File,Line,Status
+EVT-SEC-001,HIGH,Security,Mutable Event Payload Tampering,src/EricksonLopez.Events/Bus/InMemoryEventPublisher.cs,45,MITIGATED_BY_GUIDANCE
+EVT-LFC-001,HIGH,Lifecycle,O(N^2) Zombie Handler Instantiation Storm,src/EricksonLopez.Events/Bus/Registry/HandlerResolutionHelper.cs,42,DOCUMENTED
+EVT-REL-002,MEDIUM,Reliability,Volatile Memory Loss in TransactionalEventPublisher,src/EricksonLopez.Events/Bus/Transactional/TransactionalEventPublisher.cs,15,OBSOLETE
+EVT-CNC-001,MEDIUM,Concurrency,ParallelExecutionStrategy Shares Scoped DbContext,src/EricksonLopez.Events/Bus/Execution/ParallelExecutionStrategy.cs,28,RECOMMENDED_FIX
+EVT-DAT-002,HIGH,Correctness,EventMetadata Case-Insensitive HashCode Mismatch,src/EricksonLopez.Events.Contracts/Metadata/EventMetadata.cs,176,REMEDIATED
+EVT-SEC-004,HIGH,Security,TenantId Whitespace-Only Inequality Discrepancy,src/EricksonLopez.Events.Contracts/Identifiers/TenantId.cs,38,REMEDIATED
+EVT-GOV-001,LOW,Governance,Missing MIT License Header,src/EricksonLopez.Events/Registry/StaticEventTypeRegistry.cs,1,DOCUMENTED

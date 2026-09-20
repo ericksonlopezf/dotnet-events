@@ -28,7 +28,7 @@ Add the generator package to your project with `OutputItemType="Analyzer"` and `
 Or when consuming via NuGet:
 
 ```xml
-<PackageReference Include="EricksonLopez.Events.Generators" Version="1.0.0" PrivateAssets="all" />
+<PackageReference Include="EricksonLopez.Events.Generators" Version="2.0.0" PrivateAssets="all" />
 ```
 
 ---

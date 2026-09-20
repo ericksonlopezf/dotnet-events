@@ -1,5 +1,11 @@
 # ADR-006: Typed Event Envelope Design
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

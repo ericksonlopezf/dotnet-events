@@ -28,6 +28,6 @@
     <Project Path="tests/EricksonLopez.Events.Serialization.Tests/EricksonLopez.Events.Serialization.Tests.csproj" />
     <Project Path="tests/EricksonLopez.Events.Testing.Tests/EricksonLopez.Events.Testing.Tests.csproj" />
     <Project Path="tests/EricksonLopez.Events.UnitTests/EricksonLopez.Events.UnitTests.csproj" />
-    <Project Path="tests/EricksonLopez.Events.NativeAotTests/EricksonLopez.Events.NativeAotTests.csproj" />
+    <Project Path="tests/EricksonLopez.Events.AotSmokeTest/EricksonLopez.Events.AotSmokeTest.csproj" />
   </Folder>
 </Solution>

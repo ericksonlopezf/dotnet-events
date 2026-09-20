@@ -21,7 +21,8 @@ public static class EventsOpenTelemetryExtensions
     public static TracerProviderBuilder AddEventsInstrumentation(this TracerProviderBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        return builder.AddSource(EventsDiagnostics.SourceName);
+        return builder.AddSource(EventsDiagnostics.SourceName)
+                      .AddSource(Bus.Diagnostics.EventBusDiagnostics.SourceName);
     }
 
     /// <summary>
@@ -33,7 +34,8 @@ public static class EventsOpenTelemetryExtensions
     public static MeterProviderBuilder AddEventsInstrumentation(this MeterProviderBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        return builder.AddMeter(EventsDiagnostics.SourceName);
+        return builder.AddMeter(EventsDiagnostics.SourceName)
+                      .AddMeter(Bus.Diagnostics.EventBusDiagnostics.SourceName);
     }
 }
 

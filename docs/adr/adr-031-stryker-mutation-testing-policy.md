@@ -1,5 +1,11 @@
 # ADR-031: Stryker.NET Mutation Testing Strategy, Module Decomposition, and 95% Break Threshold
 
+## Status
+Accepted
+
+## Date
+2026-08-20
+
 * **Status:** Accepted
 * **Date:** 2026-08-20
 * **Deciders:** Architecture Team, Erickson Lopez

@@ -25,16 +25,14 @@ if (EventId.TryParse("018e38d6-3e4b-7a32-8419-7e9dfc01bc52", out var parsedId))
 }
 ```
 
----
+## 2. Event Type & Versioning
 
-# Event Type & Versioning
-
-## `EventType`
+### `EventType`
 `readonly record struct EventType(string Value)`:
 - Validated naming format: `domain.entity.action` or `kebab-case`/`snake_case` hierarchy.
 - Decouples message routing from CLR class names and namespaces.
 
-## `EventVersion`
+### `EventVersion`
 `readonly record struct EventVersion(uint Value)`:
 - Represents monotonic contract version: `EventVersion.V1`, `EventVersion.From(2)`.
 - Explicit version evolution:

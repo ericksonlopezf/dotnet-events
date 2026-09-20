@@ -1,0 +1,18 @@
+﻿{
+  "auditDate": "2026-09-05",
+  "frameworkVersion": ".NET 10.0.11",
+  "totalTests": 406,
+  "testsPassed": 406,
+  "testsFailed": 0,
+  "testsSkipped": 0,
+  "nativeAotAssertionsPassed": 13,
+  "nativeAotTrimmingWarnings": 0,
+  "effectiveMutationScorePercent": 100.0,
+  "roslynAnalyzersActive": [
+    "Microsoft.CodeAnalysis.NetAnalyzers",
+    "SonarAnalyzer.CSharp",
+    "EricksonLopez.Events.Generators.ELE001"
+  ],
+  "compositeScore": 93.2,
+  "productionGateStatus": "READY_WITH_CONDITIONS"
+}

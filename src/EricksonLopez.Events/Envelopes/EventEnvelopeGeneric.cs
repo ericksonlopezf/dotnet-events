@@ -20,7 +20,7 @@ namespace EricksonLopez.Events.Envelopes;
 /// </list>
 /// </remarks>
 /// <typeparam name="TEvent">The type of the event payload.</typeparam>
-public sealed record EventEnvelope<TEvent> : IEventEnvelope where TEvent : IEvent
+public sealed record EventEnvelope<TEvent> : IEventEnvelope<TEvent> where TEvent : IEvent
 {
     /// <inheritdoc />
     public EventId Id { get; init; }
@@ -62,10 +62,16 @@ public sealed record EventEnvelope<TEvent> : IEventEnvelope where TEvent : IEven
 
         Id = id.IsEmpty ? payload.Id : id;
         Type = type.IsEmpty ? StaticEventTypeRegistry.GetEventType<TEvent>() : type;
-        Version = version == default ? StaticEventTypeRegistry.GetVersion<TEvent>() : version;
+        Version = version.IsUninitialized ? StaticEventTypeRegistry.GetVersion<TEvent>() : version;
         OccurredAt = occurredAt == default ? payload.OccurredAt : occurredAt;
         Payload = payload;
-        Metadata = metadata ?? EventMetadata.Empty;
+        var meta = metadata ?? EventMetadata.Empty;
+        var descriptor = StaticEventTypeRegistry.GetDescriptor<TEvent>();
+        if (string.IsNullOrEmpty(meta.Source) && !string.IsNullOrEmpty(descriptor.Source))
+        {
+            meta = meta with { Source = descriptor.Source };
+        }
+        Metadata = meta;
     }
 
     /// <inheritdoc />

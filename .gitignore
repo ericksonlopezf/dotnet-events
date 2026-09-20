@@ -1,21 +1,76 @@
-# .NET
-bin/
-obj/
-**/bin/
-**/obj/
+# ==============================================================================
+# .NET & MSBuild Build Outputs
+# ==============================================================================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+*.binlog
+msbuild.log
+msbuild.err
+msbuild.wrn
+aot-output/
+GeneratedFiles/
 
-# Backup files
+# Backup, Swap and Temp files
 *.bak
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
 
-# Strong Name Keys
-# *.snk (Allowed for Open Source projects)
-# Allow the public-key-only file (safe to commit — contains NO private key)
+# ==============================================================================
+# Security, Certificates & Strong Name Keys
+# ==============================================================================
+# Ignore private strong name keys & certificates by default
+*.snk
+*.pfx
+*.p12
+*.cer
+*.crt
+*.pem
+*.key
+
+# Allow only public/open-source strong name public keys
 !public.snk
+!*.pub.snk
 
-# NuGet packages
+# Local configuration, Secrets and Environment files
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+.env
+.env.*
+!.env.example
+
+# ==============================================================================
+# NuGet Packages & Caches
+# ==============================================================================
 nupkgs/
 *.nupkg
 *.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# ==============================================================================
+# IDEs & Developer Tools
+# ==============================================================================
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
 
 # Visual Studio Code
 .vscode/*
@@ -24,46 +79,56 @@ nupkgs/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+.history/
+.ionide/
 
-# Visual Studio / Rider
-.vs/
-*.user
-*.suo
+# JetBrains Rider & ReSharper
 .idea/
+_ReSharper*/
 *.DotSettings.user
+*.dotCover
+*.dotTrace
+*.dotMemory
 
-# Test & Analysis artifacts
+# ==============================================================================
+# Test, Code Coverage & Quality Tools
+# ==============================================================================
 [Tt]est[Rr]esults*/
 test-results/
 [Cc]overage[Rr]eport*/
 coverage-report*/
 coverage-results/
-temp-coverage/
-temp-coverage-report/
+temp-coverage*/
 *.trx
 *.coverage
 *.coveragexml
 *.cobertura.xml
 *.opencover.xml
 coverage.*/
-**/coverage.*.xml
-**/coverage.*.cobertura.xml
-**/coverage.*.opencover.xml
+
+# Stryker.NET Mutation Testing
+StrykerOutput/
+.stryker-tmp/
+
+# BenchmarkDotNet
 BenchmarkDotNet.Artifacts/
 benchmarks/results/*.log
-StrykerOutput/
 
-# Secrets & Local Config
-appsettings.Development.json
-appsettings.Local.json
-secrets.json
+# Crash & Memory Dumps
+*.dmp
+core.*
 
-# OS files
+# ==============================================================================
+# OS Generated Files
+# ==============================================================================
 Thumbs.db
+ehthumbs.db
 Desktop.ini
 .DS_Store
+$RECYCLE.BIN/
+*.lnk
 
-# Documentation & Generated Artifacts
+# ==============================================================================
+# Documentation Generated Artifacts
+# ==============================================================================
 docs/*.html
-*.binlog
-aot-output/

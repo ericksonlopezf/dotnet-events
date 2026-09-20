@@ -1,4 +1,11 @@
 # Architectural Decision Record: REJECT-004
+
+## Status
+Rejected
+
+## Date
+2026-09-04
+
 ## Rejection of Global Static Ambient Event Bus
 
 ### Status

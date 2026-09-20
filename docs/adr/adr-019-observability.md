@@ -1,5 +1,11 @@
 # ADR-019: Zero-Cost Observability and OpenTelemetry Integration
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

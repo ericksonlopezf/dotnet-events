@@ -55,6 +55,12 @@ public static class CloudEventExtensions
             {
                 // Extension attributes in CloudEvents specification must be lowercase alphanumeric
                 string normalizedKey = key.ToLowerInvariant().Replace("-", string.Empty);
+                if (extensionAttributes.TryGetValue(normalizedKey, out var existingValue) && !Equals(existingValue, value))
+                {
+                    throw new InvalidOperationException(
+                        $"CloudEvent extension attribute key collision: Header '{key}' normalizes to '{normalizedKey}', which is already assigned with a different value.");
+                }
+
                 extensionAttributes[normalizedKey] = value;
             }
         }
@@ -85,15 +91,22 @@ public static class CloudEventExtensions
     {
         ArgumentNullException.ThrowIfNull(cloudEvent);
 
-        var eventId = EventId.TryParse(cloudEvent.Id, null, out var parsedId)
-            ? parsedId
-            : cloudEvent.Data.Id;
-
-        var eventType = EventType.From(cloudEvent.Type);
-
         var metadataBuilder = new EventMetadataBuilder()
             .WithSource(cloudEvent.Source.ToString())
             .WithContentType(cloudEvent.DataContentType ?? "application/json");
+
+        EventId eventId;
+        if (EventId.TryParse(cloudEvent.Id, null, out var parsedId))
+        {
+            eventId = parsedId;
+        }
+        else
+        {
+            eventId = cloudEvent.Data.Id;
+            metadataBuilder.WithHeader("cloudevents.id", cloudEvent.Id);
+        }
+
+        var eventType = EventType.From(cloudEvent.Type);
 
         if (!string.IsNullOrWhiteSpace(cloudEvent.CorrelationId))
         {
@@ -123,10 +136,21 @@ public static class CloudEventExtensions
 
         var metadata = metadataBuilder.Build();
 
+        EventVersion version = EventVersion.V1;
+        if (cloudEvent.DataSchema != null)
+        {
+            var schemaStr = cloudEvent.DataSchema.OriginalString;
+            int vIndex = schemaStr.LastIndexOf("/v", StringComparison.OrdinalIgnoreCase);
+            if (vIndex >= 0 && uint.TryParse(schemaStr.AsSpan(vIndex + 2), out var parsedVer) && parsedVer > 0)
+            {
+                version = EventVersion.From(parsedVer);
+            }
+        }
+
         return new EventEnvelope<TEvent>(
             id: eventId,
             type: eventType,
-            version: default,
+            version: version,
             occurredAt: cloudEvent.Time ?? cloudEvent.Data.OccurredAt,
             payload: cloudEvent.Data,
             metadata: metadata);

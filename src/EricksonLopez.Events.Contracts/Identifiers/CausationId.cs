@@ -118,7 +118,7 @@ public readonly record struct CausationId :
     public static explicit operator CausationId(string value) => new(value);
 
     /// <inheritdoc />
-    public override string ToString() => Value;
+    public override string ToString() => Value ?? string.Empty;
 
     /// <inheritdoc />
     public static CausationId Parse(string s, IFormatProvider? provider = null) =>

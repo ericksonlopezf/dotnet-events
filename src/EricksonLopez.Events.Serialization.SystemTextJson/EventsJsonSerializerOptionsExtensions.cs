@@ -30,6 +30,7 @@ public static class EventsJsonSerializerOptionsExtensions
         options.Converters.Add(new CausationIdJsonConverter());
         options.Converters.Add(new TenantIdJsonConverter());
         options.Converters.Add(new EventMetadataJsonConverter());
+        options.Converters.Add(new EventEnvelopeJsonConverterFactory());
 
         return options;
     }

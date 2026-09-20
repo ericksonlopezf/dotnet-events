@@ -41,11 +41,16 @@ public sealed class EventBusIntegrationTests
 
     public sealed class FixtureLoggingMiddleware : IEventMiddleware
     {
-        public int ExecutedCount { get; private set; }
+        // Use a static Interlocked counter so that the Singleton instance can track
+        // executions across concurrent dispatches. Reset before each test.
+        private static int _executedCount;
+        public static void Reset() => Interlocked.Exchange(ref _executedCount, 0);
+        public int ExecutedCount => Volatile.Read(ref _executedCount);
+
         public async ValueTask InvokeAsync<TEvent>(TEvent eventInstance, EventMiddlewareDelegate<TEvent> nextHandler, CancellationToken cancellationToken)
             where TEvent : IEvent
         {
-            ExecutedCount++;
+            Interlocked.Increment(ref _executedCount);
             await nextHandler(eventInstance, cancellationToken);
         }
     }
@@ -72,6 +77,8 @@ public sealed class EventBusIntegrationTests
     [Fact]
     public async Task EventBus_WithTestFixture_WithOptionsAndMiddleware_ShouldExecutePipelineCorrectly()
     {
+        FixtureLoggingMiddleware.Reset();
+
         using var fixture = new EventBusTestFixture()
             .WithOptions(opts => opts.ThrowOnUnregisteredEvent = false)
             .WithEventMiddleware<FixtureLoggingMiddleware>(Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton)

@@ -1,5 +1,11 @@
 # ADR-015: Target Framework Strategy (.NET 10.0 Standard)
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

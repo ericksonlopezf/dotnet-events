@@ -119,16 +119,27 @@ public sealed class EventIncrementalGenerator : IIncrementalGenerator
             return null;
         }
 
-        var handledEventTypes = new List<string>();
+        var handledEventTypes = new List<HandledEventTypeModel>();
 
         foreach (var iface in symbol.AllInterfaces)
         {
-            if (iface.Name == "IEventHandler" &&
-                iface.ContainingNamespace.ToDisplayString() == "EricksonLopez.Events.Contracts" &&
+            if (iface.ContainingNamespace.ToDisplayString() == "EricksonLopez.Events.Contracts" &&
                 iface.TypeArguments.Length == 1)
             {
-                var eventTypeSymbol = iface.TypeArguments[0];
-                handledEventTypes.Add(eventTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+                if (iface.Name == "IEventHandler")
+                {
+                    var eventTypeSymbol = iface.TypeArguments[0];
+                    handledEventTypes.Add(new HandledEventTypeModel(
+                        eventTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                        IsEnvelope: false));
+                }
+                else if (iface.Name == "IEnvelopeEventHandler")
+                {
+                    var eventTypeSymbol = iface.TypeArguments[0];
+                    handledEventTypes.Add(new HandledEventTypeModel(
+                        eventTypeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                        IsEnvelope: true));
+                }
             }
         }
 
@@ -250,13 +261,54 @@ public sealed class EventIncrementalGenerator : IIncrementalGenerator
 
         foreach (var handler in distinctHandlers)
         {
+            sb.AppendLine($"        services.Add(new ServiceDescriptor(");
+            sb.AppendLine($"            typeof({handler.FullHandlerTypeName}),");
+            sb.AppendLine($"            typeof({handler.FullHandlerTypeName}),");
+            sb.AppendLine("            lifetime));");
+            sb.AppendLine();
+
             foreach (var eventType in handler.HandledEventTypes)
             {
+                var iface = eventType.IsEnvelope ? "IEnvelopeEventHandler" : "IEventHandler";
                 sb.AppendLine($"        services.Add(new ServiceDescriptor(");
-                sb.AppendLine($"            typeof(IEventHandler<{eventType}>),");
-                sb.AppendLine($"            typeof({handler.FullHandlerTypeName}),");
+                sb.AppendLine($"            typeof({iface}<{eventType.FullEventTypeName}>),");
+                sb.AppendLine($"            static sp => sp.GetRequiredService<{handler.FullHandlerTypeName}>(),");
                 sb.AppendLine("            lifetime));");
                 sb.AppendLine();
+
+                if (!eventType.IsEnvelope)
+                {
+                    sb.AppendLine($"        services.AddSingleton(new EricksonLopez.Events.Bus.Extensions.HandlerRegistrationToken(");
+                    sb.AppendLine($"            typeof({eventType.FullEventTypeName}),");
+                    sb.AppendLine($"            new EricksonLopez.Events.Bus.Registry.HandlerDescriptor(");
+                    sb.AppendLine($"                typeof({handler.FullHandlerTypeName}),");
+                    sb.AppendLine($"                typeof({iface}<{eventType.FullEventTypeName}>),");
+                    sb.AppendLine($"                static (inst, evt, ct) => (({iface}<{eventType.FullEventTypeName}>)inst).HandleAsync(({eventType.FullEventTypeName})evt, ct),");
+                    sb.AppendLine($"                new EricksonLopez.Events.Bus.Registry.HandlerInvoker<{eventType.FullEventTypeName}>(static (inst, evt, ct) => (({iface}<{eventType.FullEventTypeName}>)inst).HandleAsync(evt, ct)))));");
+                    sb.AppendLine();
+                }
+                else
+                {
+                    sb.AppendLine($"        services.AddSingleton(new EricksonLopez.Events.Bus.Extensions.HandlerRegistrationToken(");
+                    sb.AppendLine($"            typeof({eventType.FullEventTypeName}),");
+                    sb.AppendLine($"            new EricksonLopez.Events.Bus.Registry.HandlerDescriptor(");
+                    sb.AppendLine($"                typeof({handler.FullHandlerTypeName}),");
+                    sb.AppendLine($"                typeof({iface}<{eventType.FullEventTypeName}>),");
+                    sb.AppendLine($"                static (inst, evt, ct) =>");
+                    sb.AppendLine($"                {{");
+                    sb.AppendLine($"                    var typedEvent = ({eventType.FullEventTypeName})evt;");
+                    sb.AppendLine($"                    var envelope = EricksonLopez.Events.Context.EventContext.Current as EricksonLopez.Events.Envelopes.IEventEnvelope<{eventType.FullEventTypeName}>");
+                    sb.AppendLine($"                        ?? EricksonLopez.Events.Envelopes.EventEnvelope.Create(typedEvent);");
+                    sb.AppendLine($"                    return (({iface}<{eventType.FullEventTypeName}>)inst).HandleAsync(envelope, ct);");
+                    sb.AppendLine($"                }},");
+                    sb.AppendLine($"                new EricksonLopez.Events.Bus.Registry.HandlerInvoker<{eventType.FullEventTypeName}>(static (inst, evt, ct) =>");
+                    sb.AppendLine($"                {{");
+                    sb.AppendLine($"                    var envelope = EricksonLopez.Events.Context.EventContext.Current as EricksonLopez.Events.Envelopes.IEventEnvelope<{eventType.FullEventTypeName}>");
+                    sb.AppendLine($"                        ?? EricksonLopez.Events.Envelopes.EventEnvelope.Create(evt);");
+                    sb.AppendLine($"                    return (({iface}<{eventType.FullEventTypeName}>)inst).HandleAsync(envelope, ct);");
+                    sb.AppendLine($"                }}))));");
+                    sb.AppendLine();
+                }
             }
         }
 
@@ -273,7 +325,11 @@ public sealed class EventIncrementalGenerator : IIncrementalGenerator
         uint Version,
         string? Source);
 
+    private sealed record HandledEventTypeModel(
+        string FullEventTypeName,
+        bool IsEnvelope);
+
     private sealed record HandlerTypeModel(
         string FullHandlerTypeName,
-        List<string> HandledEventTypes);
+        List<HandledEventTypeModel> HandledEventTypes);
 }

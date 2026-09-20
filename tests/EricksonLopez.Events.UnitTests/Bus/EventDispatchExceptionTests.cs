@@ -5,8 +5,8 @@ using System.Threading;
 
 namespace EricksonLopez.Events.UnitTests.Bus;
 
-using EricksonLopez.Events.Bus.Exceptions;
 using AwesomeAssertions;
+using EricksonLopez.Events.Bus.Exceptions;
 using Xunit;
 
 [Xunit.Trait("Category", "Unit")]

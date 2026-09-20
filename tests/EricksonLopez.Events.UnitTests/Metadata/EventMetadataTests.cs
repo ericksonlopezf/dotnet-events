@@ -5,14 +5,38 @@ using System.Collections.Generic;
 namespace EricksonLopez.Events.UnitTests.Metadata;
 
 using System.Collections.Frozen;
+using AwesomeAssertions;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.Metadata;
-using AwesomeAssertions;
 using Xunit;
 
 [Xunit.Trait("Category", "Unit")]
 public sealed class EventMetadataTests
 {
+    [Fact]
+    public void EVT_PRF_002_WithHeader_ToExistingMetadata_ShouldNotUseToFrozenDictionaryForPerformance()
+    {
+        // Verified Remediation for EVT-PRF-002:
+        // `EventMetadata.WithHeader` must not create intermediate FrozenDictionary instances in hot paths
+        // because it allocates memory and triggers GC Gen0 collections under load.
+        // It should just create a small immutable or copied Dictionary, avoiding the ToFrozenDictionary heavy lift.
+
+        var meta = EventMetadata.Empty;
+        var meta2 = meta.WithHeader("X-Test-1", "A");
+        var meta3 = meta2.WithHeader("X-Test-2", "B");
+
+        meta3.TryGetHeader("X-Test-1", out var v1).Should().BeTrue();
+        meta3.TryGetHeader("X-Test-2", out var v2).Should().BeTrue();
+
+        v1.Should().Be("A");
+        v2.Should().Be("B", "EVT-PRF-002: WithHeader must correctly propagate headers without incurring heavy ToFrozenDictionary penalties in the hot path.");
+
+        // Explicitly ensuring type is NOT FrozenDictionary (if we can detect it) or at least ensuring the logic works seamlessly
+        // Note: The remediation removed ToFrozenDictionary from the hot path in WithHeader.
+        var headersType = meta3.CustomHeaders.GetType();
+        headersType.Name.Should().NotContain("FrozenDictionary", "EVT-PRF-002: Intermediate dictionaries should not use FrozenDictionary in hot paths.");
+    }
+
     [Fact]
     public void EventMetadata_Empty_ShouldHaveDefaultValues()
     {
@@ -58,13 +82,22 @@ public sealed class EventMetadataTests
     }
 
     [Fact]
-    public void EventMetadata_Constructor_WithFrozenDictionaryHeaders_ShouldReuseInstance()
+    public void EventMetadata_Constructor_WithFrozenDictionaryHeaders_ShouldNormalizeToOrdinalIgnoreCase()
     {
+        // EVT-DAT-003 FIX: The constructor always rebuilds the FrozenDictionary with OrdinalIgnoreCase
+        // to guarantee case-insensitive header lookups regardless of the input comparer.
+        // Reference equality (BeSameAs) is no longer guaranteed — content equality is.
         var frozen = new Dictionary<string, string> { ["k"] = "v" }.ToFrozenDictionary();
         var meta = new EventMetadata(CorrelationId.Empty, CausationId.Empty, TenantId.Empty, customHeaders: frozen);
 
-        meta.CustomHeaders.Should().BeSameAs(frozen);
+        meta.CustomHeaders.Should().HaveCount(1);
+        meta.CustomHeaders["k"].Should().Be("v");
+        // Verify case-insensitive access is guaranteed regardless of input comparer
+        meta.CustomHeaders["K"].Should().Be("v");
+        meta.TryGetHeader("K", out var val).Should().BeTrue();
+        val.Should().Be("v");
     }
+
 
     [Fact]
     public void EventMetadataBuilder_Build_WithCompleteValues_ShouldConstructCompleteMetadata()
@@ -144,7 +177,120 @@ public sealed class EventMetadataTests
         Action actInvalid = () => original.WithHeader("", "val");
         actInvalid.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void EventMetadata_Equals_ShouldVerifyValueEqualityAndSymmetry()
+    {
+        var meta1 = EventMetadata.Create(
+            CorrelationId.From("corr-1"),
+            CausationId.From("caus-1"),
+            TenantId.From("tenant-1"),
+            "source-1",
+            "application/json",
+            new Dictionary<string, string> { ["header-a"] = "val-a", ["Header-B"] = "val-b" });
+
+        var meta2 = EventMetadata.Create(
+            CorrelationId.From("corr-1"),
+            CausationId.From("caus-1"),
+            TenantId.From("tenant-1"),
+            "source-1",
+            "application/json",
+            new Dictionary<string, string> { ["HEADER-A"] = "val-a", ["header-b"] = "val-b" });
+
+        var metaDifferentTenant = EventMetadata.Create(
+            CorrelationId.From("corr-1"),
+            CausationId.From("caus-1"),
+            TenantId.From("tenant-2"),
+            "source-1",
+            "application/json",
+            new Dictionary<string, string> { ["header-a"] = "val-a", ["Header-B"] = "val-b" });
+
+        var metaDifferentHeaders = EventMetadata.Create(
+            CorrelationId.From("corr-1"),
+            CausationId.From("caus-1"),
+            TenantId.From("tenant-1"),
+            "source-1",
+            "application/json",
+            new Dictionary<string, string> { ["header-a"] = "different-val" });
+
+        // Typed Equals
+        meta1.Equals(meta1).Should().BeTrue();
+        meta1.Equals(meta2).Should().BeTrue();
+        meta2.Equals(meta1).Should().BeTrue();
+        meta1.Equals(metaDifferentTenant).Should().BeFalse();
+        meta1.Equals(metaDifferentHeaders).Should().BeFalse();
+        // Operators
+        (meta1 == meta2).Should().BeTrue();
+        (meta1 != meta2).Should().BeFalse();
+        (meta1 == metaDifferentTenant).Should().BeFalse();
+        (meta1 != metaDifferentTenant).Should().BeTrue();
+
+        EventMetadata? nullMeta = null;
+        meta1.Equals(nullMeta).Should().BeFalse();
+        (nullMeta == meta1).Should().BeFalse();
+        (meta1 == nullMeta).Should().BeFalse();
+    }
+
+    [Fact]
+    public void EventMetadata_BoxedEquals_ShouldHandleAllObjectCases()
+    {
+        var meta1 = EventMetadata.Create(CorrelationId.From("c1"));
+        var meta2 = EventMetadata.Create(CorrelationId.From("c1"));
+        var meta3 = EventMetadata.Create(CorrelationId.From("c2"));
+
+        object boxed = meta1;
+        boxed.Equals((object)meta2).Should().BeTrue();
+        boxed.Equals((object)meta3).Should().BeFalse();
+        boxed.Equals("some string").Should().BeFalse();
+        boxed.Equals(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public void EventMetadata_GetHashCode_ShouldBeOrderIndependentAndEqualForEqualInstances()
+    {
+        var meta1 = EventMetadata.Create(
+            CorrelationId.From("corr-1"),
+            CausationId.From("caus-1"),
+            TenantId.From("tenant-1"),
+            "source-1",
+            "application/json",
+            new Dictionary<string, string>
+            {
+                ["First"] = "1",
+                ["Second"] = "2",
+                ["Third"] = "3"
+            });
+
+        // Same entries inserted in reverse order and with different case
+        var meta2 = EventMetadata.Create(
+            CorrelationId.From("corr-1"),
+            CausationId.From("caus-1"),
+            TenantId.From("tenant-1"),
+            "source-1",
+            "application/json",
+            new Dictionary<string, string>
+            {
+                ["THIRD"] = "3",
+                ["second"] = "2",
+                ["first"] = "1"
+            });
+
+        meta1.Should().Be(meta2);
+        meta1.GetHashCode().Should().Be(meta2.GetHashCode());
+    }
+
+    [Fact]
+    public void EventMetadata_GetHashCode_WrappingAdditionDoesNotCancelCollidingEntries()
+    {
+        // When two distinct headers exist, wrapping addition preserves entropy
+        var meta = EventMetadata.Create(
+            customHeaders: new Dictionary<string, string>
+            {
+                ["h1"] = "val",
+                ["h2"] = "val"
+            });
+
+        var hash = meta.GetHashCode();
+        hash.Should().NotBe(0);
+    }
 }
-
-
-

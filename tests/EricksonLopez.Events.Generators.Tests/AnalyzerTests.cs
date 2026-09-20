@@ -40,8 +40,31 @@ namespace TestNamespace
         diagnostics.Should().ContainSingle();
         var diag = diagnostics[0];
         diag.Id.Should().Be(EventImmutabilityAnalyzer.DiagnosticId);
-        diag.Severity.Should().Be(DiagnosticSeverity.Warning);
+        diag.Severity.Should().Be(DiagnosticSeverity.Error);
         diag.GetMessage().Should().Contain("MutableTitle");
+    }
+
+    [Fact]
+    public async Task EventImmutabilityAnalyzer_WhenPublicFieldIsMutable_ShouldReportELE001()
+    {
+        var source = @"
+namespace TestNamespace
+{
+    public class MutableFieldEvent : IDomainEvent
+    {
+        public EventId Id { get; init; }
+        public DateTimeOffset OccurredAt { get; init; }
+        public string MutableField = string.Empty;
+    }
+}";
+
+        var diagnostics = await RoslynTestBed.RunAnalyzerAsync(new EventImmutabilityAnalyzer(), source);
+
+        diagnostics.Should().ContainSingle();
+        var diag = diagnostics[0];
+        diag.Id.Should().Be(EventImmutabilityAnalyzer.DiagnosticId);
+        diag.Severity.Should().Be(DiagnosticSeverity.Error);
+        diag.GetMessage().Should().Contain("MutableField");
     }
 
     [Fact]
@@ -80,6 +103,49 @@ namespace TestNamespace
 }";
 
         var diagnostics = await RoslynTestBed.RunAnalyzerAsync(new EventImmutabilityAnalyzer(), source);
+        diagnostics.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task EventImmutabilityAnalyzer_WhenPropertyIsMutableCollection_ShouldReportELE006()
+    {
+        var source = @"
+namespace TestNamespace
+{
+    public sealed record EventWithMutableList : EricksonLopez.Events.Contracts.IDomainEvent
+    {
+        public EricksonLopez.Events.Identifiers.EventId Id { get; init; }
+        public System.DateTimeOffset OccurredAt { get; init; }
+        public System.Collections.Generic.List<string> Tags { get; init; } = new();
+    }
+}";
+
+        var diagnostics = await RoslynTestBed.RunAnalyzerAsync(new EventImmutabilityAnalyzer(), source);
+
+        diagnostics.Should().ContainSingle();
+        var diag = diagnostics[0];
+        diag.Id.Should().Be(EventImmutabilityAnalyzer.MutableCollectionDiagnosticId);
+        diag.Severity.Should().Be(DiagnosticSeverity.Warning);
+        diag.GetMessage().Should().Contain("Tags");
+    }
+
+    [Fact]
+    public async Task EventImmutabilityAnalyzer_WhenPropertyIsImmutableArrayOrReadOnlyList_ShouldNotReportELE006()
+    {
+        var source = @"
+namespace TestNamespace
+{
+    public sealed record EventWithImmutableCollections : EricksonLopez.Events.Contracts.IDomainEvent
+    {
+        public EricksonLopez.Events.Identifiers.EventId Id { get; init; }
+        public System.DateTimeOffset OccurredAt { get; init; }
+        public System.Collections.Immutable.ImmutableArray<string> Tags { get; init; }
+        public System.Collections.Generic.IReadOnlyList<int> Numbers { get; init; } = System.Array.Empty<int>();
+    }
+}";
+
+        var diagnostics = await RoslynTestBed.RunAnalyzerAsync(new EventImmutabilityAnalyzer(), source);
+
         diagnostics.Should().BeEmpty();
     }
 

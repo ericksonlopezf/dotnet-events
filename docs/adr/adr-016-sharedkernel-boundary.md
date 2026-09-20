@@ -1,5 +1,11 @@
 # ADR-016: SharedKernel Boundary and Non-Duplication
 
+## Status
+Accepted
+
+## Date
+2026-08-14
+
 * **Status:** Accepted
 * **Date:** 2026-08-14
 * **Deciders:** Architecture Team, Erickson Lopez

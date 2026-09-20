@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace EricksonLopez.Events.UnitTests.Bus;
 
+using AwesomeAssertions;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
 using EricksonLopez.Events.UnitTests.Common;
-using AwesomeAssertions;
 using Xunit;
 
 [Collection("Diagnostics")]

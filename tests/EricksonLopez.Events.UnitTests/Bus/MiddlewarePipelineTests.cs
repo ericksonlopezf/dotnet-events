@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace EricksonLopez.Events.UnitTests.Bus;
 
+using AwesomeAssertions;
 using EricksonLopez.Events.Bus.Middleware;
 using EricksonLopez.Events.Contracts;
 using EricksonLopez.Events.Identifiers;
-using AwesomeAssertions;
 using NSubstitute;
 using Xunit;
 

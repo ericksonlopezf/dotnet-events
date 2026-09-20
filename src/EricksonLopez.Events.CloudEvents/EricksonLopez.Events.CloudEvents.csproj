@@ -4,7 +4,7 @@
     <TargetFramework></TargetFramework>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <Description>CloudEvents 1.0 adapter and bidirectional mapping extensions for EricksonLopez.Events, supporting CNCF standard event gateways and Native AOT.</Description>
-    <PackageTags>$(CommonPackageTags);cloudevents;cncf;cloud-native;serverless;eventgrid;eventbridge;knative;interoperability;trimming</PackageTags>
+    <PackageTags>$(CommonPackageTags);cloudevents;cncf;cloud-native;specification;interoperability;json</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

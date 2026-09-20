@@ -16,7 +16,7 @@ using EricksonLopez.Events.Diagnostics;
 /// <remarks>
 /// <para>
 /// Subscriptions and publications are thread-safe. The copy-on-write strategy ensures that iterating over handlers
-/// during <see cref="PublishAsync{TEvent}"/> is not affected by concurrent calls to <see cref="Subscribe{TEvent}"/> or <see cref="Unsubscribe{TEvent}"/>.
+/// during <c>PublishAsync</c> is not affected by concurrent calls to <see cref="Subscribe{TEvent}(IEventHandler{TEvent})"/> or <see cref="Unsubscribe{TEvent}(IEventHandler{TEvent})"/>.
 /// </para>
 /// <para>
 /// Handlers are invoked sequentially in subscription order. Exceptions from individual handlers propagate immediately
@@ -48,40 +48,135 @@ public sealed class InMemoryEventPublisher : IEventPublisher, IEventSubscriber
     }
 
     /// <inheritdoc />
+    /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/></exception>
+    public void Subscribe<TEvent>(IEnvelopeEventHandler<TEvent> handler) where TEvent : IEvent
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+        var list = _subscriptions.GetOrAdd(typeof(TEvent), _ => new CopyOnWriteList());
+        list.Add(handler);
+    }
+
+    /// <inheritdoc />
+    /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/></exception>
+    public void Unsubscribe<TEvent>(IEnvelopeEventHandler<TEvent> handler) where TEvent : IEvent
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+        if (_subscriptions.TryGetValue(typeof(TEvent), out var list))
+        {
+            list.Remove(handler);
+        }
+    }
+
+    private readonly AsyncLocal<int> _reentrancyDepth = new();
+
+    /// <summary>
+    /// Gets or sets the maximum allowable reentrancy depth before publication is aborted to prevent stack overflow.
+    /// The default is 10.
+    /// </summary>
+    public int MaxReentrancyDepth { get; set; } = 10;
+
+    /// <inheritdoc />
     /// <exception cref="ArgumentNullException"><paramref name="eventInstance"/> is <see langword="null"/></exception>
+    /// <exception cref="InvalidOperationException">The reentrancy depth limit was exceeded</exception>
     public async ValueTask PublishAsync<TEvent>(TEvent eventInstance, CancellationToken cancellationToken = default)
         where TEvent : IEvent
     {
         ArgumentNullException.ThrowIfNull(eventInstance);
 
-        using var activity = EventsDiagnostics.StartPublishActivity(eventInstance);
-        EventsDiagnostics.RecordEventPublished(typeof(TEvent).Name);
-
-        if (!_subscriptions.TryGetValue(typeof(TEvent), out var list))
+        int currentDepth = _reentrancyDepth.Value;
+        if (currentDepth >= MaxReentrancyDepth)
         {
-            return;
+            throw new InvalidOperationException(
+                $"InMemoryEventPublisher maximum reentrancy depth limit ({MaxReentrancyDepth}) exceeded while publishing '{typeof(TEvent).Name}'. Possible cyclic event cascade.");
         }
 
-        var handlers = list.Items;
-        for (int i = 0; i < handlers.Length; i++)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
+        IDisposable? contextScope = null;
+        bool isSameEvent = Context.EventContext.Current != null &&
+            (ReferenceEquals(Context.EventContext.Current.GetPayload(), eventInstance) ||
+             (Context.EventContext.Current.Id == eventInstance.Id &&
+              Context.EventContext.Current.OccurredAt == eventInstance.OccurredAt));
 
-            if (handlers[i] is IEventHandler<TEvent> typedHandler)
+        if (!isSameEvent)
+        {
+            var metadata = Context.EventContext.Current != null
+                ? Metadata.EventMetadata.Create(
+                    correlationId: Context.EventContext.CorrelationId,
+                    causationId: Identifiers.CausationId.From(Context.EventContext.Current.Id),
+                    tenantId: Context.EventContext.TenantId,
+                    source: null,
+                    customHeaders: Context.EventContext.Current.Metadata?.CustomHeaders)
+                : Metadata.EventMetadata.Empty;
+
+            var ephemeralEnvelope = Envelopes.EventEnvelope.Create(eventInstance, metadata);
+            contextScope = Context.EventContext.SetCurrent(ephemeralEnvelope);
+        }
+
+        _reentrancyDepth.Value = currentDepth + 1;
+        try
+        {
+            using var activity = EventsDiagnostics.StartPublishActivity(eventInstance);
+            EventsDiagnostics.RecordEventPublished(typeof(TEvent).Name);
+
+            if (!_subscriptions.TryGetValue(typeof(TEvent), out var list))
             {
-                long startTimestamp = Stopwatch.GetTimestamp();
-                bool success = false;
-                try
+                return;
+            }
+
+            var handlers = list.Items;
+            for (int i = 0; i < handlers.Length; i++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (handlers[i] is IEventHandler<TEvent> typedHandler)
                 {
-                    await typedHandler.HandleAsync(eventInstance, cancellationToken).ConfigureAwait(false);
-                    success = true;
+                    long startTimestamp = Stopwatch.GetTimestamp();
+                    bool success = false;
+                    try
+                    {
+                        await typedHandler.HandleAsync(eventInstance, cancellationToken).ConfigureAwait(false);
+                        success = true;
+                    }
+                    finally
+                    {
+                        double elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+                        EventsDiagnostics.RecordEventHandled(typeof(TEvent).Name, elapsedMs, success);
+                    }
                 }
-                finally
+                else if (handlers[i] is IEnvelopeEventHandler<TEvent> envelopeHandler)
                 {
-                    double elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
-                    EventsDiagnostics.RecordEventHandled(typeof(TEvent).Name, elapsedMs, success);
+                    var envelope = Context.EventContext.Current as Envelopes.IEventEnvelope<TEvent>
+                        ?? Envelopes.EventEnvelope.Create(eventInstance);
+
+                    long startTimestamp = Stopwatch.GetTimestamp();
+                    bool success = false;
+                    try
+                    {
+                        await envelopeHandler.HandleAsync(envelope, cancellationToken).ConfigureAwait(false);
+                        success = true;
+                    }
+                    finally
+                    {
+                        double elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+                        EventsDiagnostics.RecordEventHandled(typeof(TEvent).Name, elapsedMs, success);
+                    }
                 }
             }
+        }
+        finally
+        {
+            contextScope?.Dispose();
+            _reentrancyDepth.Value = currentDepth;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask PublishEnvelopeAsync<TEvent>(Envelopes.IEventEnvelope<TEvent> envelope, CancellationToken cancellationToken = default)
+        where TEvent : IEvent
+    {
+        ArgumentNullException.ThrowIfNull(envelope);
+        using (Context.EventContext.SetCurrent(envelope))
+        {
+            await PublishAsync(envelope.Payload, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -96,6 +191,11 @@ public sealed class InMemoryEventPublisher : IEventPublisher, IEventSubscriber
         {
             lock (_lock)
             {
+                if (Array.IndexOf(_items, item) >= 0)
+                {
+                    return;
+                }
+
                 var newArray = new object[_items.Length + 1];
                 Array.Copy(_items, newArray, _items.Length);
                 newArray[^1] = item;
