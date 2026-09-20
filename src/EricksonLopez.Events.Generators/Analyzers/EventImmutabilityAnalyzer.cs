@@ -115,22 +115,22 @@ public sealed class EventImmutabilityAnalyzer : DiagnosticAnalyzer
                     }
                 }
             }
-            else if (member is IFieldSymbol field)
+            else if (member is IFieldSymbol
+                     {
+                         DeclaredAccessibility: Accessibility.Public,
+                         IsReadOnly: false,
+                         IsConst: false
+                     } field)
             {
-                if (field.DeclaredAccessibility == Accessibility.Public &&
-                    !field.IsReadOnly &&
-                    !field.IsConst)
-                {
-                    var location = field.Locations[0];
-                    var diagnostic = Diagnostic.Create(
-                        Rule,
-                        location,
-                        namedType.Name,
-                        eventInterface.Name,
-                        field.Name);
+                var location = field.Locations[0];
+                var diagnostic = Diagnostic.Create(
+                    Rule,
+                    location,
+                    namedType.Name,
+                    eventInterface.Name,
+                    field.Name);
 
-                    context.ReportDiagnostic(diagnostic);
-                }
+                context.ReportDiagnostic(diagnostic);
             }
         }
     }

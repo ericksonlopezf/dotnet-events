@@ -135,8 +135,15 @@ public readonly record struct CorrelationId :
     public override string ToString() => Value ?? string.Empty;
 
     /// <inheritdoc />
-    public static CorrelationId Parse(string s, IFormatProvider? provider = null) =>
+    public static CorrelationId Parse(string s, IFormatProvider? provider) =>
         new(s ?? throw new ArgumentNullException(nameof(s)));
+
+    /// <summary>
+    /// Parses a string into a <see cref="CorrelationId"/>.
+    /// </summary>
+    /// <param name="s">The string representation to parse.</param>
+    /// <returns>The parsed <see cref="CorrelationId"/>.</returns>
+    public static CorrelationId Parse(string s) => Parse(s, null);
 
     /// <inheritdoc />
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out CorrelationId result)

@@ -274,10 +274,10 @@ public sealed class ForensicAdversarialEvidenceTests
     #region 8. Guid v7 Monotonicity and Formatting Property Invariants
 
     [Fact]
-    public void EventId_MonotonicGuidV7_GuaranteesChronologicalOrdering()
+    public async Task EventId_MonotonicGuidV7_GuaranteesChronologicalOrdering()
     {
         var id1 = EventId.New();
-        Thread.Sleep(2);
+        await Task.Delay(5);
         var id2 = EventId.New();
 
         (id1 < id2).Should().BeTrue("Guid v7 EventId must be monotonically time-sortable.");

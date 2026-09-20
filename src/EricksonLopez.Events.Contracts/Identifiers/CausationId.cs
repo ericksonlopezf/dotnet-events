@@ -121,8 +121,15 @@ public readonly record struct CausationId :
     public override string ToString() => Value ?? string.Empty;
 
     /// <inheritdoc />
-    public static CausationId Parse(string s, IFormatProvider? provider = null) =>
+    public static CausationId Parse(string s, IFormatProvider? provider) =>
         new(s ?? throw new ArgumentNullException(nameof(s)));
+
+    /// <summary>
+    /// Parses a string into a <see cref="CausationId"/>.
+    /// </summary>
+    /// <param name="s">The string representation to parse.</param>
+    /// <returns>The parsed <see cref="CausationId"/>.</returns>
+    public static CausationId Parse(string s) => Parse(s, null);
 
     /// <inheritdoc />
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out CausationId result)

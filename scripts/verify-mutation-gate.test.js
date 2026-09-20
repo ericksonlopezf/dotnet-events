@@ -8,19 +8,23 @@ const {
   MAX_REPORT_AGE_DAYS
 } = require('./verify-mutation-gate');
 
+const test = async (name, fn) => {
+  await fn();
+};
+
 console.log('Running tests for verify-mutation-gate.js...\n');
 
 // Test 1: loadThresholds from stryker-config.json
-{
+test('loadThresholds from stryker-config.json', () => {
   const thresholds = loadThresholds();
   assert.strictEqual(thresholds.high, 100, 'Threshold high should be 100');
   assert.strictEqual(thresholds.low, 98, 'Threshold low should be 98');
   assert.strictEqual(thresholds.break, 95, 'Threshold break should be 95');
   console.log('✅ Test 1 Passed: loadThresholds loads correct values from stryker-config.json');
-}
+});
 
 // Test 2: parseScoreFromDescription
-{
+test('parseScoreFromDescription extracts numeric values correctly', () => {
   assert.strictEqual(parseScoreFromDescription('Stryker: 100% (240/240 killed) - ✅ HIGH'), 100);
   assert.strictEqual(parseScoreFromDescription('Stryker: 98.5% (200/203 killed) - 🟡 LOW'), 98.5);
   assert.strictEqual(parseScoreFromDescription('Stryker: 95.0% - 🟠 WARNING'), 95.0);
@@ -28,10 +32,10 @@ console.log('Running tests for verify-mutation-gate.js...\n');
   assert.strictEqual(parseScoreFromDescription(null), null);
   assert.strictEqual(parseScoreFromDescription('No percentage here'), null);
   console.log('✅ Test 2 Passed: parseScoreFromDescription correctly extracts numeric percentage');
-}
+});
 
 // Test 3: evaluateScore
-{
+test('evaluateScore categorizes thresholds and break gates', () => {
   const thresholds = { high: 100, low: 98, break: 95 };
 
   const resHigh = evaluateScore(100, thresholds);
@@ -55,10 +59,10 @@ console.log('Running tests for verify-mutation-gate.js...\n');
   assert.strictEqual(resFail.passedBreak, false);
 
   console.log('✅ Test 3 Passed: evaluateScore correctly categorizes scores and break gate');
-}
+});
 
 // Test 4: verifyMutationGate with mock direct target SHA
-(async () => {
+test('verifyMutationGate succeeds with direct 100% commit status', async () => {
   let failed = false;
   const mockContext = {
     repo: { owner: 'ericksonlopezf', repo: 'dotnet-events' },
@@ -99,10 +103,10 @@ console.log('Running tests for verify-mutation-gate.js...\n');
   await verifyMutationGate({ github: mockGithub, context: mockContext, core: mockCore });
   assert.strictEqual(failed, false, 'Should pass for 100% score on target commit');
   console.log('✅ Test 4 Passed: verifyMutationGate succeeds with direct 100% commit status');
-})();
+});
 
 // Test 5: verifyMutationGate with score below break threshold
-(async () => {
+test('verifyMutationGate blocks release for sub-break score', async () => {
   let failed = false;
   const mockContext = {
     repo: { owner: 'ericksonlopezf', repo: 'dotnet-events' },
@@ -144,4 +148,4 @@ console.log('Running tests for verify-mutation-gate.js...\n');
     assert.strictEqual(failed, true, 'core.setFailed should be called');
     console.log('✅ Test 5 Passed: verifyMutationGate blocks release for sub-break score');
   }
-})();
+});

@@ -133,11 +133,18 @@ public readonly record struct EventVersion :
     public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
 
     /// <inheritdoc />
-    public static EventVersion Parse(string s, IFormatProvider? provider = null)
+    public static EventVersion Parse(string s, IFormatProvider? provider)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(s);
         return new EventVersion(uint.Parse(s, provider));
     }
+
+    /// <summary>
+    /// Parses a string into an <see cref="EventVersion"/>.
+    /// </summary>
+    /// <param name="s">The string representation to parse.</param>
+    /// <returns>The parsed <see cref="EventVersion"/>.</returns>
+    public static EventVersion Parse(string s) => Parse(s, null);
 
     /// <inheritdoc />
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out EventVersion result)

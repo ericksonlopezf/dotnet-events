@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using EricksonLopez.Events.Contracts;
 
 namespace EricksonLopez.Events.Testing;
@@ -11,6 +12,7 @@ namespace EricksonLopez.Events.Testing;
 /// <summary>
 /// Provides an in-memory fake event publisher for testing event emission, verifying assertions, and inspecting published events.
 /// </summary>
+[ExcludeFromCodeCoverage(Justification = "Testing harness infrastructure provided for consumer applications")]
 public sealed class FakeEventPublisher : IEventPublisher
 {
     private readonly List<IEvent> _publishedEvents = new();

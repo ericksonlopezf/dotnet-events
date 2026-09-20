@@ -64,7 +64,7 @@ public static class EventBusDiagnostics
         {
             SetTagSanitized(activity, "event.type", typeof(TEvent).FullName);
             SetTagSanitized(activity, "event.name", typeof(TEvent).Name);
-            if (eventInstance != null)
+            if (!EqualityComparer<TEvent>.Default.Equals(eventInstance, default))
             {
                 SetTagSanitized(activity, "event.id", eventInstance.Id.ToString());
             }

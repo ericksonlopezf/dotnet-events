@@ -14,7 +14,6 @@ public readonly record struct EventId :
     IEquatable<EventId>,
     ISpanFormattable,
     IUtf8SpanFormattable,
-    IParsable<EventId>,
     ISpanParsable<EventId>
 {
     /// <summary>
@@ -139,11 +138,18 @@ public readonly record struct EventId :
         Value.TryFormat(utf8Destination, out bytesWritten, format);
 
     /// <inheritdoc />
-    public static EventId Parse(string s, IFormatProvider? provider = null)
+    public static EventId Parse(string s, IFormatProvider? provider)
     {
         ArgumentNullException.ThrowIfNull(s);
         return new EventId(Guid.Parse(s, provider));
     }
+
+    /// <summary>
+    /// Parses a string into an <see cref="EventId"/>.
+    /// </summary>
+    /// <param name="s">The string representation to parse.</param>
+    /// <returns>The parsed <see cref="EventId"/>.</returns>
+    public static EventId Parse(string s) => Parse(s, null);
 
     /// <inheritdoc />
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out EventId result)
@@ -159,8 +165,15 @@ public readonly record struct EventId :
     }
 
     /// <inheritdoc />
-    public static EventId Parse(ReadOnlySpan<char> s, IFormatProvider? provider = null) =>
+    public static EventId Parse(ReadOnlySpan<char> s, IFormatProvider? provider) =>
         new(Guid.Parse(s, provider));
+
+    /// <summary>
+    /// Parses a character span into an <see cref="EventId"/>.
+    /// </summary>
+    /// <param name="s">The span representation to parse.</param>
+    /// <returns>The parsed <see cref="EventId"/>.</returns>
+    public static EventId Parse(ReadOnlySpan<char> s) => Parse(s, null);
 
     /// <inheritdoc />
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out EventId result)
