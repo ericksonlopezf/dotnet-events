@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>EricksonLopez.Events.Benchmarks.DispatchScenariosBenchmarks-20260927-072953</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
+AMD EPYC 7763 2.69GHz, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 10.0.401
+  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  ShortRun  : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method                 </th><th>Job</th><th>Runtime</th><th>IterationCount</th><th>LaunchCount</th><th>WarmupCount</th><th>Mean  </th><th>Error </th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>Publish_1Handler</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>381.7 ns</td><td>2.32 ns</td><td>2.17 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_5Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>705.4 ns</td><td>2.35 ns</td><td>2.08 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_10Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>1,115.3 ns</td><td>3.37 ns</td><td>3.15 ns</td><td>?</td><td>?</td><td>0.0362</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_50Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>4,398.4 ns</td><td>4.89 ns</td><td>3.82 ns</td><td>?</td><td>?</td><td>0.0305</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_100Events_Sequential</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>36,618.4 ns</td><td>292.78 ns</td><td>259.55 ns</td><td>?</td><td>?</td><td>3.7231</td><td>62401 B</td><td>?</td>
+</tr><tr><td>Publish_1000Events_Sequential</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>358,777.3 ns</td><td>1,818.16 ns</td><td>1,611.75 ns</td><td>?</td><td>?</td><td>37.1094</td><td>624009 B</td><td>?</td>
+</tr><tr><td>Publish_1Handler</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_5Handlers</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_10Handlers</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_50Handlers</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_100Events_Sequential</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_1000Events_Sequential</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_1Handler</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_5Handlers</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_10Handlers</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_50Handlers</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_100Events_Sequential</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_1000Events_Sequential</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
+</tr><tr><td>Publish_1Handler</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>379.6 ns</td><td>12.56 ns</td><td>0.69 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_5Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>689.3 ns</td><td>78.71 ns</td><td>4.31 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_10Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>1,098.6 ns</td><td>27.51 ns</td><td>1.51 ns</td><td>?</td><td>?</td><td>0.0362</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_50Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>4,407.6 ns</td><td>132.93 ns</td><td>7.29 ns</td><td>?</td><td>?</td><td>0.0305</td><td>624 B</td><td>?</td>
+</tr><tr><td>Publish_100Events_Sequential</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>35,335.4 ns</td><td>2,519.67 ns</td><td>138.11 ns</td><td>?</td><td>?</td><td>3.7231</td><td>62401 B</td><td>?</td>
+</tr><tr><td>Publish_1000Events_Sequential</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>362,392.0 ns</td><td>49,581.03 ns</td><td>2,717.70 ns</td><td>?</td><td>?</td><td>37.1094</td><td>624009 B</td><td>?</td>
+</tr></tbody></table>
+</body>
+</html>
