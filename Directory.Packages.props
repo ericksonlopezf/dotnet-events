@@ -24,7 +24,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
     <!-- OpenTelemetry for optional observability testing -->
-    <PackageVersion Include="OpenTelemetry" Version="1.19.0" />
+    <PackageVersion Include="OpenTelemetry" Version="1.19.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.11.2" />
     <PackageVersion Include="OpenTelemetry.Api" Version="1.11.2" />
   </ItemGroup>
