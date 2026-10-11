@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>EricksonLopez.Events.Benchmarks.RegistryBenchmarks-20261004-075059</title>
+<title>EricksonLopez.Events.Benchmarks.RegistryBenchmarks-20261011-081817</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -14,22 +14,22 @@
 <body>
 <pre><code>
 BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
-AMD EPYC 9V45 4.30GHz, 1 CPU, 4 logical and 2 physical cores
+AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
 .NET SDK 10.0.401
-  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v4
-  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v4
-  ShortRun  : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v4
+  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  ShortRun  : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
 </code></pre>
 <pre><code></code></pre>
 
 <table>
 <thead><tr><th>Method                              </th><th>Job</th><th>Runtime</th><th>IterationCount</th><th>LaunchCount</th><th>WarmupCount</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>StaticRegistry_GetDescriptor_Cached</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>5.489 ns</td><td>0.1043 ns</td><td>0.0975 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByType_N1</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>2.473 ns</td><td>0.0382 ns</td><td>0.0357 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByType_N10</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>2.041 ns</td><td>0.0225 ns</td><td>0.0188 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByType_N100</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>2.175 ns</td><td>0.0535 ns</td><td>0.0501 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByEventType_N100</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>17.509 ns</td><td>0.1677 ns</td><td>0.1487 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</thead><tbody><tr><td>StaticRegistry_GetDescriptor_Cached</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>8.999 ns</td><td>0.0135 ns</td><td>0.0112 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByType_N1</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>4.475 ns</td><td>0.0157 ns</td><td>0.0147 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByType_N10</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>4.466 ns</td><td>0.0138 ns</td><td>0.0129 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByType_N100</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>4.468 ns</td><td>0.0110 ns</td><td>0.0103 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByEventType_N100</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>25.559 ns</td><td>0.0248 ns</td><td>0.0220 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
 </tr><tr><td>StaticRegistry_GetDescriptor_Cached</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>?</td>
 </tr><tr><td>Registry_TryGetDescriptor_ByType_N1</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>?</td>
 </tr><tr><td>Registry_TryGetDescriptor_ByType_N10</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>?</td>
@@ -40,11 +40,11 @@ AMD EPYC 9V45 4.30GHz, 1 CPU, 4 logical and 2 physical cores
 </tr><tr><td>Registry_TryGetDescriptor_ByType_N10</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>?</td>
 </tr><tr><td>Registry_TryGetDescriptor_ByType_N100</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>?</td>
 </tr><tr><td>Registry_TryGetDescriptor_ByEventType_N100</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>?</td>
-</tr><tr><td>StaticRegistry_GetDescriptor_Cached</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>5.588 ns</td><td>1.9775 ns</td><td>0.1084 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByType_N1</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>2.033 ns</td><td>0.1755 ns</td><td>0.0096 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByType_N10</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>2.136 ns</td><td>1.0177 ns</td><td>0.0558 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByType_N100</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>2.050 ns</td><td>0.1553 ns</td><td>0.0085 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
-</tr><tr><td>Registry_TryGetDescriptor_ByEventType_N100</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>17.223 ns</td><td>1.3138 ns</td><td>0.0720 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>StaticRegistry_GetDescriptor_Cached</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>9.036 ns</td><td>4.7769 ns</td><td>0.2618 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByType_N1</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>4.606 ns</td><td>1.2315 ns</td><td>0.0675 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByType_N10</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>3.994 ns</td><td>0.0661 ns</td><td>0.0036 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByType_N100</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>3.976 ns</td><td>0.1362 ns</td><td>0.0075 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
+</tr><tr><td>Registry_TryGetDescriptor_ByEventType_N100</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>25.530 ns</td><td>1.4474 ns</td><td>0.0793 ns</td><td>?</td><td>?</td><td>-</td><td>?</td>
 </tr></tbody></table>
 </body>
 </html>

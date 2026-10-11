@@ -1,22 +1,22 @@
 ```
 
 BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
-AMD EPYC 9V45 4.30GHz, 1 CPU, 4 logical and 2 physical cores
+AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
 .NET SDK 10.0.401
-  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v4
-  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v4
-  ShortRun  : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v4
+  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+  ShortRun  : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
 
 
 ```
 | Method                      | Job       | Runtime   | IterationCount | LaunchCount | WarmupCount | Mean         | Error       | StdDev     | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
 |---------------------------- |---------- |---------- |--------------- |------------ |------------ |-------------:|------------:|-----------:|------:|--------:|-------:|----------:|------------:|
-| EventId_New                 | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   491.979 ns |   9.7627 ns | 10.4460 ns |     ? |       ? |      - |         - |           ? |
-| EventId_TryFormat_ZeroAlloc | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     1.613 ns |   0.0207 ns |  0.0183 ns |     ? |       ? |      - |         - |           ? |
-| Envelope_Create             | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |    19.870 ns |   0.4346 ns |  0.3853 ns |     ? |       ? | 0.0048 |      80 B |           ? |
-| Envelope_Serialize_Json     | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   564.012 ns |   8.9813 ns |  7.9617 ns |     ? |       ? | 0.0620 |    1048 B |           ? |
-| Envelope_Deserialize_Json   | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     | 1,381.067 ns |  19.0594 ns | 15.9154 ns |     ? |       ? | 0.0992 |    1680 B |           ? |
-| Event_Publish_InMemory      | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   205.713 ns |   2.5388 ns |  2.2506 ns |     ? |       ? | 0.0372 |     624 B |           ? |
+| EventId_New                 | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   691.423 ns |   1.2411 ns |  1.0364 ns |     ? |       ? |      - |         - |           ? |
+| EventId_TryFormat_ZeroAlloc | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     3.209 ns |   0.0075 ns |  0.0063 ns |     ? |       ? |      - |         - |           ? |
+| Envelope_Create             | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |    34.126 ns |   0.1510 ns |  0.1412 ns |     ? |       ? | 0.0048 |      80 B |           ? |
+| Envelope_Serialize_Json     | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   973.945 ns |   6.3980 ns |  5.3426 ns |     ? |       ? | 0.0610 |    1048 B |           ? |
+| Envelope_Deserialize_Json   | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     | 2,445.953 ns |  12.4654 ns | 11.6601 ns |     ? |       ? | 0.0992 |    1680 B |           ? |
+| Event_Publish_InMemory      | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   362.050 ns |   5.2782 ns |  5.4204 ns |     ? |       ? | 0.0372 |     624 B |           ? |
 | EventId_New                 | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |          NA |         NA |     ? |       ? |     NA |        NA |           ? |
 | EventId_TryFormat_ZeroAlloc | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |          NA |         NA |     ? |       ? |     NA |        NA |           ? |
 | Envelope_Create             | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |          NA |         NA |     ? |       ? |     NA |        NA |           ? |
@@ -29,12 +29,12 @@ AMD EPYC 9V45 4.30GHz, 1 CPU, 4 logical and 2 physical cores
 | Envelope_Serialize_Json     | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |          NA |         NA |     ? |       ? |     NA |        NA |           ? |
 | Envelope_Deserialize_Json   | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |          NA |         NA |     ? |       ? |     NA |        NA |           ? |
 | Event_Publish_InMemory      | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |          NA |         NA |     ? |       ? |     NA |        NA |           ? |
-| EventId_New                 | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   499.695 ns |   0.9773 ns |  0.0536 ns |     ? |       ? |      - |         - |           ? |
-| EventId_TryFormat_ZeroAlloc | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     1.608 ns |   1.1099 ns |  0.0608 ns |     ? |       ? |      - |         - |           ? |
-| Envelope_Create             | ShortRun  | .NET 10.0 | 3              | 1           | 3           |    22.116 ns |   4.0568 ns |  0.2224 ns |     ? |       ? | 0.0048 |      80 B |           ? |
-| Envelope_Serialize_Json     | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   580.977 ns | 218.7221 ns | 11.9889 ns |     ? |       ? | 0.0610 |    1048 B |           ? |
-| Envelope_Deserialize_Json   | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 1,476.528 ns | 846.7652 ns | 46.4141 ns |     ? |       ? | 0.0992 |    1680 B |           ? |
-| Event_Publish_InMemory      | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   199.050 ns |  25.0127 ns |  1.3710 ns |     ? |       ? | 0.0372 |     624 B |           ? |
+| EventId_New                 | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   688.969 ns |  11.1374 ns |  0.6105 ns |     ? |       ? |      - |         - |           ? |
+| EventId_TryFormat_ZeroAlloc | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     3.119 ns |   0.1059 ns |  0.0058 ns |     ? |       ? |      - |         - |           ? |
+| Envelope_Create             | ShortRun  | .NET 10.0 | 3              | 1           | 3           |    33.361 ns |   5.1670 ns |  0.2832 ns |     ? |       ? | 0.0048 |      80 B |           ? |
+| Envelope_Serialize_Json     | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 1,011.199 ns | 159.3265 ns |  8.7332 ns |     ? |       ? | 0.0610 |    1040 B |           ? |
+| Envelope_Deserialize_Json   | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 2,513.969 ns |  71.3465 ns |  3.9107 ns |     ? |       ? | 0.0992 |    1680 B |           ? |
+| Event_Publish_InMemory      | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   359.052 ns |  38.6421 ns |  2.1181 ns |     ? |       ? | 0.0372 |     624 B |           ? |
 
 Benchmarks with issues:
   EventBenchmarks.EventId_New: .NET 8.0(Runtime=.NET 8.0, Toolchain=net8.0)
