@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>EricksonLopez.Events.Benchmarks.EventBusBenchmarks-20261011-081623</title>
+<title>EricksonLopez.Events.Benchmarks.EventBusBenchmarks-20261018-070046</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -14,21 +14,21 @@
 <body>
 <pre><code>
 BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
-AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
-.NET SDK 10.0.401
-  [Host]    : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
-  .NET 10.0 : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
-  ShortRun  : .NET 10.0.12 (10.0.12, 10.0.1226.42308), X64 RyuJIT x86-64-v3
+AMD EPYC 9V45 2.60GHz, 1 CPU, 4 logical and 2 physical cores
+.NET SDK 10.0.402
+  [Host]    : .NET 10.0.13 (10.0.13, 10.0.1326.50504), X64 RyuJIT x86-64-v4
+  .NET 10.0 : .NET 10.0.13 (10.0.13, 10.0.1326.50504), X64 RyuJIT x86-64-v4
+  ShortRun  : .NET 10.0.13 (10.0.13, 10.0.1326.50504), X64 RyuJIT x86-64-v4
 </code></pre>
 <pre><code></code></pre>
 
 <table>
 <thead><tr><th>Method                    </th><th>Job</th><th>Runtime</th><th>IterationCount</th><th>LaunchCount</th><th>WarmupCount</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>EventBus_Sequential_1Handler</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>406.4 ns</td><td>6.21 ns</td><td>5.81 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
-</tr><tr><td>EventBus_Sequential_5Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>395.8 ns</td><td>4.58 ns</td><td>4.28 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
-</tr><tr><td>EventBus_Parallel_5Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>509.7 ns</td><td>5.56 ns</td><td>5.20 ns</td><td>?</td><td>?</td><td>0.0439</td><td>744 B</td><td>?</td>
-</tr><tr><td>EventBus_WithMiddleware_1Handler</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>445.5 ns</td><td>4.21 ns</td><td>3.94 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
+</thead><tbody><tr><td>EventBus_Sequential_1Handler</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>208.6 ns</td><td>4.18 ns</td><td>4.47 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
+</tr><tr><td>EventBus_Sequential_5Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>214.0 ns</td><td>4.07 ns</td><td>5.30 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
+</tr><tr><td>EventBus_Parallel_5Handlers</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>261.1 ns</td><td>3.89 ns</td><td>4.16 ns</td><td>?</td><td>?</td><td>0.0443</td><td>744 B</td><td>?</td>
+</tr><tr><td>EventBus_WithMiddleware_1Handler</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>225.8 ns</td><td>2.28 ns</td><td>2.02 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
 </tr><tr><td>EventBus_Sequential_1Handler</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>EventBus_Sequential_5Handlers</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>EventBus_Parallel_5Handlers</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
@@ -37,10 +37,10 @@ AMD EPYC 7763 2.45GHz, 1 CPU, 4 logical and 2 physical cores
 </tr><tr><td>EventBus_Sequential_5Handlers</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>EventBus_Parallel_5Handlers</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>EventBus_WithMiddleware_1Handler</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
-</tr><tr><td>EventBus_Sequential_1Handler</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>396.2 ns</td><td>24.15 ns</td><td>1.32 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
-</tr><tr><td>EventBus_Sequential_5Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>387.1 ns</td><td>52.64 ns</td><td>2.89 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
-</tr><tr><td>EventBus_Parallel_5Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>531.3 ns</td><td>23.68 ns</td><td>1.30 ns</td><td>?</td><td>?</td><td>0.0439</td><td>744 B</td><td>?</td>
-</tr><tr><td>EventBus_WithMiddleware_1Handler</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>444.8 ns</td><td>52.46 ns</td><td>2.88 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
+</tr><tr><td>EventBus_Sequential_1Handler</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>217.4 ns</td><td>25.37 ns</td><td>1.39 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
+</tr><tr><td>EventBus_Sequential_5Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>205.1 ns</td><td>9.35 ns</td><td>0.51 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
+</tr><tr><td>EventBus_Parallel_5Handlers</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>264.7 ns</td><td>357.63 ns</td><td>19.60 ns</td><td>?</td><td>?</td><td>0.0443</td><td>744 B</td><td>?</td>
+</tr><tr><td>EventBus_WithMiddleware_1Handler</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>229.3 ns</td><td>81.48 ns</td><td>4.47 ns</td><td>?</td><td>?</td><td>0.0339</td><td>568 B</td><td>?</td>
 </tr></tbody></table>
 </body>
 </html>
