@@ -9,11 +9,11 @@ AMD EPYC 9V45 2.60GHz, 1 CPU, 4 logical and 2 physical cores
 
  Method                                     | Job       | Runtime   | IterationCount | LaunchCount | WarmupCount | Mean      | Error     | StdDev    | Ratio | RatioSD | Allocated | Alloc Ratio |
 ------------------------------------------- |---------- |---------- |--------------- |------------ |------------ |----------:|----------:|----------:|------:|--------:|----------:|------------:|
- StaticRegistry_GetDescriptor_Cached        | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  5.490 ns | 0.1495 ns | 0.1325 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByType_N1        | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  2.060 ns | 0.0404 ns | 0.0378 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByType_N10       | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  2.007 ns | 0.0425 ns | 0.0377 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByType_N100      | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  2.004 ns | 0.0574 ns | 0.0537 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByEventType_N100 | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     | 16.779 ns | 0.3440 ns | 0.3532 ns |     ? |       ? |         - |           ? |
+ StaticRegistry_GetDescriptor_Cached        | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  5.519 ns | 0.1465 ns | 0.1370 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByType_N1        | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  1.997 ns | 0.0292 ns | 0.0244 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByType_N10       | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  2.022 ns | 0.0170 ns | 0.0142 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByType_N100      | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  2.034 ns | 0.0417 ns | 0.0370 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByEventType_N100 | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     | 16.883 ns | 0.2517 ns | 0.2231 ns |     ? |       ? |         - |           ? |
  StaticRegistry_GetDescriptor_Cached        | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |        NA |        NA |        NA |     ? |       ? |        NA |           ? |
  Registry_TryGetDescriptor_ByType_N1        | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |        NA |        NA |        NA |     ? |       ? |        NA |           ? |
  Registry_TryGetDescriptor_ByType_N10       | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |        NA |        NA |        NA |     ? |       ? |        NA |           ? |
@@ -24,11 +24,11 @@ AMD EPYC 9V45 2.60GHz, 1 CPU, 4 logical and 2 physical cores
  Registry_TryGetDescriptor_ByType_N10       | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |        NA |        NA |        NA |     ? |       ? |        NA |           ? |
  Registry_TryGetDescriptor_ByType_N100      | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |        NA |        NA |        NA |     ? |       ? |        NA |           ? |
  Registry_TryGetDescriptor_ByEventType_N100 | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |        NA |        NA |        NA |     ? |       ? |        NA |           ? |
- StaticRegistry_GetDescriptor_Cached        | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  6.066 ns | 3.7739 ns | 0.2069 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByType_N1        | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  2.059 ns | 1.3344 ns | 0.0731 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByType_N10       | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  2.360 ns | 0.5683 ns | 0.0312 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByType_N100      | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  1.993 ns | 0.0506 ns | 0.0028 ns |     ? |       ? |         - |           ? |
- Registry_TryGetDescriptor_ByEventType_N100 | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 16.801 ns | 0.1633 ns | 0.0090 ns |     ? |       ? |         - |           ? |
+ StaticRegistry_GetDescriptor_Cached        | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  5.469 ns | 2.9689 ns | 0.1627 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByType_N1        | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  2.022 ns | 0.2813 ns | 0.0154 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByType_N10       | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  2.058 ns | 0.3520 ns | 0.0193 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByType_N100      | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  2.100 ns | 0.6600 ns | 0.0362 ns |     ? |       ? |         - |           ? |
+ Registry_TryGetDescriptor_ByEventType_N100 | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 17.677 ns | 1.0759 ns | 0.0590 ns |     ? |       ? |         - |           ? |
 
 Benchmarks with issues:
   RegistryBenchmarks.StaticRegistry_GetDescriptor_Cached: .NET 8.0(Runtime=.NET 8.0, Toolchain=net8.0)

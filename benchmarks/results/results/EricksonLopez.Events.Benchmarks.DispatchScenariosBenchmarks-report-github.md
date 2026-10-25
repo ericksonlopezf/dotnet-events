@@ -9,32 +9,32 @@ AMD EPYC 9V45 2.60GHz, 1 CPU, 4 logical and 2 physical cores
 
 
 ```
-| Method                        | Job       | Runtime   | IterationCount | LaunchCount | WarmupCount | Mean         | Error        | StdDev      | Ratio | RatioSD | Gen0    | Allocated | Alloc Ratio |
-|------------------------------ |---------- |---------- |--------------- |------------ |------------ |-------------:|-------------:|------------:|------:|--------:|--------:|----------:|------------:|
-| Publish_1Handler              | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     215.1 ns |      2.92 ns |     2.44 ns |     ? |       ? |  0.0372 |     624 B |           ? |
-| Publish_5Handlers             | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     471.0 ns |      5.05 ns |     4.21 ns |     ? |       ? |  0.0372 |     624 B |           ? |
-| Publish_10Handlers            | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     770.0 ns |      8.58 ns |     6.70 ns |     ? |       ? |  0.0372 |     624 B |           ? |
-| Publish_50Handlers            | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   3,065.3 ns |     49.12 ns |    41.02 ns |     ? |       ? |  0.0343 |     624 B |           ? |
-| Publish_100Events_Sequential  | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  20,070.7 ns |    393.24 ns |   452.85 ns |     ? |       ? |  3.7231 |   62401 B |           ? |
-| Publish_1000Events_Sequential | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     | 207,035.1 ns |  4,102.15 ns | 5,883.18 ns |     ? |       ? | 37.1094 |  624009 B |           ? |
-| Publish_1Handler              | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_5Handlers             | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_10Handlers            | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_50Handlers            | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_100Events_Sequential  | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_1000Events_Sequential | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_1Handler              | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_5Handlers             | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_10Handlers            | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_50Handlers            | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_100Events_Sequential  | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_1000Events_Sequential | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |           NA |          NA |     ? |       ? |      NA |        NA |           ? |
-| Publish_1Handler              | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     209.6 ns |     91.50 ns |     5.02 ns |     ? |       ? |  0.0372 |     624 B |           ? |
-| Publish_5Handlers             | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     451.7 ns |    322.34 ns |    17.67 ns |     ? |       ? |  0.0372 |     624 B |           ? |
-| Publish_10Handlers            | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     764.4 ns |    533.01 ns |    29.22 ns |     ? |       ? |  0.0372 |     624 B |           ? |
-| Publish_50Handlers            | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   3,161.4 ns |    531.18 ns |    29.12 ns |     ? |       ? |  0.0343 |     624 B |           ? |
-| Publish_100Events_Sequential  | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  20,740.0 ns |  3,755.23 ns |   205.84 ns |     ? |       ? |  3.7231 |   62401 B |           ? |
-| Publish_1000Events_Sequential | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 205,690.5 ns | 65,631.37 ns | 3,597.48 ns |     ? |       ? | 37.1094 |  624009 B |           ? |
+| Method                        | Job       | Runtime   | IterationCount | LaunchCount | WarmupCount | Mean         | Error         | StdDev      | Ratio | RatioSD | Gen0    | Allocated | Alloc Ratio |
+|------------------------------ |---------- |---------- |--------------- |------------ |------------ |-------------:|--------------:|------------:|------:|--------:|--------:|----------:|------------:|
+| Publish_1Handler              | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     209.3 ns |       3.92 ns |     4.36 ns |     ? |       ? |  0.0372 |     624 B |           ? |
+| Publish_5Handlers             | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     448.2 ns |       4.37 ns |     3.65 ns |     ? |       ? |  0.0372 |     624 B |           ? |
+| Publish_10Handlers            | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |     764.5 ns |      15.17 ns |    14.19 ns |     ? |       ? |  0.0372 |     624 B |           ? |
+| Publish_50Handlers            | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |   3,213.1 ns |      27.97 ns |    24.79 ns |     ? |       ? |  0.0343 |     624 B |           ? |
+| Publish_100Events_Sequential  | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     |  20,860.8 ns |     405.29 ns |   541.04 ns |     ? |       ? |  3.7231 |   62401 B |           ? |
+| Publish_1000Events_Sequential | .NET 10.0 | .NET 10.0 | Default        | Default     | Default     | 203,812.5 ns |   2,389.26 ns | 2,118.02 ns |     ? |       ? | 37.1094 |  624009 B |           ? |
+| Publish_1Handler              | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_5Handlers             | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_10Handlers            | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_50Handlers            | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_100Events_Sequential  | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_1000Events_Sequential | .NET 8.0  | .NET 8.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_1Handler              | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_5Handlers             | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_10Handlers            | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_50Handlers            | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_100Events_Sequential  | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_1000Events_Sequential | .NET 9.0  | .NET 9.0  | Default        | Default     | Default     |           NA |            NA |          NA |     ? |       ? |      NA |        NA |           ? |
+| Publish_1Handler              | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     206.8 ns |     153.17 ns |     8.40 ns |     ? |       ? |  0.0372 |     624 B |           ? |
+| Publish_5Handlers             | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     468.5 ns |     297.62 ns |    16.31 ns |     ? |       ? |  0.0372 |     624 B |           ? |
+| Publish_10Handlers            | ShortRun  | .NET 10.0 | 3              | 1           | 3           |     775.3 ns |     118.50 ns |     6.50 ns |     ? |       ? |  0.0372 |     624 B |           ? |
+| Publish_50Handlers            | ShortRun  | .NET 10.0 | 3              | 1           | 3           |   3,197.7 ns |   1,173.38 ns |    64.32 ns |     ? |       ? |  0.0343 |     624 B |           ? |
+| Publish_100Events_Sequential  | ShortRun  | .NET 10.0 | 3              | 1           | 3           |  20,176.1 ns |   3,213.22 ns |   176.13 ns |     ? |       ? |  3.7231 |   62401 B |           ? |
+| Publish_1000Events_Sequential | ShortRun  | .NET 10.0 | 3              | 1           | 3           | 205,919.5 ns | 126,889.44 ns | 6,955.24 ns |     ? |       ? | 37.1094 |  624009 B |           ? |
 
 Benchmarks with issues:
   DispatchScenariosBenchmarks.Publish_1Handler: .NET 8.0(Runtime=.NET 8.0, Toolchain=net8.0)
