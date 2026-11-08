@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>EricksonLopez.Events.Benchmarks.EventBenchmarks-20261101-083909</title>
+<title>EricksonLopez.Events.Benchmarks.EventBenchmarks-20261108-083139</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,24 +13,24 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.15.8, Linux Ubuntu 24.04.5 LTS (Noble Numbat)
-AMD EPYC 7763 2.63GHz, 1 CPU, 4 logical and 2 physical cores
+BenchmarkDotNet v0.15.8, Linux Ubuntu 26.04.1 LTS (Resolute Raccoon)
+AMD EPYC 9V74 3.60GHz, 1 CPU, 4 logical and 2 physical cores
 .NET SDK 10.0.403
-  [Host]    : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v3
-  .NET 10.0 : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v3
-  ShortRun  : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v3
+  [Host]    : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v4
+  .NET 10.0 : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v4
+  ShortRun  : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v4
 </code></pre>
 <pre><code></code></pre>
 
 <table>
 <thead><tr><th>Method               </th><th>Job</th><th>Runtime</th><th>IterationCount</th><th>LaunchCount</th><th>WarmupCount</th><th>Mean  </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>EventId_New</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>720.104 ns</td><td>1.6869 ns</td><td>1.5780 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
-</tr><tr><td>EventId_TryFormat_ZeroAlloc</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>3.265 ns</td><td>0.0060 ns</td><td>0.0053 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
-</tr><tr><td>Envelope_Create</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>31.267 ns</td><td>0.1892 ns</td><td>0.1580 ns</td><td>?</td><td>?</td><td>0.0048</td><td>80 B</td><td>?</td>
-</tr><tr><td>Envelope_Serialize_Json</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>962.410 ns</td><td>7.3665 ns</td><td>6.5302 ns</td><td>?</td><td>?</td><td>0.0610</td><td>1048 B</td><td>?</td>
-</tr><tr><td>Envelope_Deserialize_Json</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>2,487.920 ns</td><td>7.1295 ns</td><td>5.9535 ns</td><td>?</td><td>?</td><td>0.0992</td><td>1680 B</td><td>?</td>
-</tr><tr><td>Event_Publish_InMemory</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>354.507 ns</td><td>2.4850 ns</td><td>2.0751 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
+</thead><tbody><tr><td>EventId_New</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>749.787 ns</td><td>1.0224 ns</td><td>0.9063 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>EventId_TryFormat_ZeroAlloc</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>3.109 ns</td><td>0.0079 ns</td><td>0.0074 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>Envelope_Create</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>25.326 ns</td><td>0.1947 ns</td><td>0.1821 ns</td><td>?</td><td>?</td><td>0.0048</td><td>80 B</td><td>?</td>
+</tr><tr><td>Envelope_Serialize_Json</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>665.468 ns</td><td>6.1340 ns</td><td>5.4377 ns</td><td>?</td><td>?</td><td>0.0610</td><td>1048 B</td><td>?</td>
+</tr><tr><td>Envelope_Deserialize_Json</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>1,773.208 ns</td><td>2.9207 ns</td><td>2.5891 ns</td><td>?</td><td>?</td><td>0.0992</td><td>1680 B</td><td>?</td>
+</tr><tr><td>Event_Publish_InMemory</td><td>.NET 10.0</td><td>.NET 10.0</td><td>Default</td><td>Default</td><td>Default</td><td>262.600 ns</td><td>0.9536 ns</td><td>0.8454 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
 </tr><tr><td>EventId_New</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>EventId_TryFormat_ZeroAlloc</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>Envelope_Create</td><td>.NET 8.0</td><td>.NET 8.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
@@ -43,12 +43,12 @@ AMD EPYC 7763 2.63GHz, 1 CPU, 4 logical and 2 physical cores
 </tr><tr><td>Envelope_Serialize_Json</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>Envelope_Deserialize_Json</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
 </tr><tr><td>Event_Publish_InMemory</td><td>.NET 9.0</td><td>.NET 9.0</td><td>Default</td><td>Default</td><td>Default</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td><td>NA</td><td>NA</td><td>?</td>
-</tr><tr><td>EventId_New</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>721.101 ns</td><td>13.2291 ns</td><td>0.7251 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
-</tr><tr><td>EventId_TryFormat_ZeroAlloc</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>3.251 ns</td><td>0.0874 ns</td><td>0.0048 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
-</tr><tr><td>Envelope_Create</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>31.712 ns</td><td>5.0307 ns</td><td>0.2757 ns</td><td>?</td><td>?</td><td>0.0048</td><td>80 B</td><td>?</td>
-</tr><tr><td>Envelope_Serialize_Json</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>969.445 ns</td><td>127.9664 ns</td><td>7.0143 ns</td><td>?</td><td>?</td><td>0.0610</td><td>1040 B</td><td>?</td>
-</tr><tr><td>Envelope_Deserialize_Json</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>2,531.945 ns</td><td>834.9540 ns</td><td>45.7666 ns</td><td>?</td><td>?</td><td>0.0992</td><td>1680 B</td><td>?</td>
-</tr><tr><td>Event_Publish_InMemory</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>413.996 ns</td><td>8.8722 ns</td><td>0.4863 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
+</tr><tr><td>EventId_New</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>733.299 ns</td><td>4.0483 ns</td><td>0.2219 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>EventId_TryFormat_ZeroAlloc</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>2.753 ns</td><td>0.1112 ns</td><td>0.0061 ns</td><td>?</td><td>?</td><td>-</td><td>-</td><td>?</td>
+</tr><tr><td>Envelope_Create</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>26.401 ns</td><td>2.8297 ns</td><td>0.1551 ns</td><td>?</td><td>?</td><td>0.0048</td><td>80 B</td><td>?</td>
+</tr><tr><td>Envelope_Serialize_Json</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>673.541 ns</td><td>191.1346 ns</td><td>10.4767 ns</td><td>?</td><td>?</td><td>0.0610</td><td>1048 B</td><td>?</td>
+</tr><tr><td>Envelope_Deserialize_Json</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>1,805.961 ns</td><td>42.7230 ns</td><td>2.3418 ns</td><td>?</td><td>?</td><td>0.0992</td><td>1680 B</td><td>?</td>
+</tr><tr><td>Event_Publish_InMemory</td><td>ShortRun</td><td>.NET 10.0</td><td>3</td><td>1</td><td>3</td><td>260.327 ns</td><td>20.6866 ns</td><td>1.1339 ns</td><td>?</td><td>?</td><td>0.0372</td><td>624 B</td><td>?</td>
 </tr></tbody></table>
 </body>
 </html>
